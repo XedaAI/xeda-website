@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <!-- Homepage with language alternates -->
+  <url>
+    <loc>https://xeda.ai/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xeda.ai/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://xeda.ai/?lang=de"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://xeda.ai/?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://xeda.ai/?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://xeda.ai/?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xeda.ai/"/>
+    <lastmod>2024-12-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <!-- Careers -->
+  <url>
+    <loc>https://xeda.ai/careers</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xeda.ai/careers?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://xeda.ai/careers?lang=de"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://xeda.ai/careers?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://xeda.ai/careers?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://xeda.ai/careers?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xeda.ai/careers"/>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Blog index -->
+  <url>
+    <loc>https://xeda.ai/blog</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xeda.ai/blog?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://xeda.ai/blog?lang=de"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xeda.ai/blog"/>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Blog posts -->
+  <url>
+    <loc>https://xeda.ai/blog/1</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://xeda.ai/blog/2</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://xeda.ai/blog/3</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://xeda.ai/blog/4</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://xeda.ai/blog/5</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://xeda.ai/blog/6</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Privacy Policy -->
+  <url>
+    <loc>https://xeda.ai/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xeda.ai/privacy?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://xeda.ai/privacy?lang=de"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://xeda.ai/privacy?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://xeda.ai/privacy?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://xeda.ai/privacy?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xeda.ai/privacy"/>
+    <lastmod>2024-12-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  
+  <!-- Terms of Service -->
+  <url>
+    <loc>https://xeda.ai/terms</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xeda.ai/terms?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://xeda.ai/terms?lang=de"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://xeda.ai/terms?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://xeda.ai/terms?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://xeda.ai/terms?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xeda.ai/terms"/>
+    <lastmod>2024-12-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  
+  <!-- Impressum (Legal Notice) -->
+  <url>
+    <loc>https://xeda.ai/impressum</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xeda.ai/impressum?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://xeda.ai/impressum?lang=de"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://xeda.ai/impressum?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://xeda.ai/impressum?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://xeda.ai/impressum?lang=it"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xeda.ai/impressum"/>
+    <lastmod>2024-12-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  
+</urlset>

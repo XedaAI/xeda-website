@@ -1,0 +1,178 @@
+@import url("https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 250 20% 98%;
+    --foreground: 250 25% 10%;
+
+    --card: 250 20% 100%;
+    --card-foreground: 250 25% 10%;
+
+    --popover: 250 15% 95%;
+    --popover-foreground: 250 25% 10%;
+
+    --primary: 262 83% 58%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 250 15% 25%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 250 10% 60%;
+    --muted-foreground: 250 15% 40%;
+
+    --accent: 262 60% 95%;
+    --accent-foreground: 262 83% 50%;
+
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 85% 97%;
+
+    --border: 250 15% 88%;
+    --input: 250 15% 88%;
+    --ring: 262 83% 58%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 250 20% 100%;
+    --sidebar-foreground: 250 25% 10%;
+    --sidebar-primary: 262 83% 58%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 262 60% 95%;
+    --sidebar-accent-foreground: 262 83% 50%;
+    --sidebar-border: 250 15% 88%;
+    --sidebar-ring: 262 83% 58%;
+
+    --chart-1: 262 83% 58%;
+    --chart-2: 280 70% 55%;
+    --chart-3: 245 75% 60%;
+    --chart-4: 300 60% 50%;
+    --chart-5: 250 15% 45%;
+
+    --sidebar: 0 0% 98%;
+
+    --font-sans: 'Work Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+
+    --font-serif: 'Lora', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+
+    --font-mono: 'Inconsolata', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+
+    --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+
+    --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+
+    --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+
+    --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+
+    --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1);
+
+    --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
+
+    --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
+
+    --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+
+    --tracking-normal: 0em;
+
+    --spacing: 0.25rem;
+  }
+
+  .dark {
+    --background: 250 25% 8%;
+    --foreground: 250 10% 95%;
+
+    --card: 250 25% 12%;
+    --card-foreground: 250 10% 95%;
+
+    --popover: 250 25% 15%;
+    --popover-foreground: 250 10% 95%;
+
+    --primary: 262 75% 65%;
+    --primary-foreground: 250 25% 8%;
+
+    --secondary: 250 15% 40%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 250 15% 35%;
+    --muted-foreground: 250 10% 70%;
+
+    --accent: 262 50% 18%;
+    --accent-foreground: 262 75% 75%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 85% 97%;
+
+    --border: 250 20% 22%;
+    --input: 250 20% 22%;
+    --ring: 262 75% 65%;
+    --sidebar-background: 250 25% 10%;
+    --sidebar-foreground: 250 10% 95%;
+    --sidebar-primary: 262 75% 65%;
+    --sidebar-primary-foreground: 250 25% 8%;
+    --sidebar-accent: 262 50% 18%;
+    --sidebar-accent-foreground: 262 75% 75%;
+    --sidebar-border: 250 20% 22%;
+    --sidebar-ring: 262 75% 65%;
+    --chart-1: 262 75% 65%;
+    --chart-2: 280 65% 60%;
+    --chart-3: 245 70% 65%;
+    --chart-4: 300 55% 55%;
+    --chart-5: 250 15% 50%;
+    --sidebar: 250 25% 12%;
+    --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+    --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
+    --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+    --shadow: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
+    --shadow-md: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.1);
+    --shadow-lg: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 4px 6px -1px hsl(0 0% 0% / 0.1);
+    --shadow-xl: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 8px 10px -1px hsl(0 0% 0% / 0.1);
+    --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* --- AI robot: scroll-scrubbed burst/reassemble + idle float (decorative, hero bg) --- */
+@keyframes robotFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* --burst (0..1) is driven by scroll position (useScrollBurst); each part's inline
+   transform multiplies its offset by it, scrubbing apart on scroll-down and back
+   together on scroll-up. Only static props live here (the transform/opacity are inline
+   so the engine recomputes them when the inherited --burst changes). */
+.robot-part {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.robot-float {
+  animation: robotFloat 5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .robot-float {
+    animation: none;
+  }
+}
