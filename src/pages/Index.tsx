@@ -8,6 +8,7 @@ import ForBusinessesSection from "@/components/ForBusinessesSection";
 import WhyUsSection from "@/components/WhyUsSection";
 import TeamSection from "@/components/TeamSection";
 import CaseStudiesSection from "@/components/CaseStudiesSection";
+import AuditSection from "@/components/AuditSection";
 import PricingSection from "@/components/PricingSection";
 // TestimonialsSection temporarily removed: quotes + client logos were fabricated
 // template content. Re-enable once real, attributable testimonials exist.
@@ -53,6 +54,9 @@ const Index = () => {
         </AnimatedSection>
         <AnimatedSection>
           <CaseStudiesSection />
+        </AnimatedSection>
+        <AnimatedSection>
+          <AuditSection />
         </AnimatedSection>
         <AnimatedSection>
           <PricingSection />
