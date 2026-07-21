@@ -30,6 +30,14 @@
     <priority>0.6</priority>
   </url>
 
+  <!-- Landing: Steuerkanzleien (accounting firms) -->
+  <url>
+    <loc>https://xeda.ai/steuerkanzleien</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
   <!-- Blog index -->
   <url>
     <loc>https://xeda.ai/blog</loc>
