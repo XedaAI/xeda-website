@@ -1,0 +1,11 @@
+# Code owners — GitHub auto-requests review from the owner(s) when matching files change.
+# Uncomment and replace with real GitHub usernames (Waleed, Kamran, reviewers) to activate.
+# Until then, reviewers are requested manually on each PR.
+#
+# Everything:
+# *                       @waleed-github  @kamran-github
+#
+# Example of scoping ownership by area:
+# /src/components/         @waleed-github
+# /supabase/               @kamran-github
+# /.github/                @waleed-github  @kamran-github
