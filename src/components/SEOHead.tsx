@@ -9,14 +9,14 @@ interface SEOContent {
 
 const seoContent: Record<SiteLanguage, SEOContent> = {
   en: {
-    title: "xeda.ai | German GenAI Agency - AI Products & Implementation",
-    description: "We build production-ready AI products and help businesses integrate Generative AI. From MVPs to enterprise automation. Based in Germany.",
-    keywords: "GenAI, AI agency, AI automation, AI products, machine learning, LLM, AI consulting, Germany, artificial intelligence",
+    title: "xeda.ai — AI receptionists, booking & automation for German businesses",
+    description: "We build and run the AI front office for German service businesses — AI phone answering, booking, and automation. Start with a free AI audit.",
+    keywords: "AI receptionist, KI Telefonassistent, AI audit, KI Audit, appointment booking AI, AI automation, AI for SMBs, KI Mittelstand, Germany, GenAI studio",
   },
   de: {
-    title: "xeda.ai | Deutsche GenAI-Agentur - KI-Produkte & Implementierung",
-    description: "Wir entwickeln produktionsreife KI-Produkte und helfen Unternehmen bei der Integration von Generativer KI. Von MVPs bis zur Unternehmensautomatisierung.",
-    keywords: "GenAI, KI-Agentur, KI-Automatisierung, KI-Produkte, maschinelles Lernen, LLM, KI-Beratung, Deutschland, künstliche Intelligenz",
+    title: "xeda.ai — KI-Telefonassistent, Terminbuchung & Automatisierung für den Mittelstand",
+    description: "Wir bauen und betreiben das KI-Front-Office für deutsche Dienstleister — Telefon, Terminbuchung, Automatisierung. Starten Sie mit einem kostenlosen KI-Audit.",
+    keywords: "KI-Telefonassistent, KI-Audit, Terminbuchung KI, KI-Automatisierung, KI für den Mittelstand, KI-Agentur Deutschland, AI receptionist, GenAI Studio",
   },
   fr: {
     title: "xeda.ai | Agence GenAI Allemande - Produits & Implémentation IA",
@@ -156,8 +156,8 @@ interface SEOHeadProps {
 
 const pageContent: Record<string, Record<SiteLanguage, { title: string; description: string; image: string }>> = {
   home: {
-    en: { title: "xeda.ai | German GenAI Agency - AI Products & Implementation", description: "We build production-ready AI products and help businesses integrate Generative AI.", image: "/og-image.png" },
-    de: { title: "xeda.ai | Deutsche GenAI-Agentur - KI-Produkte & Implementierung", description: "Wir entwickeln produktionsreife KI-Produkte und helfen Unternehmen bei der Integration von Generativer KI.", image: "/og-image.png" },
+    en: { title: "xeda.ai — AI receptionists, booking & automation for German businesses", description: "We build and run the AI front office for German service businesses — phone answering, booking, and automation. Start with a free AI audit.", image: "/og-image.png" },
+    de: { title: "xeda.ai — KI-Telefonassistent, Terminbuchung & Automatisierung für den Mittelstand", description: "Wir bauen und betreiben das KI-Front-Office für deutsche Dienstleister. Starten Sie mit einem kostenlosen KI-Audit.", image: "/og-image.png" },
     fr: { title: "xeda.ai | Agence GenAI Allemande - Produits & Implémentation IA", description: "Nous créons des produits IA prêts pour la production.", image: "/og-image.png" },
     es: { title: "xeda.ai | Agencia GenAI Alemana - Productos e Implementación de IA", description: "Creamos productos de IA listos para producción.", image: "/og-image.png" },
     it: { title: "xeda.ai | Agenzia GenAI Tedesca - Prodotti e Implementazione IA", description: "Creiamo prodotti IA pronti per la produzione.", image: "/og-image.png" },

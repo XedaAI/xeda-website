@@ -2,12 +2,15 @@ import Header from "@/components/Header";
 import HeroSection from "@/components/HeroSection";
 import TrustStrip from "@/components/TrustStrip";
 import WhatWeDoSection from "@/components/WhatWeDoSection";
+import UseCasesSection from "@/components/UseCasesSection";
 import HowWeWorkSection from "@/components/HowWeWorkSection";
+import VisionSection from "@/components/VisionSection";
 import ForBusinessesSection from "@/components/ForBusinessesSection";
 // ForDevelopersSection (recruiting) moved off the buyer flow to the /careers page.
 import WhyUsSection from "@/components/WhyUsSection";
 import TeamSection from "@/components/TeamSection";
 import CaseStudiesSection from "@/components/CaseStudiesSection";
+import AuditSection from "@/components/AuditSection";
 import PricingSection from "@/components/PricingSection";
 // TestimonialsSection temporarily removed: quotes + client logos were fabricated
 // template content. Re-enable once real, attributable testimonials exist.
@@ -40,7 +43,13 @@ const Index = () => {
           <WhatWeDoSection />
         </AnimatedSection>
         <AnimatedSection>
+          <UseCasesSection />
+        </AnimatedSection>
+        <AnimatedSection>
           <HowWeWorkSection />
+        </AnimatedSection>
+        <AnimatedSection>
+          <VisionSection />
         </AnimatedSection>
         <AnimatedSection>
           <ForBusinessesSection />
@@ -53,6 +62,9 @@ const Index = () => {
         </AnimatedSection>
         <AnimatedSection>
           <CaseStudiesSection />
+        </AnimatedSection>
+        <AnimatedSection>
+          <AuditSection />
         </AnimatedSection>
         <AnimatedSection>
           <PricingSection />
