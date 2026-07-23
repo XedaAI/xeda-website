@@ -5,6 +5,9 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  // Served at a subpath on GitHub Pages (xedaai.github.io/xeda-website/); at root
+  // everywhere else (local dev, and any custom domain / Vercel / Cloudflare).
+  base: process.env.GITHUB_PAGES === "true" ? "/xeda-website/" : "/",
   server: {
     host: "::",
     port: 8080,
