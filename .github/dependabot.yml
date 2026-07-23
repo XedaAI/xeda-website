@@ -1,18 +1,30 @@
 version: 2
 updates:
-  # Keep npm dependencies fresh (grouped, weekly, low noise).
+  # npm dependencies.
+  # Minor + patch updates are batched into ONE low-risk PR. Major updates come as
+  # SEPARATE, individual PRs so a breaking major can't ride in with everything else
+  # (that's what took the build/site down before). typescript majors are held back
+  # because typescript-eslint pins a peer range and a TS major breaks the build.
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: weekly
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 10
     groups:
-      dependencies:
-        patterns:
-          - "*"
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
+    ignore:
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
 
-  # Keep GitHub Actions versions up to date.
+  # GitHub Actions versions (grouped, weekly).
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
+    groups:
+      actions:
+        patterns:
+          - "*"
