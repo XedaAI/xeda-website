@@ -1,11 +1,4 @@
-# Code owners — GitHub auto-requests review from the owner(s) when matching files change.
-# Uncomment and replace with real GitHub usernames (Waleed, Kamran, reviewers) to activate.
-# Until then, reviewers are requested manually on each PR.
-#
-# Everything:
-# *                       @waleed-github  @kamran-github
-#
-# Example of scoping ownership by area:
-# /src/components/         @waleed-github
-# /supabase/               @kamran-github
-# /.github/                @waleed-github  @kamran-github
+# Code owners — GitHub auto-requests review from these owners when matching files change.
+# All three are on the XedaAI dev team. Scope per-area later if review load gets noisy.
+
+*  @Neo-Xylen  @OmegaZenthis  @kamransialxeda
