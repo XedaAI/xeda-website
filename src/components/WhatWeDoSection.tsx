@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { PhoneCall, CalendarClock, Zap } from "lucide-react";
+import { Workflow, Zap, Bot } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const WhatWeDoSection = () => {
@@ -7,17 +7,17 @@ const WhatWeDoSection = () => {
 
   const services = [
     {
-      icon: PhoneCall,
+      icon: Workflow,
       titleKey: "whatWeDo.saas.title",
       descKey: "whatWeDo.saas.desc",
     },
     {
-      icon: CalendarClock,
+      icon: Zap,
       titleKey: "whatWeDo.mvp.title",
       descKey: "whatWeDo.mvp.desc",
     },
     {
-      icon: Zap,
+      icon: Bot,
       titleKey: "whatWeDo.automation.title",
       descKey: "whatWeDo.automation.desc",
     },
