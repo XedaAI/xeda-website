@@ -12,9 +12,6 @@ import TeamSection from "@/components/TeamSection";
 import CaseStudiesSection from "@/components/CaseStudiesSection";
 import AuditSection from "@/components/AuditSection";
 import PricingSection from "@/components/PricingSection";
-// TestimonialsSection temporarily removed: quotes + client logos were fabricated
-// template content. Re-enable once real, attributable testimonials exist.
-// import TestimonialsSection from "@/components/TestimonialsSection";
 import BlogSection from "@/components/BlogSection";
 import FAQSection from "@/components/FAQSection";
 import ContactSection from "@/components/ContactSection";

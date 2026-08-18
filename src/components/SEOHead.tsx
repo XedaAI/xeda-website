@@ -18,37 +18,16 @@ const seoContent: Record<SiteLanguage, SEOContent> = {
     description: "Wir bauen und betreiben das KI-Front-Office für deutsche Dienstleister — Telefon, Terminbuchung, Automatisierung. Starten Sie mit einem kostenlosen KI-Audit.",
     keywords: "KI-Telefonassistent, KI-Audit, Terminbuchung KI, KI-Automatisierung, KI für den Mittelstand, KI-Agentur Deutschland, AI receptionist, GenAI Studio",
   },
-  fr: {
-    title: "xeda.ai | Agence GenAI Allemande - Produits & Implémentation IA",
-    description: "Nous créons des produits IA prêts pour la production et aidons les entreprises à intégrer l'IA Générative. Des MVPs à l'automatisation entreprise.",
-    keywords: "GenAI, agence IA, automatisation IA, produits IA, apprentissage automatique, LLM, conseil IA, Allemagne, intelligence artificielle",
-  },
-  es: {
-    title: "xeda.ai | Agencia GenAI Alemana - Productos e Implementación de IA",
-    description: "Creamos productos de IA listos para producción y ayudamos a las empresas a integrar IA Generativa. Desde MVPs hasta automatización empresarial.",
-    keywords: "GenAI, agencia IA, automatización IA, productos IA, aprendizaje automático, LLM, consultoría IA, Alemania, inteligencia artificial",
-  },
-  it: {
-    title: "xeda.ai | Agenzia GenAI Tedesca - Prodotti e Implementazione IA",
-    description: "Creiamo prodotti IA pronti per la produzione e aiutiamo le aziende a integrare l'IA Generativa. Dai MVP all'automazione aziendale.",
-    keywords: "GenAI, agenzia IA, automazione IA, prodotti IA, apprendimento automatico, LLM, consulenza IA, Germania, intelligenza artificiale",
-  },
 };
 
 const languageCodes: Record<SiteLanguage, string> = {
   en: "en-GB",
   de: "de-DE",
-  fr: "fr-FR",
-  es: "es-ES",
-  it: "it-IT",
 };
 
 const serviceDescriptions: Record<SiteLanguage, string[]> = {
   en: ["GenAI SaaS Products", "AI MVPs & Prototypes", "AI Automation", "AI Transformation", "Custom Copilots", "AI Consulting"],
   de: ["GenAI SaaS-Produkte", "KI MVPs & Prototypen", "KI-Automatisierung", "KI-Transformation", "Individuelle Copiloten", "KI-Beratung"],
-  fr: ["Produits SaaS GenAI", "MVPs & Prototypes IA", "Automatisation IA", "Transformation IA", "Copilotes Personnalisés", "Conseil IA"],
-  es: ["Productos SaaS GenAI", "MVPs y Prototipos IA", "Automatización IA", "Transformación IA", "Copilotos Personalizados", "Consultoría IA"],
-  it: ["Prodotti SaaS GenAI", "MVP e Prototipi IA", "Automazione IA", "Trasformazione IA", "Copiloti Personalizzati", "Consulenza IA"],
 };
 
 interface ServiceDetail {
@@ -72,30 +51,6 @@ const serviceDetails: Record<SiteLanguage, ServiceDetail[]> = {
     { name: "KI-Transformation", description: "Ganzheitliche KI-Transformationsberatung zur Integration von KI in Kerngeschäftsprozesse." },
     { name: "Individuelle Copiloten", description: "Maßgeschneiderte KI-Copilot-Assistenten zur Erweiterung der Teamfähigkeiten mit domänenspezifischem Wissen." },
     { name: "KI-Beratung", description: "Strategische KI-Beratung einschließlich Roadmap-Entwicklung und Technologiebewertung." },
-  ],
-  fr: [
-    { name: "Produits SaaS GenAI", description: "Produits SaaS d'IA générative sur mesure adaptés à vos besoins, du concept au déploiement en production." },
-    { name: "MVPs & Prototypes IA", description: "Développement rapide de MVPs et prototypes IA pour valider les idées en 4-8 semaines." },
-    { name: "Automatisation IA", description: "Solutions d'automatisation intelligentes pour optimiser les flux de travail et augmenter l'efficacité opérationnelle." },
-    { name: "Transformation IA", description: "Conseil en transformation IA de bout en bout pour intégrer l'IA dans les processus métier." },
-    { name: "Copilotes Personnalisés", description: "Assistants copilotes IA sur mesure pour augmenter les capacités de votre équipe." },
-    { name: "Conseil IA", description: "Services de conseil stratégique en IA incluant développement de feuille de route et évaluation technologique." },
-  ],
-  es: [
-    { name: "Productos SaaS GenAI", description: "Productos SaaS de IA generativa personalizados para sus necesidades, desde el concepto hasta el despliegue en producción." },
-    { name: "MVPs y Prototipos IA", description: "Desarrollo rápido de MVPs y prototipos de IA para validar ideas en 4-8 semanas." },
-    { name: "Automatización IA", description: "Soluciones de automatización inteligente para optimizar flujos de trabajo y aumentar la eficiencia operativa." },
-    { name: "Transformación IA", description: "Consultoría integral de transformación IA para integrar la IA en los procesos de negocio." },
-    { name: "Copilotos Personalizados", description: "Asistentes copiloto de IA personalizados para ampliar las capacidades de su equipo." },
-    { name: "Consultoría IA", description: "Servicios de consultoría estratégica de IA incluyendo desarrollo de hoja de ruta y evaluación tecnológica." },
-  ],
-  it: [
-    { name: "Prodotti SaaS GenAI", description: "Prodotti SaaS di IA generativa personalizzati per le vostre esigenze, dal concept al deployment in produzione." },
-    { name: "MVP e Prototipi IA", description: "Sviluppo rapido di MVP e prototipi IA per validare idee in 4-8 settimane." },
-    { name: "Automazione IA", description: "Soluzioni di automazione intelligente per ottimizzare i flussi di lavoro e aumentare l'efficienza operativa." },
-    { name: "Trasformazione IA", description: "Consulenza completa per la trasformazione IA per integrare l'IA nei processi aziendali." },
-    { name: "Copiloti Personalizzati", description: "Assistenti copilota IA personalizzati per ampliare le capacità del vostro team." },
-    { name: "Consulenza IA", description: "Servizi di consulenza strategica IA incluso sviluppo roadmap e valutazione tecnologica." },
   ],
 };
 
@@ -121,30 +76,6 @@ const faqContent: Record<SiteLanguage, FAQItem[]> = {
     { question: "Was unterscheidet xeda.ai von anderen KI-Agenturen?", answer: "Wir kombinieren deutsche Ingenieurskunst mit modernster KI-Expertise. Unser Team besteht aus Senior-Entwicklern, die Produktionssysteme für Unternehmen gebaut haben." },
     { question: "Bieten Sie fortlaufenden Support nach Projektabschluss?", answer: "Ja, wir bieten flexible Support- und Wartungspakete. Viele Kunden arbeiten mit uns auf Retainer-Basis für laufende KI-Initiativen." },
   ],
-  fr: [
-    { question: "Quels types de solutions IA propose xeda.ai ?", answer: "Nous nous spécialisons dans les produits SaaS GenAI, les MVPs IA, les solutions d'automatisation, le conseil en transformation IA et les copilotes personnalisés." },
-    { question: "Combien de temps dure un projet IA typique ?", answer: "Les délais varient selon la complexité. Un MVP IA peut être livré en 4-8 semaines, tandis que les projets de transformation prennent 3-6 mois." },
-    { question: "Ai-je besoin d'expertise technique pour travailler avec xeda.ai ?", answer: "Pas du tout. Nous gérons tous les aspects techniques du projet et travaillons avec vos parties prenantes." },
-    { question: "Comment assurez-vous la sécurité et la confidentialité des données ?", answer: "La sécurité est primordiale dans tout ce que nous construisons. Nous suivons la conformité RGPD et implémentons le chiffrement de bout en bout." },
-    { question: "Qu'est-ce qui différencie xeda.ai des autres agences IA ?", answer: "Nous combinons la précision de l'ingénierie allemande avec une expertise IA de pointe. Notre équipe est composée de développeurs seniors." },
-    { question: "Offrez-vous un support continu après la fin du projet ?", answer: "Oui, nous proposons des packages de support et maintenance flexibles. Beaucoup de clients travaillent avec nous sur base de retainer." },
-  ],
-  es: [
-    { question: "¿Qué tipos de soluciones de IA ofrece xeda.ai?", answer: "Nos especializamos en productos SaaS GenAI, MVPs de IA, soluciones de automatización, consultoría de transformación IA y copilotos personalizados." },
-    { question: "¿Cuánto tiempo dura un proyecto típico de IA?", answer: "Los plazos varían según la complejidad. Un MVP de IA puede entregarse en 4-8 semanas, mientras que proyectos de transformación toman 3-6 meses." },
-    { question: "¿Necesito experiencia técnica para trabajar con xeda.ai?", answer: "Para nada. Manejamos todos los aspectos técnicos del proyecto y trabajamos estrechamente con sus partes interesadas." },
-    { question: "¿Cómo garantizan la seguridad y privacidad de los datos?", answer: "La seguridad es primordial en todo lo que construimos. Seguimos el cumplimiento del RGPD e implementamos cifrado de extremo a extremo." },
-    { question: "¿Qué diferencia a xeda.ai de otras agencias de IA?", answer: "Combinamos la precisión de ingeniería alemana con experiencia IA de vanguardia. Nuestro equipo consiste en desarrolladores senior." },
-    { question: "¿Ofrecen soporte continuo después de completar el proyecto?", answer: "Sí, ofrecemos paquetes flexibles de soporte y mantenimiento. Muchos clientes trabajan con nosotros en base de retainer." },
-  ],
-  it: [
-    { question: "Quali tipi di soluzioni IA offre xeda.ai?", answer: "Ci specializziamo in prodotti SaaS GenAI, MVP IA, soluzioni di automazione, consulenza per la trasformazione IA e copiloti personalizzati." },
-    { question: "Quanto dura un tipico progetto IA?", answer: "I tempi variano in base alla complessità. Un MVP IA può essere consegnato in 4-8 settimane, mentre progetti di trasformazione richiedono 3-6 mesi." },
-    { question: "Ho bisogno di competenze tecniche per lavorare con xeda.ai?", answer: "Assolutamente no. Gestiamo tutti gli aspetti tecnici del progetto e lavoriamo a stretto contatto con i vostri stakeholder." },
-    { question: "Come garantite la sicurezza e la privacy dei dati?", answer: "La sicurezza è fondamentale in tutto ciò che costruiamo. Seguiamo la conformità GDPR e implementiamo la crittografia end-to-end." },
-    { question: "Cosa distingue xeda.ai dalle altre agenzie IA?", answer: "Combiniamo la precisione ingegneristica tedesca con expertise IA all'avanguardia. Il nostro team è composto da sviluppatori senior." },
-    { question: "Offrite supporto continuo dopo il completamento del progetto?", answer: "Sì, offriamo pacchetti flessibili di supporto e manutenzione. Molti clienti lavorano con noi su base retainer." },
-  ],
 };
 
 interface SEOHeadProps {
@@ -158,37 +89,22 @@ const pageContent: Record<string, Record<SiteLanguage, { title: string; descript
   home: {
     en: { title: "xeda.ai — AI receptionists, booking & automation for German businesses", description: "We build and run the AI front office for German service businesses — phone answering, booking, and automation. Start with a free AI audit.", image: "/og-image.png" },
     de: { title: "xeda.ai — KI-Telefonassistent, Terminbuchung & Automatisierung für den Mittelstand", description: "Wir bauen und betreiben das KI-Front-Office für deutsche Dienstleister. Starten Sie mit einem kostenlosen KI-Audit.", image: "/og-image.png" },
-    fr: { title: "xeda.ai | Agence GenAI Allemande - Produits & Implémentation IA", description: "Nous créons des produits IA prêts pour la production.", image: "/og-image.png" },
-    es: { title: "xeda.ai | Agencia GenAI Alemana - Productos e Implementación de IA", description: "Creamos productos de IA listos para producción.", image: "/og-image.png" },
-    it: { title: "xeda.ai | Agenzia GenAI Tedesca - Prodotti e Implementazione IA", description: "Creiamo prodotti IA pronti per la produzione.", image: "/og-image.png" },
   },
   privacy: {
     en: { title: "Privacy Policy | xeda.ai", description: "Learn how xeda.ai protects your privacy and handles your personal data. GDPR compliant privacy practices.", image: "/og-privacy.png" },
     de: { title: "Datenschutzerklärung | xeda.ai", description: "Erfahren Sie, wie xeda.ai Ihre Privatsphäre schützt. DSGVO-konforme Datenschutzpraktiken.", image: "/og-privacy.png" },
-    fr: { title: "Politique de Confidentialité | xeda.ai", description: "Découvrez comment xeda.ai protège votre vie privée. Conforme au RGPD.", image: "/og-privacy.png" },
-    es: { title: "Política de Privacidad | xeda.ai", description: "Conozca cómo xeda.ai protege su privacidad. Conforme al RGPD.", image: "/og-privacy.png" },
-    it: { title: "Informativa sulla Privacy | xeda.ai", description: "Scopri come xeda.ai protegge la tua privacy. Conforme al GDPR.", image: "/og-privacy.png" },
   },
   terms: {
     en: { title: "Terms of Service | xeda.ai", description: "Terms and conditions for using xeda.ai services. Clear guidelines for our AI consulting partnerships.", image: "/og-terms.png" },
     de: { title: "Nutzungsbedingungen | xeda.ai", description: "Geschäftsbedingungen für xeda.ai Dienstleistungen. Klare Richtlinien für KI-Beratung.", image: "/og-terms.png" },
-    fr: { title: "Conditions d'Utilisation | xeda.ai", description: "Conditions générales des services xeda.ai. Directives claires pour nos partenariats.", image: "/og-terms.png" },
-    es: { title: "Términos de Servicio | xeda.ai", description: "Términos y condiciones de los servicios de xeda.ai.", image: "/og-terms.png" },
-    it: { title: "Termini di Servizio | xeda.ai", description: "Termini e condizioni per i servizi xeda.ai.", image: "/og-terms.png" },
   },
   careers: {
     en: { title: "Careers & Developers | xeda.ai", description: "Work with xeda.ai on challenging GenAI projects. Contract and ongoing collaboration for developers and AI engineers. Python, TypeScript, cloud-native.", image: "/og-image.png" },
     de: { title: "Karriere & Entwickler | xeda.ai", description: "Arbeiten Sie mit xeda.ai an anspruchsvollen GenAI-Projekten. Vertrags- und langfristige Zusammenarbeit für Entwickler und KI-Ingenieure.", image: "/og-image.png" },
-    fr: { title: "Carrières & Développeurs | xeda.ai", description: "Travaillez avec xeda.ai sur des projets GenAI stimulants. Collaboration contractuelle et continue pour développeurs et ingénieurs IA.", image: "/og-image.png" },
-    es: { title: "Carreras y Desarrolladores | xeda.ai", description: "Trabaja con xeda.ai en proyectos GenAI desafiantes. Colaboración por contrato y continua para desarrolladores e ingenieros de IA.", image: "/og-image.png" },
-    it: { title: "Carriere e Sviluppatori | xeda.ai", description: "Lavora con xeda.ai su progetti GenAI stimolanti. Collaborazione a contratto e continuativa per sviluppatori e ingegneri IA.", image: "/og-image.png" },
   },
   impressum: {
     en: { title: "Legal Notice (Impressum) | xeda.ai", description: "Legal information and company details for xeda.ai GmbH. German law compliance.", image: "/og-impressum.png" },
     de: { title: "Impressum | xeda.ai", description: "Rechtliche Informationen und Unternehmensangaben der xeda.ai GmbH.", image: "/og-impressum.png" },
-    fr: { title: "Mentions Légales | xeda.ai", description: "Informations légales et coordonnées de xeda.ai GmbH.", image: "/og-impressum.png" },
-    es: { title: "Aviso Legal | xeda.ai", description: "Información legal y datos de la empresa xeda.ai GmbH.", image: "/og-impressum.png" },
-    it: { title: "Note Legali | xeda.ai", description: "Informazioni legali e dati aziendali di xeda.ai GmbH.", image: "/og-impressum.png" },
   },
 };
 
@@ -248,7 +164,7 @@ const SEOHead = ({ page = "home", customTitle, customDescription, customImage }:
     document.querySelectorAll('link[hreflang]').forEach(el => el.remove());
 
     // Add hreflang links for all languages
-    const languages: SiteLanguage[] = ["en", "de", "fr", "es", "it"];
+    const languages: SiteLanguage[] = ["en", "de"];
     languages.forEach((lang) => {
       const link = document.createElement("link");
       link.rel = "alternate";
@@ -406,9 +322,6 @@ const SEOHead = ({ page = "home", customTitle, customDescription, customImage }:
     const breadcrumbNames: Record<SiteLanguage, string> = {
       en: "Home",
       de: "Startseite",
-      fr: "Accueil",
-      es: "Inicio",
-      it: "Home"
     };
 
     const breadcrumbSchema = {
@@ -450,23 +363,14 @@ const SEOHead = ({ page = "home", customTitle, customDescription, customImage }:
         privacy: {
           en: "Privacy Policy",
           de: "Datenschutzerklärung",
-          fr: "Politique de Confidentialité",
-          es: "Política de Privacidad",
-          it: "Informativa sulla Privacy",
         },
         terms: {
           en: "Terms of Service",
           de: "Nutzungsbedingungen",
-          fr: "Conditions d Utilisation",
-          es: "Términos de Servicio",
-          it: "Termini di Servizio",
         },
         impressum: {
           en: "Legal Notice (Impressum)",
           de: "Impressum",
-          fr: "Mentions Légales",
-          es: "Aviso Legal",
-          it: "Note Legali",
         },
       };
 
@@ -513,30 +417,18 @@ const SEOHead = ({ page = "home", customTitle, customDescription, customImage }:
       home: {
         en: "xeda.ai - German GenAI Agency",
         de: "xeda.ai - Deutsche GenAI-Agentur",
-        fr: "xeda.ai - Agence GenAI Allemande",
-        es: "xeda.ai - Agencia GenAI Alemana",
-        it: "xeda.ai - Agenzia GenAI Tedesca",
       },
       privacy: {
         en: "Privacy Policy - xeda.ai",
         de: "Datenschutzerklärung - xeda.ai",
-        fr: "Politique de Confidentialité - xeda.ai",
-        es: "Política de Privacidad - xeda.ai",
-        it: "Informativa sulla Privacy - xeda.ai",
       },
       terms: {
         en: "Terms of Service - xeda.ai",
         de: "Nutzungsbedingungen - xeda.ai",
-        fr: "Conditions d Utilisation - xeda.ai",
-        es: "Términos de Servicio - xeda.ai",
-        it: "Termini di Servizio - xeda.ai",
       },
       impressum: {
         en: "Legal Notice - xeda.ai",
         de: "Impressum - xeda.ai",
-        fr: "Mentions Légales - xeda.ai",
-        es: "Aviso Legal - xeda.ai",
-        it: "Note Legali - xeda.ai",
       },
     };
 
