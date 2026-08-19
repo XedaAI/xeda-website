@@ -89,9 +89,6 @@ const pageContent: Record<string, Record<SiteLanguage, { title: string; descript
   home: {
     en: { title: "xeda.ai — AI integration & automation for German-speaking businesses", description: "We integrate AI into your workflows and automate the repetitive work — across Germany and the DACH region. We build it and run it. Start with a free AI audit.", image: "/og-image.png" },
     de: { title: "xeda.ai — KI-Integration & Automatisierung für den deutschsprachigen Raum", description: "Wir integrieren KI in Ihre Abläufe und automatisieren die wiederkehrende Arbeit — in Deutschland, Österreich und der Schweiz. Kostenloses KI-Audit.", image: "/og-image.png" },
-    fr: { title: "xeda.ai | Agence GenAI Allemande - Produits & Implémentation IA", description: "Nous créons des produits IA prêts pour la production.", image: "/og-image.png" },
-    es: { title: "xeda.ai | Agencia GenAI Alemana - Productos e Implementación de IA", description: "Creamos productos de IA listos para producción.", image: "/og-image.png" },
-    it: { title: "xeda.ai | Agenzia GenAI Tedesca - Prodotti e Implementazione IA", description: "Creiamo prodotti IA pronti per la produzione.", image: "/og-image.png" },
   },
   privacy: {
     en: { title: "Privacy Policy | xeda.ai", description: "Learn how xeda.ai protects your privacy and handles your personal data. GDPR compliant privacy practices.", image: "/og-privacy.png" },
@@ -108,9 +105,6 @@ const pageContent: Record<string, Record<SiteLanguage, { title: string; descript
   impressum: {
     en: { title: "Legal Notice (Impressum) | xeda.ai", description: "Legal information and company details for Xeda UG (haftungsbeschränkt). German law compliance.", image: "/og-impressum.png" },
     de: { title: "Impressum | xeda.ai", description: "Rechtliche Informationen und Unternehmensangaben der Xeda UG (haftungsbeschränkt).", image: "/og-impressum.png" },
-    fr: { title: "Mentions Légales | xeda.ai", description: "Informations légales et coordonnées de Xeda UG (haftungsbeschränkt).", image: "/og-impressum.png" },
-    es: { title: "Aviso Legal | xeda.ai", description: "Información legal y datos de la empresa Xeda UG (haftungsbeschränkt).", image: "/og-impressum.png" },
-    it: { title: "Note Legali | xeda.ai", description: "Informazioni legali e dati aziendali di Xeda UG (haftungsbeschränkt).", image: "/og-impressum.png" },
   },
 };
 
