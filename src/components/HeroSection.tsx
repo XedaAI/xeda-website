@@ -24,7 +24,7 @@ const HeroSection = () => {
 
       {/* Robot fills the first viewport behind the content; bursts apart on scroll-down */}
       <div className="absolute inset-0 z-[1] flex items-center justify-center pointer-events-none overflow-hidden">
-        <AIRobot className="opacity-40" />
+        <AIRobot className="opacity-20" />
       </div>
 
       <div className="relative z-10 container mx-auto px-6 text-center max-w-4xl">
