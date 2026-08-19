@@ -22,14 +22,16 @@ const Privacy = () => {
 
         <article className="prose prose-neutral dark:prose-invert max-w-3xl mx-auto">
           <h1 className="text-4xl font-bold text-foreground mb-2">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Last updated: December 14, 2024</p>
+          <p className="text-muted-foreground mb-8">Last updated: August 13, 2026</p>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-foreground mb-4">1. Introduction</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Welcome to xeda.ai. We respect your privacy and are committed to protecting your personal data. 
-              This privacy policy explains how we collect, use, and safeguard your information when you visit 
-              our website or use our services.
+              Xeda UG (haftungsbeschränkt) ("xeda.ai", "we") respects your privacy and is committed to protecting your
+              personal data. This privacy policy explains how we collect, use, and safeguard your information when you
+              visit our website or use our services. The controller responsible for data processing is Xeda UG
+              (haftungsbeschränkt); full contact details are in our{" "}
+              <a href="/impressum" className="text-primary hover:underline">Impressum</a>.
             </p>
           </section>
 
@@ -111,11 +113,23 @@ const Privacy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-foreground mb-4">8. Third-Party Services</h2>
-            <p className="text-muted-foreground leading-relaxed">
-              We may use third-party services for analytics, hosting, and communication. These services 
-              have their own privacy policies, and we encourage you to review them. We ensure all 
-              third-party processors comply with GDPR requirements.
+            <h2 className="text-2xl font-semibold text-foreground mb-4">8. Third-Party Processors</h2>
+            <p className="text-muted-foreground leading-relaxed mb-4">
+              We use the following processors to operate this website and our services. Each acts under a
+              data processing agreement (Art. 28 GDPR). Where a provider is based outside the EU/EEA,
+              transfers are safeguarded by the EU Standard Contractual Clauses (Art. 46 GDPR):
+            </p>
+            <ul className="list-disc pl-6 text-muted-foreground space-y-2">
+              <li><strong className="text-foreground">Supabase</strong> (Supabase, Inc., USA) — database and serverless functions that store contact-form submissions, newsletter sign-ups, and chatbot conversations.</li>
+              <li><strong className="text-foreground">Resend</strong> (Resend, Inc., USA) — delivery of transactional emails (your contact-form confirmation and our internal notification). Processes your name, email address, and message.</li>
+              <li><strong className="text-foreground">Mailchimp</strong> (The Rocket Science Group LLC / Intuit, USA) — sending our newsletter to subscribers who have opted in. Processes your email address.</li>
+              <li><strong className="text-foreground">AI chatbot</strong> — messages you send to our on-site assistant are processed via the Lovable AI Gateway (Lovable) and Google's Gemini model to generate a reply, and are stored in Supabase under an anonymous session ID. <em>Please do not enter personal or confidential information into the chatbot.</em></li>
+              <li><strong className="text-foreground">Website hosting</strong> (GitHub Pages — GitHub, Inc. / Microsoft, USA) — serves this website; standard server logs (including IP address) are processed to deliver and secure the site.</li>
+            </ul>
+            <p className="text-muted-foreground leading-relaxed mt-4">
+              Legal bases: Art. 6(1)(b) GDPR (handling your contact request), Art. 6(1)(a) GDPR (newsletter — based
+              on your consent, withdrawable at any time), and Art. 6(1)(f) GDPR (secure operation of the website).
+              We do not sell your personal data.
             </p>
           </section>
 
@@ -133,9 +147,9 @@ const Privacy = () => {
               If you have any questions about this privacy policy or our data practices, please contact us at:
             </p>
             <p className="text-muted-foreground mt-4">
-              <strong className="text-foreground">xeda.ai</strong><br />
-              Email: privacy@xeda.ai<br />
-              Germany
+              <strong className="text-foreground">Xeda UG (haftungsbeschränkt)</strong><br />
+              Bismarckstr. 54, 67059 Ludwigshafen am Rhein, Deutschland<br />
+              E-Mail: saad.bakhtiyar@xeda.ai
             </p>
           </section>
         </article>
