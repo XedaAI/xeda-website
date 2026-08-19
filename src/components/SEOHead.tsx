@@ -184,11 +184,11 @@ const pageContent: Record<string, Record<SiteLanguage, { title: string; descript
     it: { title: "Carriere e Sviluppatori | xeda.ai", description: "Lavora con xeda.ai su progetti GenAI stimolanti. Collaborazione a contratto e continuativa per sviluppatori e ingegneri IA.", image: "/og-image.png" },
   },
   impressum: {
-    en: { title: "Legal Notice (Impressum) | xeda.ai", description: "Legal information and company details for xeda.ai GmbH. German law compliance.", image: "/og-impressum.png" },
-    de: { title: "Impressum | xeda.ai", description: "Rechtliche Informationen und Unternehmensangaben der xeda.ai GmbH.", image: "/og-impressum.png" },
-    fr: { title: "Mentions Légales | xeda.ai", description: "Informations légales et coordonnées de xeda.ai GmbH.", image: "/og-impressum.png" },
-    es: { title: "Aviso Legal | xeda.ai", description: "Información legal y datos de la empresa xeda.ai GmbH.", image: "/og-impressum.png" },
-    it: { title: "Note Legali | xeda.ai", description: "Informazioni legali e dati aziendali di xeda.ai GmbH.", image: "/og-impressum.png" },
+    en: { title: "Legal Notice (Impressum) | xeda.ai", description: "Legal information and company details for Xeda UG (haftungsbeschränkt). German law compliance.", image: "/og-impressum.png" },
+    de: { title: "Impressum | xeda.ai", description: "Rechtliche Informationen und Unternehmensangaben der Xeda UG (haftungsbeschränkt).", image: "/og-impressum.png" },
+    fr: { title: "Mentions Légales | xeda.ai", description: "Informations légales et coordonnées de Xeda UG (haftungsbeschränkt).", image: "/og-impressum.png" },
+    es: { title: "Aviso Legal | xeda.ai", description: "Información legal y datos de la empresa Xeda UG (haftungsbeschränkt).", image: "/og-impressum.png" },
+    it: { title: "Note Legali | xeda.ai", description: "Informazioni legali e dati aziendali di Xeda UG (haftungsbeschränkt).", image: "/og-impressum.png" },
   },
 };
 
@@ -281,7 +281,7 @@ const SEOHead = ({ page = "home", customTitle, customDescription, customImage }:
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "xeda.ai",
-      "legalName": "xeda.ai GmbH",
+      "legalName": "Xeda UG (haftungsbeschränkt)",
       "url": baseUrl,
       "logo": `${baseUrl}/og-image.png`,
       "description": content.description,
