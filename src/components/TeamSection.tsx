@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Shield, Lightbulb, Users, Zap } from "lucide-react";
+import { Shield, Lightbulb, Users, Zap, Linkedin } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -25,6 +25,20 @@ const TeamMemberCard = ({ member, index }: { member: typeof teamMembers[0]; inde
         </div>
         <h3 className="text-xl font-bold text-foreground mb-1">{member.name}</h3>
         <p className="text-sm text-primary font-medium">{t(member.roleKey)}</p>
+        {member.bioKey && (
+          <p className="mt-4 text-sm text-muted-foreground leading-relaxed">{t(member.bioKey)}</p>
+        )}
+        {member.linkedin && (
+          <a
+            href={member.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex items-center justify-center w-9 h-9 rounded-lg bg-background hover:bg-primary/10 border border-border/50 transition-colors"
+            aria-label={`${member.name} on LinkedIn`}
+          >
+            <Linkedin className="h-4 w-4 text-muted-foreground hover:text-primary" />
+          </a>
+        )}
       </CardContent>
     </Card>
   );
@@ -32,9 +46,11 @@ const TeamMemberCard = ({ member, index }: { member: typeof teamMembers[0]; inde
 
 const teamMembers = [
   {
-    name: "Saad",
-    initials: "S",
+    name: "Saad Bakhtiar",
+    initials: "SB",
     roleKey: "team.founder.role",
+    bioKey: "team.founder.bio",
+    linkedin: "https://www.linkedin.com/in/saad-bakhtiar/",
   },
 ];
 
