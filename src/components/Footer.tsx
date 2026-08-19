@@ -147,7 +147,7 @@ const Footer = () => {
 
         <div className="border-t border-border pt-8">
           <p className="text-sm text-muted-foreground text-center">
-            © {new Date().getFullYear()} xeda.ai GmbH. {t("footer.rights")}
+            © {new Date().getFullYear()} Xeda UG (haftungsbeschränkt). {t("footer.rights")}
           </p>
         </div>
       </div>

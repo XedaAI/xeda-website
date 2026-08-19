@@ -31,9 +31,11 @@ interface AuthorData {
 
 const authors: Record<string, AuthorData> = {
   Saad: {
-    name: "Saad",
+    name: "Saad Bakhtiar",
     role: "team.founder.role",
-    initials: "S",
+    initials: "SB",
+    bio: "team.founder.bio",
+    linkedin: "https://www.linkedin.com/in/saad-bakhtiar/",
   },
 };
 
@@ -302,7 +304,7 @@ const BlogPost = () => {
             <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
                 <User className="h-4 w-4" />
-                {post.author}
+                {authors[post.author]?.name ?? post.author}
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
