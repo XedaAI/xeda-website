@@ -26,9 +26,9 @@ const Impressum = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-foreground mb-4">Angaben gemäß § 5 TMG</h2>
             <p className="text-muted-foreground leading-relaxed">
-              xeda.ai GmbH<br />
-              [Straße und Hausnummer]<br />
-              [PLZ] [Stadt]<br />
+              Xeda UG (haftungsbeschränkt)<br />
+              Bismarckstr. 54<br />
+              67059 Ludwigshafen am Rhein<br />
               Deutschland
             </p>
           </section>
@@ -36,15 +36,15 @@ const Impressum = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-foreground mb-4">Vertreten durch</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Geschäftsführer: [Name des Geschäftsführers]
+              Geschäftsführer: Muhammad Saad Bakhtiar
             </p>
           </section>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-foreground mb-4">Kontakt</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Telefon: [Telefonnummer]<br />
-              E-Mail: contact@xeda.ai
+              Telefon: +49 179 4158530<br />
+              E-Mail: saad.bakhtiyar@xeda.ai
             </p>
           </section>
 
@@ -52,24 +52,24 @@ const Impressum = () => {
             <h2 className="text-2xl font-semibold text-foreground mb-4">Registereintrag</h2>
             <p className="text-muted-foreground leading-relaxed">
               Eintragung im Handelsregister<br />
-              Registergericht: [Amtsgericht]<br />
-              Registernummer: HRB [Nummer]
+              Registergericht: Amtsgericht Ludwigshafen am Rhein<br />
+              Registernummer: HRB 71014
             </p>
           </section>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-foreground mb-4">Umsatzsteuer-ID</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Umsatzsteuer-Identifikationsnummer gemäß § 27 a Umsatzsteuergesetz:<br />
-              DE [Nummer]
+              Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz:<br />
+              Wird nach Erteilung durch das Bundeszentralamt für Steuern ergänzt.
             </p>
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-foreground mb-4">Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h2>
+            <h2 className="text-2xl font-semibold text-foreground mb-4">Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h2>
             <p className="text-muted-foreground leading-relaxed">
-              [Name]<br />
-              [Adresse]
+              Muhammad Saad Bakhtiar<br />
+              Bismarckstr. 54, 67059 Ludwigshafen am Rhein
             </p>
           </section>
 
