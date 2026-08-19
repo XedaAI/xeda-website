@@ -9,14 +9,14 @@ interface SEOContent {
 
 const seoContent: Record<SiteLanguage, SEOContent> = {
   en: {
-    title: "xeda.ai — AI receptionists, booking & automation for German businesses",
-    description: "We build and run the AI front office for German service businesses — AI phone answering, booking, and automation. Start with a free AI audit.",
-    keywords: "AI receptionist, KI Telefonassistent, AI audit, KI Audit, appointment booking AI, AI automation, AI for SMBs, KI Mittelstand, Germany, GenAI studio",
+    title: "xeda.ai — AI integration & automation for German-speaking businesses",
+    description: "We integrate AI into your workflows and automate the repetitive work — for businesses across Germany and the DACH region. We build it and run it. Start with a free AI audit.",
+    keywords: "AI integration, AI automation, workflow automation, custom AI, AI agency DACH, KI-Integration, KI-Automatisierung, KI-Agentur, Mittelstand, GenAI studio, Germany, Austria, Switzerland",
   },
   de: {
-    title: "xeda.ai — KI-Telefonassistent, Terminbuchung & Automatisierung für den Mittelstand",
-    description: "Wir bauen und betreiben das KI-Front-Office für deutsche Dienstleister — Telefon, Terminbuchung, Automatisierung. Starten Sie mit einem kostenlosen KI-Audit.",
-    keywords: "KI-Telefonassistent, KI-Audit, Terminbuchung KI, KI-Automatisierung, KI für den Mittelstand, KI-Agentur Deutschland, AI receptionist, GenAI Studio",
+    title: "xeda.ai — KI-Integration & Automatisierung für den deutschsprachigen Raum",
+    description: "Wir integrieren KI in Ihre Abläufe und automatisieren die wiederkehrende Arbeit — für Unternehmen in Deutschland, Österreich und der Schweiz. Wir bauen es und betreiben es. Kostenloses KI-Audit.",
+    keywords: "KI-Integration, KI-Automatisierung, Prozessautomatisierung, individuelle KI, KI-Agentur DACH, KI-Agentur Deutschland, Mittelstand, GenAI Studio, Deutschland, Österreich, Schweiz",
   },
   fr: {
     title: "xeda.ai | Agence GenAI Allemande - Produits & Implémentation IA",
@@ -156,8 +156,8 @@ interface SEOHeadProps {
 
 const pageContent: Record<string, Record<SiteLanguage, { title: string; description: string; image: string }>> = {
   home: {
-    en: { title: "xeda.ai — AI receptionists, booking & automation for German businesses", description: "We build and run the AI front office for German service businesses — phone answering, booking, and automation. Start with a free AI audit.", image: "/og-image.png" },
-    de: { title: "xeda.ai — KI-Telefonassistent, Terminbuchung & Automatisierung für den Mittelstand", description: "Wir bauen und betreiben das KI-Front-Office für deutsche Dienstleister. Starten Sie mit einem kostenlosen KI-Audit.", image: "/og-image.png" },
+    en: { title: "xeda.ai — AI integration & automation for German-speaking businesses", description: "We integrate AI into your workflows and automate the repetitive work — across Germany and the DACH region. We build it and run it. Start with a free AI audit.", image: "/og-image.png" },
+    de: { title: "xeda.ai — KI-Integration & Automatisierung für den deutschsprachigen Raum", description: "Wir integrieren KI in Ihre Abläufe und automatisieren die wiederkehrende Arbeit — in Deutschland, Österreich und der Schweiz. Kostenloses KI-Audit.", image: "/og-image.png" },
     fr: { title: "xeda.ai | Agence GenAI Allemande - Produits & Implémentation IA", description: "Nous créons des produits IA prêts pour la production.", image: "/og-image.png" },
     es: { title: "xeda.ai | Agencia GenAI Alemana - Productos e Implementación de IA", description: "Creamos productos de IA listos para producción.", image: "/og-image.png" },
     it: { title: "xeda.ai | Agenzia GenAI Tedesca - Prodotti e Implementazione IA", description: "Creiamo prodotti IA pronti per la produzione.", image: "/og-image.png" },
@@ -184,11 +184,11 @@ const pageContent: Record<string, Record<SiteLanguage, { title: string; descript
     it: { title: "Carriere e Sviluppatori | xeda.ai", description: "Lavora con xeda.ai su progetti GenAI stimolanti. Collaborazione a contratto e continuativa per sviluppatori e ingegneri IA.", image: "/og-image.png" },
   },
   impressum: {
-    en: { title: "Legal Notice (Impressum) | xeda.ai", description: "Legal information and company details for xeda.ai GmbH. German law compliance.", image: "/og-impressum.png" },
-    de: { title: "Impressum | xeda.ai", description: "Rechtliche Informationen und Unternehmensangaben der xeda.ai GmbH.", image: "/og-impressum.png" },
-    fr: { title: "Mentions Légales | xeda.ai", description: "Informations légales et coordonnées de xeda.ai GmbH.", image: "/og-impressum.png" },
-    es: { title: "Aviso Legal | xeda.ai", description: "Información legal y datos de la empresa xeda.ai GmbH.", image: "/og-impressum.png" },
-    it: { title: "Note Legali | xeda.ai", description: "Informazioni legali e dati aziendali di xeda.ai GmbH.", image: "/og-impressum.png" },
+    en: { title: "Legal Notice (Impressum) | xeda.ai", description: "Legal information and company details for Xeda UG (haftungsbeschränkt). German law compliance.", image: "/og-impressum.png" },
+    de: { title: "Impressum | xeda.ai", description: "Rechtliche Informationen und Unternehmensangaben der Xeda UG (haftungsbeschränkt).", image: "/og-impressum.png" },
+    fr: { title: "Mentions Légales | xeda.ai", description: "Informations légales et coordonnées de Xeda UG (haftungsbeschränkt).", image: "/og-impressum.png" },
+    es: { title: "Aviso Legal | xeda.ai", description: "Información legal y datos de la empresa Xeda UG (haftungsbeschränkt).", image: "/og-impressum.png" },
+    it: { title: "Note Legali | xeda.ai", description: "Informazioni legali e dati aziendali di Xeda UG (haftungsbeschränkt).", image: "/og-impressum.png" },
   },
 };
 
@@ -281,7 +281,7 @@ const SEOHead = ({ page = "home", customTitle, customDescription, customImage }:
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "xeda.ai",
-      "legalName": "xeda.ai GmbH",
+      "legalName": "Xeda UG (haftungsbeschränkt)",
       "url": baseUrl,
       "logo": `${baseUrl}/og-image.png`,
       "description": content.description,
