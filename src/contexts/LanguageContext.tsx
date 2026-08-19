@@ -26,6 +26,10 @@ const translations: Record<SiteLanguage, Record<string, string>> = {
     "hero.cta": "Book a free AI audit",
     "hero.secondary": "See What We Build",
     // Trust / compliance strip
+    "cookie.text": "We use cookies to run this site and, only with your consent, to improve it. You can accept or reject non-essential cookies at any time.",
+    "cookie.learnMore": "Privacy policy",
+    "cookie.accept": "Accept",
+    "cookie.decline": "Reject",
     "trust.label": "Security & compliance, built in",
     "trust.gdpr.title": "GDPR-compliant",
     "trust.gdpr.desc": "Built to EU data-protection standards (DSGVO).",
@@ -303,6 +307,10 @@ const translations: Record<SiteLanguage, Record<string, string>> = {
     "hero.cta": "Kostenloses KI-Audit buchen",
     "hero.secondary": "Was wir bauen",
     // Trust / compliance strip
+    "cookie.text": "Wir verwenden Cookies, um diese Website zu betreiben und – nur mit Ihrer Einwilligung – zu verbessern. Sie können nicht notwendige Cookies jederzeit akzeptieren oder ablehnen.",
+    "cookie.learnMore": "Datenschutz",
+    "cookie.accept": "Akzeptieren",
+    "cookie.decline": "Ablehnen",
     "trust.label": "Sicherheit & Compliance von Anfang an",
     "trust.gdpr.title": "DSGVO-konform",
     "trust.gdpr.desc": "Nach EU-Datenschutzstandards entwickelt.",

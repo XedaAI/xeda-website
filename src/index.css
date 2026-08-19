@@ -148,20 +148,16 @@ All colors MUST be HSL.
   }
 }
 
-/* --- AI robot: scroll-scrubbed burst/reassemble + idle float (decorative, hero bg) --- */
+/* --- AI robot: subtle idle float only (decorative, faint hero background) --- */
 @keyframes robotFloat {
   0%, 100% {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-8px);
+    transform: translateY(-5px);
   }
 }
 
-/* --burst (0..1) is driven by scroll position (useScrollBurst); each part's inline
-   transform multiplies its offset by it, scrubbing apart on scroll-down and back
-   together on scroll-up. Only static props live here (the transform/opacity are inline
-   so the engine recomputes them when the inherited --burst changes). */
 .robot-part {
   transform-box: fill-box;
   transform-origin: center;

@@ -1,40 +1,30 @@
 import { CSSProperties } from "react";
 import { useMouseParallax } from "@/hooks/useMouseParallax";
-import { useScrollBurst } from "@/hooks/useScrollBurst";
 
-// Each shape gets an INLINE transform that scrubs its target offset/rotation by the
-// scroll-driven --burst variable (0 assembled -> 1 fully burst). scrolling down bursts
-// the robot apart, scrolling up reassembles it.
-//
-// Why inline (not a stylesheet rule): this engine only applies CSS transforms to SVG
-// *shapes* (not <g> containers), AND it doesn't recompute a *stylesheet* transform when
-// an inherited custom property changes — but it does recompute an *inline* one. Both
-// constraints were verified in-browser, hence: transform on shapes, inline, via --burst.
-const part = (tx: number, ty: number, rot = 0): CSSProperties => ({
-  transform: `translate(calc(${tx}px * var(--burst, 0)), calc(${ty}px * var(--burst, 0))) rotate(calc(${rot}deg * var(--burst, 0)))`,
-  opacity: `calc(1 - 0.55 * var(--burst, 0))`,
-});
+// Static assembled part (kept as a helper so the shapes stay tidy). The dramatic
+// scroll-burst was intentionally removed — for a conservative DACH B2B audience the
+// robot should read as a calm, faint background accent, not a gimmick. It now only
+// floats gently and drifts subtly toward the cursor.
+const part = (..._args: number[]): CSSProperties => ({});
 
 interface AIRobotProps {
   className?: string;
 }
 
 /**
- * Decorative AI robot for the hero background. Its parts burst apart as the page
- * scrolls down and reassemble scrolling up (useScrollBurst -> --burst), and the whole
- * robot drifts toward the cursor (useMouseParallax). Purely decorative (aria-hidden);
- * all motion respects prefers-reduced-motion.
+ * Decorative AI robot for the hero background — deliberately understated: a gentle
+ * idle float and a subtle cursor drift only. Purely decorative (aria-hidden); all
+ * motion respects prefers-reduced-motion.
  */
 const AIRobot = ({ className }: AIRobotProps) => {
-  const mouseRef = useMouseParallax<HTMLDivElement>(18);
-  const burstRef = useScrollBurst<HTMLDivElement>();
+  const mouseRef = useMouseParallax<HTMLDivElement>(6);
 
   return (
     <div ref={mouseRef} className={className} aria-hidden="true">
-      <div ref={burstRef} className="robot-float">
+      <div className="robot-float">
         <svg
           viewBox="0 0 120 150"
-          className="w-[clamp(300px,52vw,620px)] h-auto drop-shadow-[0_0_40px_hsl(var(--primary)/0.5)]"
+          className="w-[clamp(280px,48vw,560px)] h-auto drop-shadow-[0_0_28px_hsl(var(--primary)/0.3)]"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
