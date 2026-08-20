@@ -11,6 +11,9 @@ import TeamSection from "@/components/TeamSection";
 import CaseStudiesSection from "@/components/CaseStudiesSection";
 import AuditSection from "@/components/AuditSection";
 import PricingSection from "@/components/PricingSection";
+// TestimonialsSection + LogoCarousel were deleted (BS-10): their quotes and client
+// logos were fabricated template content, not real testimonials. Re-add a
+// TestimonialsSection once real, attributable client testimonials exist.
 import BlogSection from "@/components/BlogSection";
 import FAQSection from "@/components/FAQSection";
 import ContactSection from "@/components/ContactSection";
