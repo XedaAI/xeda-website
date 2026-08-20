@@ -33,14 +33,11 @@ const voices: Voice[] = [
   { id: "iP95p4xoKVk53GoZ742B", name: "Chris", description: "Casual male" },
 ];
 
-type Language = "en" | "de" | "fr" | "es" | "it";
+type Language = "en" | "de";
 
 const languageLabels: Record<Language, { name: string; flag: string }> = {
   en: { name: "English", flag: "🇬🇧" },
   de: { name: "Deutsch", flag: "🇩🇪" },
-  fr: { name: "Français", flag: "🇫🇷" },
-  es: { name: "Español", flag: "🇪🇸" },
-  it: { name: "Italiano", flag: "🇮🇹" },
 };
 
 const uiText: Record<Language, {
@@ -78,42 +75,6 @@ const uiText: Record<Language, {
     viewHistory: "Verlauf anzeigen",
     autoSpeak: "Sprachausgabe aktivieren",
     disableAutoSpeak: "Sprachausgabe deaktivieren",
-  },
-  fr: {
-    title: "Assistant xeda.ai",
-    placeholder: "Tapez un message...",
-    welcome: "Bonjour ! Posez-moi vos questions sur l'IA.",
-    history: "Historique",
-    noHistory: "Aucune conversation",
-    clearConversation: "Supprimer la conversation",
-    newConversation: "Nouvelle conversation",
-    viewHistory: "Voir l'historique",
-    autoSpeak: "Activer la lecture auto",
-    disableAutoSpeak: "Désactiver la lecture auto",
-  },
-  es: {
-    title: "Asistente xeda.ai",
-    placeholder: "Escribe un mensaje...",
-    welcome: "¡Hola! Pregúntame sobre soluciones de IA.",
-    history: "Historial",
-    noHistory: "Sin conversaciones",
-    clearConversation: "Eliminar conversación",
-    newConversation: "Nueva conversación",
-    viewHistory: "Ver historial",
-    autoSpeak: "Activar lectura automática",
-    disableAutoSpeak: "Desactivar lectura automática",
-  },
-  it: {
-    title: "Assistente xeda.ai",
-    placeholder: "Scrivi un messaggio...",
-    welcome: "Ciao! Chiedimi delle soluzioni AI.",
-    history: "Cronologia",
-    noHistory: "Nessuna conversazione",
-    clearConversation: "Elimina conversazione",
-    newConversation: "Nuova conversazione",
-    viewHistory: "Visualizza cronologia",
-    autoSpeak: "Attiva lettura automatica",
-    disableAutoSpeak: "Disattiva lettura automatica",
   },
 };
 
@@ -204,7 +165,7 @@ const Chatbot = () => {
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [language, setLanguage] = useState<Language>(() => {
     const saved = localStorage.getItem("chatbot_language");
-    return (saved === "de" || saved === "en" || saved === "fr" || saved === "es" || saved === "it") ? saved : "en";
+    return (saved === "de" || saved === "en") ? saved : "en";
   });
   const [selectedVoice, setSelectedVoice] = useState<string>(() => {
     return localStorage.getItem("chatbot_voice") || voices[0].id;

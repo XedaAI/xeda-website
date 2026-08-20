@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useLanguage, languageLabels, SiteLanguage } from "@/contexts/LanguageContext";
 
-const languages: SiteLanguage[] = ["en", "de", "fr", "es", "it"];
+const languages: SiteLanguage[] = ["en", "de"];
 
 const LanguageSelector = () => {
   const { language, setLanguage } = useLanguage();
