@@ -1,0 +1,5 @@
+# SPA fallback for Cloudflare Pages: serve index.html for any path the build
+# doesn't emit as a file, so deep links (/careers, /steuerkanzleien, …) survive a
+# refresh. Pages also falls back to index.html on its own when no 404.html exists,
+# but this makes the behaviour explicit rather than incidental.
+/*    /index.html    200
