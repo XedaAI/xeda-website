@@ -1,0 +1,4 @@
+# SPA fallback: react-router owns the routes, so any path that isn't a real
+# file in dist/ must serve index.html with a 200 (not a 404) so deep links
+# like /careers or /steuerkanzleien survive a hard refresh.
+/*  /index.html  200
