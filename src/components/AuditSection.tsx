@@ -1,15 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Check, ArrowRight, Compass } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { auditBookingUrl } from "@/lib/booking";
 
 const AuditSection = () => {
   const { t } = useLanguage();
 
   const points = ["audit.point1", "audit.point2", "audit.point3", "audit.point4"];
-
-  const scrollToContact = () => {
-    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
-  };
 
   return (
     <section id="audit" className="py-24 bg-background">
@@ -40,9 +37,11 @@ const AuditSection = () => {
                 ))}
               </ul>
 
-              <Button size="lg" onClick={scrollToContact} className="px-8">
-                {t("audit.cta")}
-                <ArrowRight className="ml-2 h-4 w-4" />
+              <Button size="lg" asChild className="px-8">
+                <a href={auditBookingUrl("audit-section")} target="_blank" rel="noopener noreferrer">
+                  {t("audit.cta")}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </a>
               </Button>
             </div>
           </div>
