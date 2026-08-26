@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { auditBookingUrl } from "@/lib/booking";
 import { useParallax } from "@/hooks/useParallax";
 import AIRobot from "@/components/AIRobot";
 import heroBg from "@/assets/hero-bg.jpg";
@@ -43,13 +44,11 @@ const HeroSection = () => {
         </p>
         
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Button 
-            size="lg" 
-            onClick={() => scrollToSection("contact")}
-            className="px-8"
-          >
-            {t("hero.cta")}
-            <ArrowRight className="ml-2 h-4 w-4" />
+          <Button size="lg" asChild className="px-8">
+            <a href={auditBookingUrl("hero")} target="_blank" rel="noopener noreferrer">
+              {t("hero.cta")}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </a>
           </Button>
           <Button 
             variant="outline" 

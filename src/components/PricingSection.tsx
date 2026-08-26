@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { auditBookingUrl } from "@/lib/booking";
 
 const PricingSection = () => {
   const { t } = useLanguage();
@@ -53,10 +54,6 @@ const PricingSection = () => {
       highlighted: false,
     },
   ];
-
-  const scrollToContact = () => {
-    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
-  };
 
   return (
     <section id="pricing" className="py-20 bg-muted/30">
@@ -115,11 +112,13 @@ const PricingSection = () => {
                 </ul>
 
                 <Button
-                  onClick={scrollToContact}
+                  asChild
                   className="w-full"
                   variant={pkg.highlighted ? "default" : "outline"}
                 >
-                  {t("pricing.cta")}
+                  <a href={auditBookingUrl("pricing")} target="_blank" rel="noopener noreferrer">
+                    {t("pricing.cta")}
+                  </a>
                 </Button>
               </CardContent>
             </Card>
