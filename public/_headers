@@ -1,0 +1,7 @@
+# Vite fingerprints everything in /assets, so it can be cached forever.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# The HTML shell must never be cached, or a deploy won't reach visitors.
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
