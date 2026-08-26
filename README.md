@@ -62,7 +62,29 @@ This project is built with:
 
 ## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+Production is **Cloudflare Pages**, live at [xeda.ai](https://xeda.ai) (and `www.xeda.ai`).
+Both hostnames are registered as custom domains on the `xeda-website` Pages project.
+
+Every push to `main` triggers a Pages build automatically:
+
+| Setting | Value |
+| --- | --- |
+| Build command | `npm run build` |
+| Output directory | `dist` |
+| `NODE_VERSION` | `20` |
+
+Client config comes from `.env.production` (committed — Supabase public/anon values only).
+
+Two things to be careful of:
+
+- **Never set `GITHUB_PAGES` in the Cloudflare environment.** `vite.config.ts` switches `base`
+  to `/xeda-website/` when it is `"true"`, which breaks every asset path on xeda.ai.
+- Adding a custom domain in the Pages UI can **rename an existing DNS record** rather than
+  create a new one. Check the confirm dialog: `www → www` is a no-op, but `www → @` means it
+  is about to move your `www` record onto the apex and leave `www` unresolvable.
+
+`.github/workflows/deploy.yml` still builds for GitHub Pages but is `workflow_dispatch`-only,
+kept purely as a manual fallback.
 
 ## Can I connect a custom domain to my Lovable project?
 
