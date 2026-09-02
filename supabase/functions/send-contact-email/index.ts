@@ -6,6 +6,17 @@ import { escapeHtml, isValidEmail, LIMITS } from "../_shared/validate.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
+// Sender and recipient. Both overridable so moving transactional mail to a
+// dedicated subdomain (e.g. mail.xeda.ai, to keep cold-outreach reputation away
+// from it) is a secret change rather than a deploy.
+//
+// This was hardcoded to Resend's shared sandbox address, onboarding@resend.dev,
+// which cannot send to arbitrary recipients -- so the visitor confirmation threw,
+// the handler returned 500, and the form reported failure even though the lead
+// had already been saved. xeda.ai is verified in Resend now.
+const FROM_ADDRESS = Deno.env.get("RESEND_FROM") ?? "xeda.ai <contact@xeda.ai>";
+const NOTIFY_ADDRESS = Deno.env.get("CONTACT_NOTIFY_TO") ?? "contact@xeda.ai";
+
 const RATE_LIMIT_MAX = 5;
 const RATE_LIMIT_WINDOW_SECONDS = 60 * 60; // 1 hour
 
@@ -17,7 +28,12 @@ interface ContactEmailRequest {
   _hp?: string; // Honeypot field
 }
 
-async function sendEmail(to: string[], subject: string, html: string) {
+async function sendEmail(
+  to: string[],
+  subject: string,
+  html: string,
+  replyTo?: string,
+) {
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -25,10 +41,11 @@ async function sendEmail(to: string[], subject: string, html: string) {
       Authorization: `Bearer ${RESEND_API_KEY}`,
     },
     body: JSON.stringify({
-      from: "xeda.ai <onboarding@resend.dev>",
+      from: FROM_ADDRESS,
       to,
       subject,
       html,
+      ...(replyTo ? { reply_to: replyTo } : {}),
     }),
   });
 
@@ -104,8 +121,10 @@ const handler = async (req: Request): Promise<Response> => {
 
     // Everything interpolated below is escaped: submitted text must never be
     // able to inject markup or links into the mail we send ourselves.
+    // reply_to is the submitter, so replying to the notification answers the
+    // lead directly instead of mailing ourselves.
     const adminEmailResponse = await sendEmail(
-      ["contact@xeda.ai"],
+      [NOTIFY_ADDRESS],
       `New Contact Form Submission from ${name.slice(0, 80)}`,
       `
         <h2>New Contact Form Submission</h2>
@@ -115,6 +134,7 @@ const handler = async (req: Request): Promise<Response> => {
         <p><strong>Message:</strong></p>
         <p>${escapeHtml(message).replace(/\n/g, "<br>")}</p>
       `,
+      email,
     );
 
     console.log("Admin notification sent:", adminEmailResponse);

@@ -37,6 +37,8 @@ Set these in the Supabase dashboard under Edge Functions → Secrets. They are
 | Secret | Used by | Notes |
 | --- | --- | --- |
 | `RESEND_API_KEY` | `send-contact-email` | Transactional email |
+| `RESEND_FROM` | `send-contact-email` | Optional. Defaults to `xeda.ai <contact@xeda.ai>`. The domain must be verified in Resend |
+| `CONTACT_NOTIFY_TO` | `send-contact-email` | Optional. Defaults to `contact@xeda.ai` |
 | `MAILCHIMP_API_KEY` | `subscribe-newsletter`, `sync-mailchimp`, `unsubscribe-mailchimp` | Server prefix is derived from the key suffix |
 | `MAILCHIMP_AUDIENCE_ID` | same | |
 | `ELEVENLABS_API_KEY` | `elevenlabs-tts` | Billed per character |
@@ -46,6 +48,17 @@ Set these in the Supabase dashboard under Edge Functions → Secrets. They are
 
 `SUPABASE_URL`, `SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY` are injected
 by the platform. Do not set them by hand.
+
+### Sending domain
+
+`xeda.ai` is verified in Resend. The sender was previously the shared sandbox
+address `onboarding@resend.dev`, which cannot mail arbitrary recipients -- the
+visitor confirmation threw, the handler returned 500, and the contact form
+reported failure even though the lead was already stored.
+
+If cold outreach ever runs from `xeda.ai` itself, move transactional mail to a
+dedicated subdomain (verify `mail.xeda.ai` in Resend, set `RESEND_FROM`) so a
+bad outbound run cannot take contact-form confirmations down with it.
 
 The `chat` function previously used `LOVABLE_API_KEY` against
 `ai.gateway.lovable.dev`. It now calls a provider directly, so that key is no
