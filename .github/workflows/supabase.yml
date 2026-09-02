@@ -40,8 +40,11 @@ jobs:
       # public INSERT policies on the lead tables, so the service-role functions
       # that replace those writes must already exist -- otherwise the forms are
       # broken for the window in between.
+      # --use-api bundles server-side. It is the path we validated by hand, and it
+      # avoids depending on Docker or on local file-descriptor limits.
       - name: Deploy edge functions
-        run: supabase functions deploy --project-ref "$PROJECT_REF"
+        run: supabase functions deploy --project-ref "$PROJECT_REF" --use-api
 
+      # -p explicitly: SUPABASE_DB_PASSWORD is documented for `link`, not `push`.
       - name: Push migrations
-        run: supabase db push
+        run: supabase db push --linked -p "$SUPABASE_DB_PASSWORD"
