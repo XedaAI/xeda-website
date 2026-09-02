@@ -1,71 +1,33 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { requireAdmin } from "../_shared/auth.ts";
+import { handlePreflight, jsonResponse } from "../_shared/cors.ts";
+import { getAdminClient } from "../_shared/supabase.ts";
+import { isValidEmail } from "../_shared/validate.ts";
 
 interface UnsubscribeRequest {
-  subscriberId: string;
-  email: string;
+  subscriberId?: string;
+  email?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const preflight = handlePreflight(req);
+  if (preflight) return preflight;
 
   try {
-    // Verify admin access
-    const authHeader = req.headers.get("Authorization");
-    if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    const supabaseClient = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      { global: { headers: { Authorization: authHeader } } }
-    );
-
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
-    if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: "Unauthorized" }),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Check admin role
-    const { data: roles } = await supabaseClient
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", user.id)
-      .eq("role", "admin");
-
-    if (!roles || roles.length === 0) {
-      return new Response(
-        JSON.stringify({ error: "Admin access required" }),
-        { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    const auth = await requireAdmin(req);
+    if (!auth.ok) {
+      return jsonResponse(req, { error: auth.error }, auth.status);
     }
 
     const { subscriberId, email }: UnsubscribeRequest = await req.json();
 
-    if (!subscriberId || !email) {
-      return new Response(
-        JSON.stringify({ error: "Subscriber ID and email are required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    if (!subscriberId || !isValidEmail(email)) {
+      return jsonResponse(req, { error: "Subscriber ID and a valid email are required" }, 400);
     }
 
-    console.log(`Unsubscribing: ${email}`);
+    console.log(`Admin ${auth.userId} unsubscribing a subscriber`);
 
-    // Remove from Mailchimp
+    // Remove from Mailchimp (best effort -- the database is the source of truth).
     const apiKey = Deno.env.get("MAILCHIMP_API_KEY");
     const audienceId = Deno.env.get("MAILCHIMP_AUDIENCE_ID");
 
@@ -73,56 +35,47 @@ const handler = async (req: Request): Promise<Response> => {
       const serverPrefix = apiKey.split("-").pop();
       const emailHash = await crypto.subtle.digest(
         "MD5",
-        new TextEncoder().encode(email.toLowerCase())
-      ).then(buf => Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join(""));
+        new TextEncoder().encode(email.toLowerCase()),
+      ).then((buf) =>
+        Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("")
+      );
 
-      const mailchimpUrl = `https://${serverPrefix}.api.mailchimp.com/3.0/lists/${audienceId}/members/${emailHash}`;
+      const mailchimpUrl =
+        `https://${serverPrefix}.api.mailchimp.com/3.0/lists/${audienceId}/members/${emailHash}`;
 
       const mcResponse = await fetch(mailchimpUrl, {
         method: "DELETE",
-        headers: {
-          "Authorization": `Basic ${btoa(`anystring:${apiKey}`)}`,
-        },
+        headers: { Authorization: `Basic ${btoa(`anystring:${apiKey}`)}` },
       });
 
       if (!mcResponse.ok && mcResponse.status !== 404) {
         console.error("Mailchimp delete failed:", await mcResponse.text());
       } else {
-        console.log(`Removed from Mailchimp: ${email}`);
+        console.log("Removed from Mailchimp");
       }
     }
 
-    // Remove from database using service role
-    const supabaseAdmin = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
+    const admin = getAdminClient();
+    if (!admin) {
+      return jsonResponse(req, { error: "Server not configured" }, 500);
+    }
 
-    const { error: deleteError } = await supabaseAdmin
+    const { error: deleteError } = await admin
       .from("newsletter_subscribers")
       .delete()
       .eq("id", subscriberId);
 
     if (deleteError) {
       console.error("Database delete error:", deleteError);
-      return new Response(
-        JSON.stringify({ error: "Failed to delete from database" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      return jsonResponse(req, { error: "Failed to delete from database" }, 500);
     }
 
-    console.log(`Successfully unsubscribed: ${email}`);
+    console.log("Successfully unsubscribed");
 
-    return new Response(
-      JSON.stringify({ success: true }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
-  } catch (error: any) {
+    return jsonResponse(req, { success: true }, 200);
+  } catch (error) {
     console.error("Error in unsubscribe function:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return jsonResponse(req, { error: "Failed to unsubscribe" }, 500);
   }
 };
 

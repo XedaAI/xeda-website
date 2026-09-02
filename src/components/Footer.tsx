@@ -43,10 +43,9 @@ const Footer = () => {
           description: t("footer.newsletter.alreadyOnList"),
         });
       } else {
-        supabase.functions.invoke("sync-mailchimp", {
-          body: { email: normalizedEmail },
-        }).catch((err) => console.error("Mailchimp sync error:", err));
-
+        // Mailchimp sync now happens server-side inside subscribe-newsletter.
+        // It used to be a second invoke from here, which left the sync endpoint
+        // open to anyone who read the bundle.
         toast({
           title: t("footer.newsletter.subscribed"),
           description: t("footer.newsletter.thankYou"),
