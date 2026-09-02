@@ -11,23 +11,28 @@ const ALLOWED_ORIGINS = [
   "https://www.xeda.ai",
 ];
 
-// Vite dev server. Only honoured when the function runs locally
-// (`supabase functions serve` sets SUPABASE_URL to a localhost address).
+// Vite dev server origins, allowed unconditionally.
+//
+// These were previously gated on the function itself running locally, which
+// broke the ordinary workflow: a local frontend against deployed functions got
+// no Access-Control-Allow-Origin and the browser dropped every response.
+//
+// Allowing them costs nothing real. A remote attacker's page cannot present an
+// Origin of http://localhost:8080 -- only a page actually served from the
+// visitor's own machine can, and anything that can do that can equally call
+// these endpoints with curl, which CORS never restrained anyway. The rate limit
+// and the input caps are the controls; this list only decides which *browsers*
+// are allowed to read a response.
 const DEV_ORIGINS = [
   "http://localhost:8080",
   "http://localhost:5173",
   "http://127.0.0.1:8080",
+  "http://127.0.0.1:5173",
 ];
-
-function isLocalRuntime(): boolean {
-  const url = Deno.env.get("SUPABASE_URL") ?? "";
-  return url.includes("localhost") || url.includes("127.0.0.1") || url.includes("kong:");
-}
 
 export function isAllowedOrigin(origin: string | null): boolean {
   if (!origin) return false;
-  if (ALLOWED_ORIGINS.includes(origin)) return true;
-  return isLocalRuntime() && DEV_ORIGINS.includes(origin);
+  return ALLOWED_ORIGINS.includes(origin) || DEV_ORIGINS.includes(origin);
 }
 
 /**
