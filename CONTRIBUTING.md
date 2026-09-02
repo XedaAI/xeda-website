@@ -26,6 +26,14 @@ npx tsc --noEmit -p tsconfig.app.json   # typecheck
 ```
 Before opening a PR, make sure **typecheck** and **build** pass locally — they are required in CI.
 
+Edge functions are typechecked separately, because they are Deno and live
+outside `tsconfig.app.json`:
+```bash
+deno check supabase/functions/*/index.ts
+```
+CI runs this too. Changes under `supabase/**` deploy to production on merge --
+see `docs/SUPABASE.md`.
+
 ## Branch naming
 | Prefix | For | Example |
 |---|---|---|

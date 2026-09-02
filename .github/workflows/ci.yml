@@ -40,3 +40,13 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      # Edge functions live outside tsconfig.app.json, so tsc above never saw
+      # them. They were shipped untypechecked until now.
+      - name: Set up Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Typecheck edge functions
+        run: deno check supabase/functions/*/index.ts
