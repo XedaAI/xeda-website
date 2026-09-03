@@ -38,14 +38,11 @@ const ContactSection = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (honeypot) {
-      toast({
-        title: t("contact.success.title"),
-        description: t("contact.success.description"),
-      });
-      return;
-    }
-    
+    // No client-side short-circuit on the honeypot. It used to return here with a
+    // success toast, so a browser that autofilled the field made the submission
+    // vanish with no request, no log and no way to know. The edge function
+    // decides, and logs when it does.
+
     setIsSubmitting(true);
 
     try {
@@ -102,12 +99,18 @@ const ContactSection = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/*
+              Honeypot. Deliberately NOT named "website", "url", "company" or
+              anything else a browser recognises: it was named "website" with a
+              matching <label>, which Safari and Chrome happily autofilled from a
+              saved contact card. autoComplete="off" is advisory and gets ignored.
+              A filled honeypot silently discarded the enquiry.
+            */}
             <div className="absolute -left-[9999px]" aria-hidden="true">
-              <label htmlFor="website">Website</label>
               <input
                 type="text"
-                id="website"
-                name="website"
+                id="xd-ref-2"
+                name="xd-ref-2"
                 tabIndex={-1}
                 autoComplete="off"
                 value={honeypot}

@@ -1,16 +1,19 @@
-project_id = "onqkzwsgnrwrtmxyfbyv"
+project_id = "htlhdakvjhyrcuzhcmfo"
 
 [functions.send-contact-email]
 verify_jwt = false
 
 [functions.sync-mailchimp]
-verify_jwt = false
+# Admin-only backfill. Platform-level JWT check plus an explicit admin-role
+# check inside the handler.
+verify_jwt = true
 
 [functions.subscribe-newsletter]
 verify_jwt = false
 
 [functions.unsubscribe-mailchimp]
-verify_jwt = false
+# Admin-only.
+verify_jwt = true
 
 [functions.chat]
 verify_jwt = false

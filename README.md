@@ -86,6 +86,13 @@ Two things to be careful of:
 `.github/workflows/deploy.yml` still builds for GitHub Pages but is `workflow_dispatch`-only,
 kept purely as a manual fallback.
 
+### Backend (Supabase)
+
+Pushes to `main` that touch `supabase/**` deploy the edge functions and
+migrations via `.github/workflows/supabase.yml`. Functions deploy before
+migrations -- see `docs/SUPABASE.md` for why the order matters, the required
+secrets, and the project cutover runbook.
+
 ## Can I connect a custom domain to my Lovable project?
 
 Yes, you can!

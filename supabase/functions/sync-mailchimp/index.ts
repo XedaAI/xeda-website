@@ -1,98 +1,58 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { requireAdmin } from "../_shared/auth.ts";
+import { handlePreflight, jsonResponse } from "../_shared/cors.ts";
+import { subscribeToMailchimp } from "../_shared/mailchimp.ts";
+import { isValidEmail } from "../_shared/validate.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+/**
+ * Admin-only Mailchimp backfill.
+ *
+ * This function used to accept an unauthenticated POST from any origin and push
+ * the address straight into the audience -- anyone could inject arbitrary
+ * emails, poisoning the list and damaging sending reputation. Normal signups no
+ * longer touch it at all; subscribe-newsletter syncs server-side. It is kept
+ * only so an admin can re-sync an address by hand from /admin.
+ */
 
 interface SyncRequest {
-  email: string;
+  email?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
-  // Handle CORS preflight requests
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const preflight = handlePreflight(req);
+  if (preflight) return preflight;
 
   try {
-    const apiKey = Deno.env.get("MAILCHIMP_API_KEY");
-    const audienceId = Deno.env.get("MAILCHIMP_AUDIENCE_ID");
-
-    if (!apiKey || !audienceId) {
-      console.error("Missing Mailchimp configuration");
-      return new Response(
-        JSON.stringify({ error: "Mailchimp not configured" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    // Extract server prefix from API key (e.g., "us1" from "xxx-us1")
-    const serverPrefix = apiKey.split("-").pop();
-    if (!serverPrefix) {
-      console.error("Invalid Mailchimp API key format");
-      return new Response(
-        JSON.stringify({ error: "Invalid API key format" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    const auth = await requireAdmin(req);
+    if (!auth.ok) {
+      return jsonResponse(req, { error: auth.error }, auth.status);
     }
 
     const { email }: SyncRequest = await req.json();
+    const normalizedEmail = (email ?? "").toLowerCase().trim();
 
-    if (!email) {
-      return new Response(
-        JSON.stringify({ error: "Email is required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    if (!isValidEmail(normalizedEmail)) {
+      return jsonResponse(req, { error: "Valid email is required" }, 400);
     }
 
-    console.log(`Syncing subscriber to Mailchimp: ${email}`);
+    console.log(`Admin ${auth.userId} syncing subscriber to Mailchimp`);
 
-    const mailchimpUrl = `https://${serverPrefix}.api.mailchimp.com/3.0/lists/${audienceId}/members`;
+    const result = await subscribeToMailchimp(normalizedEmail);
 
-    const response = await fetch(mailchimpUrl, {
-      method: "POST",
-      headers: {
-        "Authorization": `Basic ${btoa(`anystring:${apiKey}`)}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email_address: email,
-        status: "subscribed",
-      }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      // Handle "already subscribed" as success
-      if (data.title === "Member Exists") {
-        console.log(`Subscriber already exists in Mailchimp: ${email}`);
-        return new Response(
-          JSON.stringify({ success: true, message: "Already subscribed" }),
-          { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-
-      console.error("Mailchimp API error:", data);
-      return new Response(
-        JSON.stringify({ error: data.detail || "Failed to sync to Mailchimp" }),
-        { status: response.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    if (!result.ok) {
+      return jsonResponse(req, { error: result.error }, result.status);
     }
 
-    console.log(`Successfully synced subscriber to Mailchimp: ${email}`);
-
-    return new Response(
-      JSON.stringify({ success: true, id: data.id }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    return jsonResponse(
+      req,
+      result.alreadySubscribed
+        ? { success: true, message: "Already subscribed" }
+        : { success: true, id: result.id },
+      200,
     );
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error in sync-mailchimp function:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return jsonResponse(req, { error: "Failed to sync to Mailchimp" }, 500);
   }
 };
 

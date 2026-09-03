@@ -1,15 +1,30 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.87.1";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.114.0";
+import { clientIp, handlePreflight, jsonResponse, corsHeaders } from "../_shared/cors.ts";
+import { isRateLimited } from "../_shared/rate-limit.ts";
+import { LIMITS } from "../_shared/validate.ts";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
 const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 const encoder = new TextEncoder();
+
+// Provider config. Defaults to Gemini's OpenAI-compatible endpoint, which
+// speaks the same request shape and the same SSE chunk format the Lovable AI
+// gateway did -- so the frontend stream parser is unchanged. Both values are
+// env-overridable so a future provider swap needs no code change.
+// https://ai.google.dev/gemini-api/docs/openai
+const AI_BASE_URL = Deno.env.get("AI_BASE_URL") ??
+  "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
+const AI_MODEL = Deno.env.get("AI_MODEL") ?? "gemini-2.5-flash";
+const AI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+
+// The AI path costs money per call, so it gets a tighter budget than the
+// history actions, which only touch our own database.
+const AI_RATE_LIMIT_MAX = 30;
+const AI_RATE_LIMIT_WINDOW_SECONDS = 60 * 60;
+const HISTORY_RATE_LIMIT_MAX = 240;
+const HISTORY_RATE_LIMIT_WINDOW_SECONDS = 60 * 60;
 
 const toBase64Url = (bytes: Uint8Array) =>
   btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
@@ -46,6 +61,51 @@ const assertSignedSession = async (payload: Record<string, unknown>) => {
 
   return sessionId;
 };
+
+interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+/**
+ * Validate the caller-supplied conversation before we forward it to a billed
+ * provider. Previously the array was passed through untouched, which let a
+ * caller send unlimited turns and inject their own system role -- i.e. use our
+ * key as a general-purpose LLM.
+ */
+function validateMessages(input: unknown): ChatMessage[] | { error: string } {
+  if (!Array.isArray(input) || input.length === 0) {
+    return { error: "messages must be a non-empty array" };
+  }
+  if (input.length > LIMITS.chatMessages) {
+    return { error: "Conversation too long" };
+  }
+
+  let totalChars = 0;
+  const messages: ChatMessage[] = [];
+
+  for (const raw of input) {
+    const role = (raw as { role?: unknown })?.role;
+    const content = (raw as { content?: unknown })?.content;
+
+    // Only user and assistant turns. The system prompt is ours to set.
+    if (role !== "user" && role !== "assistant") {
+      return { error: "Invalid message role" };
+    }
+    if (typeof content !== "string" || !content.trim()) {
+      return { error: "Invalid message content" };
+    }
+
+    totalChars += content.length;
+    if (totalChars > LIMITS.chatTotalChars) {
+      return { error: "Conversation too long" };
+    }
+
+    messages.push({ role, content });
+  }
+
+  return messages;
+}
 
 const systemPrompts: Record<string, string> = {
   en: "You are a helpful AI assistant for xeda.ai, a German GenAI agency. You help answer questions about AI, automation, and digital transformation. Be professional, concise, and helpful. If asked about services, mention that xeda.ai offers GenAI SaaS products, AI MVPs, AI automation, AI transformation, and copilots for businesses. Respond in English.",
@@ -135,6 +195,9 @@ async function handleHistoryAction(action: string, payload: Record<string, unkno
     if ((role !== "user" && role !== "assistant") || typeof content !== "string" || !content.trim()) {
       throw new Error("Invalid message");
     }
+    if (content.length > LIMITS.chatTotalChars) {
+      throw new Error("Message too long");
+    }
 
     const { data: conversation, error: conversationError } = await supabaseAdmin
       .from("chat_conversations")
@@ -161,60 +224,81 @@ async function handleHistoryAction(action: string, payload: Record<string, unkno
     return { ok: true };
   }
 
-  if (action === "delete-conversation") {
-    const conversationId = assertSessionId(payload.conversationId);
-    const { error } = await supabaseAdmin
-      .from("chat_conversations")
-      .delete()
-      .eq("id", conversationId)
-      .eq("session_id", sessionId);
-
-    if (error) throw error;
-    return { ok: true };
-  }
-
   throw new Error("Unsupported action");
 }
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
+  const preflight = handlePreflight(req);
+  if (preflight) return preflight;
 
   try {
     const body = await req.json();
     const { messages, language = "en", action } = body;
+    const ip = clientIp(req);
 
     if (action) {
+      if (
+        await isRateLimited(supabaseAdmin, {
+          bucket: "chat-history",
+          identifier: ip,
+          max: HISTORY_RATE_LIMIT_MAX,
+          windowSeconds: HISTORY_RATE_LIMIT_WINDOW_SECONDS,
+        })
+      ) {
+        return jsonResponse(req, { error: "Too many requests. Please try again later." }, 429);
+      }
+
       const data = await handleHistoryAction(action, body);
-      return new Response(JSON.stringify({ data }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResponse(req, { data }, 200);
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+    if (
+      await isRateLimited(supabaseAdmin, {
+        bucket: "chat-ai",
+        identifier: ip,
+        max: AI_RATE_LIMIT_MAX,
+        windowSeconds: AI_RATE_LIMIT_WINDOW_SECONDS,
+      })
+    ) {
+      return jsonResponse(
+        req,
+        {
+          error: language === "de"
+            ? "Rate-Limit überschritten. Bitte versuchen Sie es später erneut."
+            : "Rate limit exceeded. Please try again later.",
+        },
+        429,
+      );
+    }
+
+    if (!AI_API_KEY) {
+      console.error("GEMINI_API_KEY is not configured");
+      return jsonResponse(
+        req,
+        { error: language === "de" ? "KI-Service-Fehler" : "AI service error" },
+        500,
+      );
+    }
+
+    const validated = validateMessages(messages);
+    if ("error" in validated) {
+      return jsonResponse(req, { error: validated.error }, 400);
     }
 
     const systemPrompt = systemPrompts[language as keyof typeof systemPrompts] || systemPrompts.en;
-    console.log("Processing chat request with", messages.length, "messages, language:", language);
+    console.log("Processing chat request with", validated.length, "messages, language:", language);
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch(AI_BASE_URL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${AI_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: AI_MODEL,
         messages: [
-          {
-            role: "system",
-            content: systemPrompt,
-          },
-          ...messages,
+          { role: "system", content: systemPrompt },
+          ...validated,
         ],
         stream: true,
       }),
@@ -223,35 +307,43 @@ serve(async (req) => {
     if (!response.ok) {
       const status = response.status;
       const text = await response.text();
-      console.error("AI gateway error:", status, text);
+      console.error("AI provider error:", status, text);
 
       if (status === 429) {
-        return new Response(
-          JSON.stringify({ error: language === "de" ? "Rate-Limit überschritten. Bitte versuchen Sie es später erneut." : "Rate limit exceeded. Please try again later." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        return jsonResponse(
+          req,
+          {
+            error: language === "de"
+              ? "Rate-Limit überschritten. Bitte versuchen Sie es später erneut."
+              : "Rate limit exceeded. Please try again later.",
+          },
+          429,
         );
       }
-      if (status === 402) {
-        return new Response(
-          JSON.stringify({ error: language === "de" ? "KI-Credits aufgebraucht. Bitte fügen Sie Credits hinzu, um fortzufahren." : "AI credits exhausted. Please add credits to continue." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      if (status === 402 || status === 403) {
+        return jsonResponse(
+          req,
+          {
+            error: language === "de"
+              ? "KI-Credits aufgebraucht. Bitte fügen Sie Credits hinzu, um fortzufahren."
+              : "AI credits exhausted. Please add credits to continue.",
+          },
+          status,
         );
       }
 
-      return new Response(
-        JSON.stringify({ error: language === "de" ? "KI-Service-Fehler" : "AI service error" }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      return jsonResponse(
+        req,
+        { error: language === "de" ? "KI-Service-Fehler" : "AI service error" },
+        500,
       );
     }
 
     return new Response(response.body, {
-      headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
+      headers: { ...corsHeaders(req), "Content-Type": "text/event-stream" },
     });
   } catch (error) {
     console.error("Chat error:", error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    return jsonResponse(req, { error: "Chat request failed" }, 500);
   }
 });
