@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
+import XedaMark from "@/components/XedaMark";
 
 const Footer = () => {
   const { toast } = useToast();
@@ -70,17 +71,8 @@ const Footer = () => {
         <div className="grid md:grid-cols-3 gap-8 mb-8">
           {/* Brand & Social */}
           <div>
-            <div className="flex items-center gap-2">
-              <img
-                src="/brand/xeda-mark-dark.png"
-                alt=""
-                className="h-6 w-6 object-contain block dark:hidden"
-              />
-              <img
-                src="/brand/xeda-mark.png"
-                alt=""
-                className="h-6 w-6 object-contain hidden dark:block"
-              />
+            <div className="flex items-center gap-2.5">
+              <XedaMark className="h-7 w-auto text-foreground" />
               <img
                 src="/brand/xeda-wordmark-dark.png"
                 alt="XEDA"
@@ -92,8 +84,10 @@ const Footer = () => {
                 className="h-5 w-auto object-contain hidden dark:block"
               />
             </div>
-            <p className="text-sm text-muted-foreground mt-2 mb-4">
-              {t("footer.description")}
+            {/* Brand signature — the mark is a ring that surrounds a centre,
+                so this line and the logo are one idea. */}
+            <p className="text-sm text-foreground/70 mt-3 mb-4 italic">
+              {t("footer.slogan")}
             </p>
             <Link
               to="/careers"
