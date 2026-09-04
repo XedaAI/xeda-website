@@ -70,7 +70,28 @@ const Footer = () => {
         <div className="grid md:grid-cols-3 gap-8 mb-8">
           {/* Brand & Social */}
           <div>
-            <span className="font-semibold text-lg text-foreground">xeda.ai</span>
+            <div className="flex items-center gap-2">
+              <img
+                src="/brand/xeda-mark-dark.png"
+                alt=""
+                className="h-6 w-6 object-contain block dark:hidden"
+              />
+              <img
+                src="/brand/xeda-mark.png"
+                alt=""
+                className="h-6 w-6 object-contain hidden dark:block"
+              />
+              <img
+                src="/brand/xeda-wordmark-dark.png"
+                alt="XEDA"
+                className="h-5 w-auto object-contain block dark:hidden"
+              />
+              <img
+                src="/brand/xeda-wordmark.png"
+                alt="XEDA"
+                className="h-5 w-auto object-contain hidden dark:block"
+              />
+            </div>
             <p className="text-sm text-muted-foreground mt-2 mb-4">
               {t("footer.description")}
             </p>
