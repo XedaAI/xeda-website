@@ -28,7 +28,7 @@ const ForDevelopersSection = () => {
     <section id="for-developers" className="py-24 bg-card">
       <div className="container mx-auto px-6">
         <div className="max-w-3xl mx-auto text-center">
-          <span className="text-sm font-medium text-primary mb-4 block">{t("forDevelopers.label")}</span>
+          <span className="text-sm font-semibold tracking-wide text-brand-accent mb-4 block">{t("forDevelopers.label")}</span>
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
             {t("forDevelopers.title")}
           </h2>

@@ -33,7 +33,7 @@ const ForBusinessesSection = () => {
       <div className="container mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div>
-            <span className="text-sm font-medium text-primary mb-4 block">{t("forBusinesses.label")}</span>
+            <span className="text-sm font-semibold tracking-wide text-brand-accent mb-4 block">{t("forBusinesses.label")}</span>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
               {t("forBusinesses.title")}
             </h2>

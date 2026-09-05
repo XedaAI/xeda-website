@@ -82,7 +82,7 @@ const TeamSection = () => {
   const { ref: valuesRef, isVisible: valuesVisible } = useScrollAnimation();
 
   return (
-    <section id="team" className="py-20 bg-muted/30">
+    <section id="team" className="py-20 bg-section-alt">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
           <Badge variant="outline" className="mb-4">
