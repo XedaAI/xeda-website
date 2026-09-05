@@ -166,6 +166,42 @@ All colors MUST be HSL.
   }
 }
 
+/* --- Ink sections -----------------------------------------------------------
+   A dark panel used a few times down the page to break up the light canvas and
+   give the accents a ground to sit against. Rather than restyling each child,
+   it re-declares the design tokens for its own subtree, so anything already
+   written as text-foreground / bg-card / text-brand-accent flips on its own.
+   In light mode this is a full inversion; in dark mode the page is already dark,
+   so it only drops a step deeper to keep the rhythm readable. */
+.section-ink {
+  --background: 220 18% 9%;
+  --foreground: 220 12% 95%;
+  --card: 220 16% 14%;
+  --card-foreground: 220 12% 95%;
+  --popover: 220 16% 14%;
+  --popover-foreground: 220 12% 95%;
+  --muted: 220 12% 34%;
+  --muted-foreground: 220 10% 74%;
+  --border: 220 14% 24%;
+  --input: 220 14% 24%;
+  --primary: 213 62% 62%;
+  --primary-foreground: 220 18% 9%;
+  --brand-accent: 35 70% 62%;
+  --accent: 213 40% 20%;
+  --accent-foreground: 213 65% 78%;
+  --ring: 213 62% 62%;
+  --secondary: 220 12% 40%;
+  --secondary-foreground: 0 0% 98%;
+
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.dark .section-ink {
+  --background: 220 20% 5%;
+  --card: 220 16% 11%;
+}
+
 /* --- AI robot: subtle idle float only (decorative, faint hero background) --- */
 @keyframes robotFloat {
   0%, 100% {

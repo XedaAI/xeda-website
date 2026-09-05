@@ -9,7 +9,7 @@ const AuditSection = () => {
   const points = ["audit.point1", "audit.point2", "audit.point3", "audit.point4"];
 
   return (
-    <section id="audit" className="py-24 bg-background">
+    <section id="audit" className="py-24 section-ink">
       <div className="container mx-auto px-6">
         <div className="max-w-4xl mx-auto rounded-3xl border border-primary/20 bg-primary/5 p-8 md:p-12">
           <div className="flex flex-col md:flex-row md:items-start gap-8">
