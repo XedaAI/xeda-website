@@ -3,6 +3,7 @@ import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/ThemeToggle";
 import XedaMark from "@/components/XedaMark";
+import XedaWordmark from "@/components/XedaWordmark";
 import LanguageSelector from "@/components/LanguageSelector";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
@@ -33,16 +34,7 @@ const Header = () => {
       <div className="container mx-auto px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <XedaMark className="h-7 w-auto text-foreground" />
-          <img
-            src="/brand/xeda-wordmark-dark.png"
-            alt="XEDA"
-            className="h-5 w-auto object-contain block dark:hidden"
-          />
-          <img
-            src="/brand/xeda-wordmark.png"
-            alt="XEDA"
-            className="h-5 w-auto object-contain hidden dark:block"
-          />
+          <XedaWordmark className="h-5 w-auto text-foreground" />
         </div>
         
         <nav className="hidden md:flex items-center gap-8">
