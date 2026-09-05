@@ -14,7 +14,7 @@ const TrustStrip = () => {
   return (
     <section className="py-14 bg-muted/30 border-y border-border/50">
       <div className="container mx-auto px-6">
-        <p className="text-center text-sm font-medium text-primary mb-10">
+        <p className="text-center text-sm font-semibold tracking-wide text-brand-accent mb-10">
           {t("trust.label")}
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">

@@ -18,7 +18,7 @@ const AuditSection = () => {
             </div>
 
             <div className="flex-1">
-              <span className="text-sm font-medium text-primary mb-3 block">
+              <span className="text-sm font-semibold tracking-wide text-brand-accent mb-3 block">
                 {t("audit.label")}
               </span>
               <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">

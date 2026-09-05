@@ -27,7 +27,7 @@ const WhatWeDoSection = () => {
     <section id="what-we-do" className="py-24 bg-background">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
-          <span className="text-sm font-medium text-primary mb-4 block">{t("whatWeDo.label")}</span>
+          <span className="text-sm font-semibold tracking-wide text-brand-accent mb-4 block">{t("whatWeDo.label")}</span>
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
             {t("whatWeDo.title")}
           </h2>
