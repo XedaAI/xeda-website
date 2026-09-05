@@ -16,7 +16,7 @@ const UseCasesSection = () => {
   const { t } = useLanguage();
 
   return (
-    <section id="use-cases" className="py-24 bg-muted/30">
+    <section id="use-cases" className="py-24 bg-section-alt">
       <div className="container mx-auto px-6">
         <div className="text-center mb-4">
           <span className="text-sm font-semibold tracking-wide text-brand-accent mb-4 block">{t("useCases.label")}</span>

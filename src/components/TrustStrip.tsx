@@ -12,7 +12,7 @@ const TrustStrip = () => {
   ];
 
   return (
-    <section className="py-14 bg-muted/30 border-y border-border/50">
+    <section className="py-14 bg-section-alt border-y border-border/50">
       <div className="container mx-auto px-6">
         <p className="text-center text-sm font-semibold tracking-wide text-brand-accent mb-10">
           {t("trust.label")}
