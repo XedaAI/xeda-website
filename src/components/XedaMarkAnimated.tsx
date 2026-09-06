@@ -1,36 +1,52 @@
-// The mark drawn as a three-beat sequence, in the order the brand story tells it:
+// The mark as a living orbit, per the brand story:
 //
-//   1. the ring draws itself around      — XEDA surrounds the business
-//   2. the line runs straight through    — it streamlines operations
-//   3. the point lands and pulses        — and transforms them into outcomes
+//   the ring is the orbit          — XEDA's intelligence, circling the business
+//   the dot is XEDA                — revolving continuously around it
+//   the line is the business       — held steady, and quickened as XEDA passes
 //
-// This is a stroke-built copy of the traced mark rather than the filled outline
-// used in the nav: filled paths cannot "draw", and stroke-dashoffset can. The
-// geometry is measured from the same artwork, so the two read as one mark.
+// The 3D read comes from occlusion, not from perspective maths: the dot is
+// drawn TWICE, once before the line and once after it. The "far" copy is
+// painted underneath the line and is only visible across the back half of the
+// orbit; the "near" copy sits on top of the line and shows across the front
+// half. They hand over at the two points where the orbit crosses the line's
+// plane, where both copies share the same size and opacity — so it reads as
+// one dot passing behind and then in front.
 //
-// pathLength="1" normalises each path so the dash offsets are plain 0→1
-// fractions instead of magic numbers tied to the viewBox.
+// Radius and opacity breathe with depth (smaller and dimmer at the back,
+// larger and brighter at the front), which is what makes a flat ellipse feel
+// like something going around.
+//
+// Note: this animated instance uses a COMPLETE ellipse, where the static logo
+// has a small gap at the dot's resting position — a revolving dot needs an
+// unbroken path to travel.
 const XedaMarkAnimated = ({ className = "" }: { className?: string }) => (
   <svg
     viewBox="0 0 318 255"
-    className={className}
+    className={`xeda-orbit ${className}`}
     fill="none"
     stroke="currentColor"
-    strokeWidth={9}
-    strokeLinecap="round"
     role="presentation"
     aria-hidden="true"
   >
-    {/* 1 — the ring: XEDA, surrounding */}
-    <path
-      className="mark-ring"
-      pathLength={1}
-      d="M 258.9 110.8 A 99 105 10 1 1 243.8 70.5"
+    {/* the orbit itself */}
+    <ellipse
+      className="orbit-ring"
+      cx="161"
+      cy="130"
+      rx="99"
+      ry="105"
+      strokeWidth="9"
+      transform="rotate(10 161 130)"
     />
-    {/* 2 — the line: the business, made straight */}
-    <line className="mark-line" pathLength={1} x1="18" y1="146" x2="300" y2="146" />
-    {/* 3 — the point: transformation, where the value lands */}
-    <circle className="mark-star" cx="263" cy="86" r="13" fill="currentColor" stroke="none" />
+
+    {/* XEDA on the far side — painted before the line, so the line covers it */}
+    <circle className="orbit-dot orbit-dot--far" r="13" fill="currentColor" stroke="none" />
+
+    {/* the business: steady, and brightening each time XEDA comes past */}
+    <line className="orbit-line" x1="18" y1="146" x2="300" y2="146" strokeWidth="9" strokeLinecap="round" />
+
+    {/* XEDA on the near side — painted after the line, so it passes in front */}
+    <circle className="orbit-dot orbit-dot--near" r="13" fill="currentColor" stroke="none" />
   </svg>
 );
 

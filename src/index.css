@@ -214,46 +214,91 @@ All colors MUST be HSL.
   background: linear-gradient(90deg, transparent, hsl(var(--border)) 20%, hsl(var(--border)) 80%, transparent);
 }
 
-/* --- Brand mark: the three-beat story ---------------------------------------
-   ring surrounds -> line streamlines -> point transforms. Timings overlap
-   slightly so it reads as one gesture rather than three separate events. */
-@keyframes markDraw {
-  from { stroke-dashoffset: 1; }
-  to   { stroke-dashoffset: 0; }
+/* --- Brand mark: the orbit --------------------------------------------------
+   XEDA (the dot) revolves around the business (the line). Depth is faked with
+   occlusion plus a breathing radius, which is cheaper and more robust than
+   real 3D transforms and survives every browser that supports offset-path.
+
+   Path below traces the same ellipse the ring is drawn with — the major-axis
+   endpoints are computed from cx/cy/rx and the 10deg rotation, so the dot
+   never drifts off the ring. Sweeping clockwise from the right-hand end means
+   25% of the way round is the BOTTOM (nearest the viewer) and 75% is the TOP
+   (furthest away). */
+@keyframes orbitTravel {
+  from { offset-distance: 0%; }
+  to   { offset-distance: 100%; }
 }
 
-@keyframes markLand {
-  0%   { transform: scale(0); opacity: 0; }
-  70%  { transform: scale(1.28); opacity: 1; }
-  100% { transform: scale(1); opacity: 1; }
+/* Radius and opacity are keyed to the same clock as the travel, so the dot is
+   biggest and brightest at the front (25%) and smallest and dimmest at the
+   back (75%). At 0% and 50% — the hand-over points — both copies match. */
+@keyframes orbitDepth {
+  0%   { r: 13px; opacity: 0.85; }
+  25%  { r: 16px; opacity: 1; }
+  50%  { r: 13px; opacity: 0.85; }
+  75%  { r: 9.5px; opacity: 0.5; }
+  100% { r: 13px; opacity: 0.85; }
 }
 
-/* Once landed, the point keeps a slow pulse — the "continuously improving"
-   half of the story, and the only moving thing left on the page. */
-@keyframes markPulse {
-  0%, 100% { opacity: 1; }
-  50%      { opacity: 0.55; }
+/* Each copy is only on screen for its own half of the orbit. Stepped so the
+   swap is instantaneous at the crossings rather than cross-fading mid-arc. */
+@keyframes orbitShowNear {
+  0%, 49.9%   { visibility: visible; }
+  50%, 100%   { visibility: hidden; }
 }
 
-.mark-ring,
-.mark-line {
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: markDraw 1.15s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+@keyframes orbitShowFar {
+  0%, 49.9%   { visibility: hidden; }
+  50%, 100%   { visibility: visible; }
 }
 
-.mark-line {
-  animation-delay: 0.55s;
-  animation-duration: 0.75s;
+/* The business line quickens as XEDA passes through its plane (0% and 50%). */
+@keyframes orbitLinePulse {
+  0%, 6%, 44%, 56%, 94%, 100% { opacity: 1; }
+  22%, 78%                    { opacity: 0.62; }
 }
 
-.mark-star {
-  transform-box: fill-box;
-  transform-origin: center;
-  opacity: 0;
+.xeda-orbit { overflow: visible; }
+
+/* Slightly held back from the line so the travelling dot stays the focus, but
+   close enough in weight that this still reads as the logo rather than a
+   different mark. */
+.orbit-ring {
+  opacity: 0.55;
+}
+
+.orbit-line {
+  animation: orbitLinePulse var(--orbit-duration, 16s) linear infinite;
+}
+
+.orbit-dot {
+  offset-path: path("M 258.50 147.19 A 99 105 10 0 1 63.50 112.81 A 99 105 10 0 1 258.50 147.19");
+  offset-rotate: 0deg;
   animation:
-    markLand 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 1.15s forwards,
-    markPulse 3.4s ease-in-out 1.9s infinite;
+    orbitTravel var(--orbit-duration, 16s) linear infinite,
+    orbitDepth  var(--orbit-duration, 16s) linear infinite;
+}
+
+.orbit-dot--near {
+  animation:
+    orbitTravel   var(--orbit-duration, 16s) linear infinite,
+    orbitDepth    var(--orbit-duration, 16s) linear infinite,
+    orbitShowNear var(--orbit-duration, 16s) step-end infinite;
+}
+
+.orbit-dot--far {
+  animation:
+    orbitTravel  var(--orbit-duration, 16s) linear infinite,
+    orbitDepth   var(--orbit-duration, 16s) linear infinite,
+    orbitShowFar var(--orbit-duration, 16s) step-end infinite;
+}
+
+/* Fallback: without offset-path the dot would pile up at the origin, so park
+   it at its resting position on the ring and drop the motion entirely. */
+@supports not (offset-path: path("M 0 0 L 1 1")) {
+  .orbit-dot { animation: none; visibility: hidden; }
+  .orbit-dot--near { visibility: visible; cx: 263px; cy: 86px; }
+  .orbit-line { animation: none; }
 }
 
 /* --- Entrance sequence ------------------------------------------------------
@@ -288,12 +333,9 @@ All colors MUST be HSL.
 /* Motion is decorative throughout: with reduced motion the sequence is skipped
    and everything is shown in its final state rather than merely slowed. */
 @media (prefers-reduced-motion: reduce) {
-  .mark-ring,
-  .mark-line {
-    stroke-dashoffset: 0;
-    animation: none;
-  }
-  .mark-star { opacity: 1; animation: none; }
+  .orbit-dot, .orbit-line { animation: none; }
+  .orbit-dot--far { visibility: hidden; }
+  .orbit-dot--near { visibility: visible; offset-path: none; cx: 263px; cy: 86px; r: 13px; opacity: 1; }
   .enter { opacity: 1; animation: none; }
   .card-lift { transition: none; }
   .card-lift:hover { transform: none; }
