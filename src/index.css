@@ -386,13 +386,13 @@ All colors MUST be HSL.
   transform-box: view-box;
   /* the business line sits at y=146 of a 255-tall viewBox */
   transform-origin: 50% 57.25%;
-  animation: orbitTilt calc(var(--orbit-duration, 16s) * 2.5) ease-in-out infinite;
+  animation: orbitTilt calc(var(--orbit-duration, 16s) * 1.25) ease-in-out infinite;
 }
 
 @keyframes orbitTilt {
-  0%   { transform: rotateX(12deg) rotateZ(-2deg); }
-  50%  { transform: rotateX(34deg) rotateZ(2deg); }
-  100% { transform: rotateX(12deg) rotateZ(-2deg); }
+  0%   { transform: rotateX(6deg) rotateZ(-3deg); }
+  50%  { transform: rotateX(56deg) rotateZ(3deg); }
+  100% { transform: rotateX(6deg) rotateZ(-3deg); }
 }
 
 /* --- Lifeline ---------------------------------------------------------------
