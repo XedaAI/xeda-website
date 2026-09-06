@@ -33,7 +33,7 @@ const HeroSection = () => {
       </div>
 
       <div className="relative z-10 container mx-auto px-6 pt-28 pb-16 text-center max-w-4xl">
-        <XedaMarkAnimated className="h-16 md:h-20 w-auto mx-auto mb-10 text-[hsl(220_8%_96%)]" />
+        <XedaMarkAnimated className="h-28 md:h-36 w-auto mx-auto mb-10 text-[hsl(220_8%_96%)]" />
 
         <div className="enter [--enter-delay:1.25s] inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[hsl(220_8%_96%/0.07)] border border-[hsl(220_8%_96%/0.20)] mb-8">
           <span className="w-2 h-2 rounded-full bg-[hsl(220_8%_88%)] animate-pulse" />
