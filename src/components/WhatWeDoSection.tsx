@@ -24,11 +24,11 @@ const WhatWeDoSection = () => {
   ];
 
   return (
-    <section id="what-we-do" className="py-24 bg-background">
+    <section id="what-we-do" className="py-28 md:py-36 bg-background">
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <span className="text-sm font-semibold tracking-wide text-brand-accent mb-4 block">{t("whatWeDo.label")}</span>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <h2 className="text-3xl md:text-5xl font-semibold tracking-[-0.022em] text-foreground mb-5 text-balance">
             {t("whatWeDo.title")}
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">

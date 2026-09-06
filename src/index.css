@@ -11,61 +11,65 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* --- Light mode ------------------------------------------------------
-       Kept available via the toggle, but dark is the default experience.
-       Cyan is darkened here so it stays AA on a light ground. */
-    --background: 205 24% 97%;
-    --foreground: 210 32% 12%;
+    /* --- Light -----------------------------------------------------------
+       Fully monochrome. No accent hue anywhere: emphasis comes from weight,
+       scale and space, and interactive elements invert rather than colour.
+       Neutrals carry a whisper of blue (hue 220 at 3-6% sat) so they read as
+       chosen rather than as flat system grey. */
+    --background: 0 0% 100%;
+    --foreground: 220 12% 8%;
 
     --card: 0 0% 100%;
-    --card-foreground: 210 32% 12%;
+    --card-foreground: 220 12% 8%;
 
-    --popover: 205 20% 96%;
-    --popover-foreground: 210 32% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 12% 8%;
 
-    --primary: 194 88% 27%;
+    /* Buttons are near-black with white text — the OpenAI move. */
+    --primary: 220 12% 10%;
     --primary-foreground: 0 0% 100%;
 
-    /* Second accent: violet. Complements the cyan and keeps a warm-free
-       palette coherent with the metallic mark. */
-    --brand-accent: 265 62% 45%;
+    /* Eyebrows and labels: muted grey, not a colour. */
+    --brand-accent: 220 6% 42%;
 
-    --section-alt: 200 34% 94%;
+    --section-alt: 220 14% 97%;
 
-    --secondary: 210 16% 26%;
+    --secondary: 220 8% 24%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 205 12% 56%;
-    --muted-foreground: 208 14% 36%;
+    --muted: 220 6% 62%;
+    --muted-foreground: 220 6% 40%;
 
-    --accent: 194 52% 92%;
-    --accent-foreground: 194 88% 22%;
+    --accent: 220 14% 96%;
+    --accent-foreground: 220 12% 14%;
 
-    --destructive: 0 72% 45%;
-    --destructive-foreground: 0 85% 97%;
+    --destructive: 0 65% 44%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 205 16% 86%;
-    --input: 205 16% 86%;
-    --ring: 194 88% 32%;
+    --border: 220 12% 90%;
+    --input: 220 12% 88%;
+    --ring: 220 12% 30%;
 
     --radius: 0.75rem;
 
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 210 32% 12%;
-    --sidebar-primary: 194 88% 27%;
+    --sidebar-foreground: 220 12% 8%;
+    --sidebar-primary: 220 12% 10%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 194 52% 92%;
-    --sidebar-accent-foreground: 194 88% 22%;
-    --sidebar-border: 205 16% 86%;
-    --sidebar-ring: 194 88% 32%;
+    --sidebar-accent: 220 14% 96%;
+    --sidebar-accent-foreground: 220 12% 14%;
+    --sidebar-border: 220 12% 90%;
+    --sidebar-ring: 220 12% 30%;
 
-    --chart-1: 194 82% 34%;
-    --chart-2: 265 58% 50%;
-    --chart-3: 168 58% 32%;
-    --chart-4: 210 12% 48%;
-    --chart-5: 28 68% 44%;
+    /* Charts are the one place categorical separation is unavoidable, so they
+       step through lightness rather than hue. */
+    --chart-1: 220 10% 18%;
+    --chart-2: 220 8% 34%;
+    --chart-3: 220 7% 50%;
+    --chart-4: 220 6% 64%;
+    --chart-5: 220 6% 78%;
 
-    --sidebar: 205 24% 97%;
+    --sidebar: 0 0% 100%;
 
     --font-sans: 'Work Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
 
@@ -95,55 +99,54 @@ All colors MUST be HSL.
   }
 
   .dark {
-    /* --- Dark mode — the default, and the brand's native context ---------
-       Near-black with a blue cast, so the metallic mark and the cyan sit on
-       the same ground the logo was designed against. */
-    --background: 208 44% 6%;
-    --foreground: 200 18% 96%;
+    /* --- Dark ------------------------------------------------------------
+       The same monochrome system inverted. Buttons become near-white with
+       dark text. */
+    --background: 220 12% 5%;
+    --foreground: 220 8% 96%;
 
-    --card: 208 34% 11%;
-    --card-foreground: 200 18% 96%;
+    --card: 220 11% 9%;
+    --card-foreground: 220 8% 96%;
 
-    --popover: 208 34% 12%;
-    --popover-foreground: 200 18% 96%;
+    --popover: 220 11% 10%;
+    --popover-foreground: 220 8% 96%;
 
-    /* Electric cyan: the page's one loud colour. */
-    --primary: 194 90% 56%;
-    --primary-foreground: 208 44% 7%;
+    --primary: 220 8% 96%;
+    --primary-foreground: 220 12% 6%;
 
-    --brand-accent: 265 88% 74%;
+    --brand-accent: 220 6% 62%;
 
-    --section-alt: 208 34% 10%;
+    --section-alt: 220 11% 8%;
 
-    --secondary: 208 16% 40%;
+    --secondary: 220 8% 32%;
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 208 16% 32%;
-    --muted-foreground: 205 16% 72%;
+    --muted: 220 8% 28%;
+    --muted-foreground: 220 7% 66%;
 
-    --accent: 194 60% 16%;
-    --accent-foreground: 194 88% 74%;
+    --accent: 220 11% 14%;
+    --accent-foreground: 220 8% 92%;
 
-    --destructive: 0 74% 58%;
-    --destructive-foreground: 0 85% 97%;
+    --destructive: 0 62% 55%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 208 24% 20%;
-    --input: 208 24% 20%;
-    --ring: 194 90% 56%;
-    --sidebar-background: 208 40% 8%;
-    --sidebar-foreground: 200 18% 96%;
-    --sidebar-primary: 194 90% 56%;
-    --sidebar-primary-foreground: 208 44% 7%;
-    --sidebar-accent: 194 60% 16%;
-    --sidebar-accent-foreground: 194 88% 74%;
-    --sidebar-border: 208 24% 20%;
-    --sidebar-ring: 194 90% 56%;
-    --chart-1: 194 90% 56%;
-    --chart-2: 265 88% 74%;
-    --chart-3: 168 62% 52%;
-    --chart-4: 205 14% 62%;
-    --chart-5: 28 80% 62%;
-    --sidebar: 208 34% 11%;
+    --border: 220 10% 17%;
+    --input: 220 10% 19%;
+    --ring: 220 8% 72%;
+    --sidebar-background: 220 12% 6%;
+    --sidebar-foreground: 220 8% 96%;
+    --sidebar-primary: 220 8% 96%;
+    --sidebar-primary-foreground: 220 12% 6%;
+    --sidebar-accent: 220 11% 14%;
+    --sidebar-accent-foreground: 220 8% 92%;
+    --sidebar-border: 220 10% 17%;
+    --sidebar-ring: 220 8% 72%;
+    --chart-1: 220 8% 92%;
+    --chart-2: 220 7% 76%;
+    --chart-3: 220 7% 60%;
+    --chart-4: 220 7% 46%;
+    --chart-5: 220 8% 34%;
+    --sidebar: 220 11% 9%;
     --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
     --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
     --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
@@ -173,23 +176,23 @@ All colors MUST be HSL.
    In light mode this is a full inversion; in dark mode the page is already dark,
    so it only drops a step deeper to keep the rhythm readable. */
 .section-ink {
-  --background: 208 44% 6%;
-  --foreground: 200 18% 96%;
-  --card: 208 34% 11%;
-  --card-foreground: 200 18% 96%;
-  --popover: 208 34% 12%;
-  --popover-foreground: 200 18% 96%;
-  --muted: 208 16% 32%;
-  --muted-foreground: 205 16% 74%;
-  --border: 208 24% 20%;
-  --input: 208 24% 20%;
-  --primary: 194 90% 56%;
-  --primary-foreground: 208 44% 7%;
-  --brand-accent: 265 88% 74%;
-  --accent: 194 60% 16%;
-  --accent-foreground: 194 88% 74%;
-  --ring: 194 90% 56%;
-  --secondary: 208 16% 40%;
+  --background: 220 12% 5%;
+  --foreground: 220 8% 96%;
+  --card: 220 11% 9%;
+  --card-foreground: 220 8% 96%;
+  --popover: 220 11% 10%;
+  --popover-foreground: 220 8% 96%;
+  --muted: 220 8% 28%;
+  --muted-foreground: 220 7% 68%;
+  --border: 220 10% 17%;
+  --input: 220 10% 19%;
+  --primary: 220 8% 96%;
+  --primary-foreground: 220 12% 6%;
+  --brand-accent: 220 6% 64%;
+  --accent: 220 11% 14%;
+  --accent-foreground: 220 8% 92%;
+  --ring: 220 8% 72%;
+  --secondary: 220 8% 32%;
   --secondary-foreground: 0 0% 98%;
 
   background-color: hsl(var(--background));
@@ -199,44 +202,16 @@ All colors MUST be HSL.
 /* In dark mode the page is already ink, so these drop a step deeper instead
    of inverting — otherwise the rhythm disappears entirely. */
 .dark .section-ink {
-  --background: 208 50% 4%;
-  --card: 208 34% 9%;
+  --background: 220 14% 3%;
+  --card: 220 11% 8%;
 }
 
-/* --- Accent glow ------------------------------------------------------------
-   A soft cyan/violet bloom behind the hero and the primary CTA. On a near-black
-   ground this is what stops large dark areas reading as flat — the light comes
-   from the accent rather than from adding more coloured surfaces. */
-.accent-glow {
-  position: relative;
-  isolation: isolate;
-}
-
-.accent-glow::before {
-  content: "";
-  position: absolute;
-  inset: -20% -10% auto -10%;
-  height: 70%;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(45% 55% at 28% 30%, hsl(194 90% 56% / 0.16), transparent 70%),
-    radial-gradient(40% 50% at 74% 22%, hsl(265 88% 74% / 0.13), transparent 72%);
-  filter: blur(8px);
-}
-
-/* Hairline rule that fades out from the accent — used to separate ink sections
-   without a hard border. */
+/* Hairline rule that fades at both ends — separates ink sections without a
+   hard border, and stays monochrome. */
 .rule-accent {
   height: 1px;
   border: 0;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    hsl(var(--primary) / 0.45) 22%,
-    hsl(var(--brand-accent) / 0.35) 60%,
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, hsl(var(--border)) 20%, hsl(var(--border)) 80%, transparent);
 }
 
 /* --- AI robot: subtle idle float only (decorative, faint hero background) --- */

@@ -29,7 +29,7 @@ const ForBusinessesSection = () => {
   ];
 
   return (
-    <section id="for-businesses" className="py-24 bg-background">
+    <section id="for-businesses" className="py-28 md:py-36 bg-background">
       <div className="container mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div>

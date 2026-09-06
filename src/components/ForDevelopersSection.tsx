@@ -25,7 +25,7 @@ const ForDevelopersSection = () => {
   ];
 
   return (
-    <section id="for-developers" className="py-24 bg-card">
+    <section id="for-developers" className="py-28 md:py-36 bg-card">
       <div className="container mx-auto px-6">
         <div className="max-w-3xl mx-auto text-center">
           <span className="text-sm font-semibold tracking-wide text-brand-accent mb-4 block">{t("forDevelopers.label")}</span>

@@ -59,7 +59,7 @@ const PricingSection = () => {
     <section id="pricing" className="py-20 bg-section-alt">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <h2 className="text-3xl md:text-5xl font-semibold tracking-[-0.022em] text-foreground mb-5 text-balance">
             {t("pricing.title")}
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">

@@ -16,11 +16,11 @@ const UseCasesSection = () => {
   const { t } = useLanguage();
 
   return (
-    <section id="use-cases" className="py-24 section-ink">
+    <section id="use-cases" className="py-28 md:py-36 section-ink">
       <div className="container mx-auto px-6">
         <div className="text-center mb-4">
           <span className="text-sm font-semibold tracking-wide text-brand-accent mb-4 block">{t("useCases.label")}</span>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{t("useCases.title")}</h2>
+          <h2 className="text-3xl md:text-5xl font-semibold tracking-[-0.022em] text-foreground mb-5 text-balance">{t("useCases.title")}</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">{t("useCases.subtitle")}</p>
         </div>
 
