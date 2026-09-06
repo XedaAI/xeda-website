@@ -4,6 +4,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { auditBookingUrl } from "@/lib/booking";
 import { useParallax } from "@/hooks/useParallax";
 import AIRobot from "@/components/AIRobot";
+import XedaMarkAnimated from "@/components/XedaMarkAnimated";
 import heroBg from "@/assets/hero-bg.jpg";
 
 const HeroSection = () => {
@@ -31,24 +32,26 @@ const HeroSection = () => {
         <AIRobot className="opacity-20" />
       </div>
 
-      <div className="relative z-10 container mx-auto px-6 text-center max-w-4xl">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[hsl(220_8%_96%/0.07)] border border-[hsl(220_8%_96%/0.20)] mb-8">
+      <div className="relative z-10 container mx-auto px-6 pt-28 pb-16 text-center max-w-4xl">
+        <XedaMarkAnimated className="h-16 md:h-20 w-auto mx-auto mb-10 text-[hsl(220_8%_96%)]" />
+
+        <div className="enter [--enter-delay:1.25s] inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[hsl(220_8%_96%/0.07)] border border-[hsl(220_8%_96%/0.20)] mb-8">
           <span className="w-2 h-2 rounded-full bg-[hsl(220_8%_88%)] animate-pulse" />
           <span className="text-sm text-[hsl(220_8%_96%/0.86)]">{t("hero.badge")}</span>
         </div>
 
-        <h1 className="text-[2.6rem] md:text-6xl lg:text-[4.6rem] font-semibold tracking-[-0.03em] text-[hsl(220_8%_97%)] mb-7 leading-[1.06] text-balance">
+        <h1 className="enter [--enter-delay:1.4s] text-[2.6rem] md:text-6xl lg:text-[4.6rem] font-semibold tracking-[-0.03em] text-[hsl(220_8%_97%)] mb-7 leading-[1.06] text-balance">
           {t("hero.title")}
           {/* Monochrome: the highlight steps down in tone rather than changing
               hue, so emphasis comes from contrast instead of colour. */}
           <span className="text-[hsl(220_7%_66%)]"> {t("hero.titleHighlight")}</span>
         </h1>
 
-        <p className="text-lg md:text-xl text-[hsl(220_7%_88%/0.74)] mb-12 max-w-[38rem] mx-auto leading-[1.65]">
+        <p className="enter [--enter-delay:1.55s] text-lg md:text-xl text-[hsl(220_7%_88%/0.74)] mb-12 max-w-[38rem] mx-auto leading-[1.65]">
           {t("hero.subtitle")}
         </p>
         
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div className="enter [--enter-delay:1.7s] flex flex-col sm:flex-row items-center justify-center gap-4">
           {/* The hero is a fixed dark panel, so the CTA is fixed too: in light
               mode --primary is near-black, which would sit dark-on-dark here. */}
           <Button
@@ -72,7 +75,7 @@ const HeroSection = () => {
         </div>
       </div>
 
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+      <div className="enter [--enter-delay:2.1s] absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
         <div className="w-6 h-10 rounded-full border-2 border-[hsl(220_8%_96%/0.30)] flex items-start justify-center pt-2">
           <div className="w-1 h-2 bg-[hsl(220_8%_96%/0.5)] rounded-full" />
         </div>

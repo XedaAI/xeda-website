@@ -214,6 +214,91 @@ All colors MUST be HSL.
   background: linear-gradient(90deg, transparent, hsl(var(--border)) 20%, hsl(var(--border)) 80%, transparent);
 }
 
+/* --- Brand mark: the three-beat story ---------------------------------------
+   ring surrounds -> line streamlines -> point transforms. Timings overlap
+   slightly so it reads as one gesture rather than three separate events. */
+@keyframes markDraw {
+  from { stroke-dashoffset: 1; }
+  to   { stroke-dashoffset: 0; }
+}
+
+@keyframes markLand {
+  0%   { transform: scale(0); opacity: 0; }
+  70%  { transform: scale(1.28); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Once landed, the point keeps a slow pulse — the "continuously improving"
+   half of the story, and the only moving thing left on the page. */
+@keyframes markPulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+
+.mark-ring,
+.mark-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: markDraw 1.15s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+.mark-line {
+  animation-delay: 0.55s;
+  animation-duration: 0.75s;
+}
+
+.mark-star {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  animation:
+    markLand 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 1.15s forwards,
+    markPulse 3.4s ease-in-out 1.9s infinite;
+}
+
+/* --- Entrance sequence ------------------------------------------------------
+   Used for the hero on load and for cards as they scroll in. The delay is set
+   per element with --enter-delay so one rule covers every stagger. */
+@keyframes enterUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.enter {
+  opacity: 0;
+  animation: enterUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--enter-delay, 0s);
+}
+
+/* --- Card hover -------------------------------------------------------------
+   Monochrome, so the affordance is a lift plus a brighter hairline rather than
+   a colour change. */
+.card-lift {
+  transition:
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.28s ease,
+    background-color 0.28s ease;
+}
+
+.card-lift:hover {
+  transform: translateY(-3px);
+  border-color: hsl(var(--foreground) / 0.28);
+}
+
+/* Motion is decorative throughout: with reduced motion the sequence is skipped
+   and everything is shown in its final state rather than merely slowed. */
+@media (prefers-reduced-motion: reduce) {
+  .mark-ring,
+  .mark-line {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+  .mark-star { opacity: 1; animation: none; }
+  .enter { opacity: 1; animation: none; }
+  .card-lift { transition: none; }
+  .card-lift:hover { transform: none; }
+}
+
 /* --- AI robot: subtle idle float only (decorative, faint hero background) --- */
 @keyframes robotFloat {
   0%, 100% {

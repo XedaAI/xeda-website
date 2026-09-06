@@ -1,3 +1,4 @@
+import type React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check } from "lucide-react";
@@ -71,7 +72,8 @@ const PricingSection = () => {
           {packages.map((pkg, index) => (
             <Card
               key={index}
-              className={`relative ${
+              style={{ "--enter-delay": `${index * 0.09}s` } as React.CSSProperties}
+              className={`card-lift enter relative ${
                 pkg.highlighted
                   ? "border-primary shadow-lg scale-105"
                   : "bg-card/50"

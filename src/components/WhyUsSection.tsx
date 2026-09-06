@@ -1,3 +1,4 @@
+import type React from "react";
 import { Shield, Zap, Brain } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -37,7 +38,7 @@ const WhyUsSection = () => {
 
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {reasons.map((reason, index) => (
-            <div key={index} className="text-center">
+            <div key={index} className="card-lift enter text-center" style={{ "--enter-delay": `${index * 0.08}s` } as React.CSSProperties}>
               <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6">
                 <reason.icon className="w-8 h-8 text-primary" />
               </div>

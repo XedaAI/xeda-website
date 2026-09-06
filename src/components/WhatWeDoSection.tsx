@@ -1,3 +1,4 @@
+import type React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Workflow, Zap, Bot } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -38,7 +39,7 @@ const WhatWeDoSection = () => {
 
         <div className="grid md:grid-cols-3 gap-8">
           {services.map((service, index) => (
-            <Card key={index} className="group hover:shadow-lg transition-all duration-300 border-border/50 bg-card">
+            <Card key={index} className="card-lift enter group hover:shadow-lg transition-all duration-300 border-border/50 bg-card" style={{ "--enter-delay": `${index * 0.08}s` } as React.CSSProperties}>
               <CardContent className="p-8">
                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
                   <service.icon className="w-6 h-6 text-primary" />
