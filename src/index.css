@@ -239,24 +239,16 @@ All colors MUST be HSL.
    biggest and brightest at the front (25%) and smallest and dimmest at the
    back (75%). At 0% and 50% — the hand-over points — both copies match. */
 @keyframes orbitDepth {
-  0%     { r: 13px;   opacity: 0.85; }
+  0%     { r: 13px;   opacity: 0.9; }
   22.4%  { r: 16px;   opacity: 1; }
-  44.9%  { r: 13px;   opacity: 0.85; }
-  72.4%  { r: 9.5px;  opacity: 0.5; }
-  100%   { r: 13px;   opacity: 0.85; }
+  44.9%  { r: 13px;   opacity: 0.9; }
+  72.4%  { r: 11.5px; opacity: 0.7; }
+  100%   { r: 13px;   opacity: 0.9; }
 }
 
-/* Each copy is only on screen for its own half of the orbit. Stepped so the
-   swap is instantaneous at the crossings rather than cross-fading mid-arc. */
-@keyframes orbitShowNear {
-  0%, 44.8%    { visibility: visible; }
-  44.9%, 100%  { visibility: hidden; }
-}
-
-@keyframes orbitShowFar {
-  0%, 44.8%    { visibility: hidden; }
-  44.9%, 100%  { visibility: visible; }
-}
+/* Which copy is on screen is decided per frame in XedaMarkAnimated, not here:
+   with the plane making a full rotation, the answer depends on the orbit phase
+   AND the tilt phase together, which CSS keyframes cannot express. */
 
 /* The business line quickens as XEDA passes through its plane (0% and 50%). */
 @keyframes orbitLinePulse {
@@ -270,7 +262,9 @@ All colors MUST be HSL.
    close enough in weight that this still reads as the logo rather than a
    different mark. */
 .orbit-ring {
-  opacity: 0.55;
+  /* Kept clearly legible: when the dot dims at the back of the orbit, a
+     readable path is what lets the eye complete the circle. */
+  opacity: 0.62;
 }
 
 .orbit-line {
@@ -289,16 +283,14 @@ All colors MUST be HSL.
   animation:
     orbitTravel   var(--orbit-duration, 16s) linear infinite,
     orbitDepth    var(--orbit-duration, 16s) linear infinite,
-    orbitGlow     var(--orbit-duration, 16s) linear infinite,
-    orbitShowNear var(--orbit-duration, 16s) step-end infinite;
+    orbitGlow     var(--orbit-duration, 16s) linear infinite;
 }
 
 .orbit-dot--far {
   animation:
     orbitTravel  var(--orbit-duration, 16s) linear infinite,
     orbitDepth   var(--orbit-duration, 16s) linear infinite,
-    orbitGlow    var(--orbit-duration, 16s) linear infinite,
-    orbitShowFar var(--orbit-duration, 16s) step-end infinite;
+    orbitGlow    var(--orbit-duration, 16s) linear infinite;
 }
 
 /* Fallback: without offset-path the dot would pile up at the origin, so park
@@ -363,20 +355,25 @@ All colors MUST be HSL.
    the orbit, almost extinguished at the back. currentColor keeps it monochrome
    and makes it inherit whatever the surrounding text colour is. */
 @keyframes orbitGlow {
-  0%     { filter: drop-shadow(0 0 5px currentColor); }
+  0%     { filter: drop-shadow(0 0 6px currentColor); }
   22.4%  { filter: drop-shadow(0 0 14px currentColor); }
-  44.9%  { filter: drop-shadow(0 0 5px currentColor); }
-  72.4%  { filter: drop-shadow(0 0 1px currentColor); }
-  100%   { filter: drop-shadow(0 0 5px currentColor); }
+  44.9%  { filter: drop-shadow(0 0 6px currentColor); }
+  72.4%  { filter: drop-shadow(0 0 4px currentColor); }
+  100%   { filter: drop-shadow(0 0 6px currentColor); }
 }
 
 
-/* --- Orbit tilt -------------------------------------------------------------
-   The plane swings in 3D around the business line. Rotating about that exact
-   axis is what makes this safe: points on the axis do not move, so the two
-   places the orbit crosses the line stay put and the occlusion hand-over keeps
-   landing on them. The angle never crosses 0, because passing through edge-on
-   would swap which half is nearest and invert the whole near/far illusion. */
+/* --- Orbit rotation --------------------------------------------------------
+   The plane makes a full turn about the business line's own axis. Rotating
+   about that exact axis is what keeps it coherent: points on the axis do not
+   move, so the two places the orbit meets the line stay put however far it
+   turns, and twice per rotation the orbit passes edge-on and briefly aligns
+   with the line.
+
+   Over a full rotation the near and far halves reverse each half turn — as the
+   plane passes face-on, where everything is momentarily at zero depth. That
+   depends on the orbit phase and the tilt phase together, which CSS keyframes
+   cannot express, so the draw-order decision lives in XedaMarkAnimated. */
 .xeda-orbit {
   /* One lever for the whole orbit. Travel, depth, glow, the two visibility
      swaps, all three trail layers and the tilt are all derived from this, so
@@ -391,13 +388,12 @@ All colors MUST be HSL.
   transform-box: view-box;
   /* the business line sits at y=146 of a 255-tall viewBox */
   transform-origin: 50% 57.25%;
-  animation: orbitTilt calc(var(--orbit-duration, 16s) * 2.2) ease-in-out infinite;
+  animation: orbitTilt calc(var(--orbit-duration, 16s) * 2.2) linear infinite;
 }
 
 @keyframes orbitTilt {
-  0%   { transform: rotateX(6deg) rotateZ(-3deg); }
-  50%  { transform: rotateX(56deg) rotateZ(3deg); }
-  100% { transform: rotateX(6deg) rotateZ(-3deg); }
+  from { transform: rotateX(0deg); }
+  to   { transform: rotateX(360deg); }
 }
 
 /* --- Lifeline ---------------------------------------------------------------
