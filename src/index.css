@@ -378,6 +378,11 @@ All colors MUST be HSL.
    landing on them. The angle never crosses 0, because passing through edge-on
    would swap which half is nearest and invert the whole near/far illusion. */
 .xeda-orbit {
+  /* One lever for the whole orbit. Travel, depth, glow, the two visibility
+     swaps, all three trail layers and the tilt are all derived from this, so
+     they can never drift out of sync with each other. */
+  --orbit-duration: 6s;
+
   perspective: 620px;
   transform-style: preserve-3d;
 }
@@ -386,7 +391,7 @@ All colors MUST be HSL.
   transform-box: view-box;
   /* the business line sits at y=146 of a 255-tall viewBox */
   transform-origin: 50% 57.25%;
-  animation: orbitTilt calc(var(--orbit-duration, 16s) * 1.25) ease-in-out infinite;
+  animation: orbitTilt calc(var(--orbit-duration, 16s) * 2.2) ease-in-out infinite;
 }
 
 @keyframes orbitTilt {
