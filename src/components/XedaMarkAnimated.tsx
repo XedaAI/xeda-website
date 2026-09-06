@@ -30,8 +30,12 @@ const XedaMarkAnimated = ({ className = "" }: { className?: string }) => (
     role="presentation"
     aria-hidden="true"
   >
-    {/* the orbit itself */}
-    <ellipse
+    {/* Everything that belongs to the orbit plane tilts together. The business
+        line deliberately sits OUTSIDE this group — it stays flat and straight
+        while the orbit swings around it. */}
+    <g className="orbit-plane">
+      {/* the orbit itself */}
+      <ellipse
       className="orbit-ring"
       cx="161"
       cy="130"
@@ -41,9 +45,9 @@ const XedaMarkAnimated = ({ className = "" }: { className?: string }) => (
       transform="rotate(10 161 130)"
     />
 
-    {/* comet trail — faintest and longest first, so brighter layers stack on top */}
-    {(["c", "b", "a"] as const).map((layer) => (
-      <ellipse
+      {/* comet trail — faintest and longest first, so brighter layers stack on top */}
+      {(["c", "b", "a"] as const).map((layer) => (
+        <ellipse
         key={layer}
         className={`orbit-trail orbit-trail--${layer}`}
         pathLength={1}
@@ -51,18 +55,35 @@ const XedaMarkAnimated = ({ className = "" }: { className?: string }) => (
         cy="130"
         rx="99"
         ry="105"
-        transform="rotate(10 161 130)"
-      />
-    ))}
+          transform="rotate(10 161 130)"
+        />
+      ))}
 
-    {/* XEDA on the far side — painted before the line, so the line covers it */}
-    <circle className="orbit-dot orbit-dot--far" r="13" fill="currentColor" stroke="none" />
+      {/* XEDA on the far side — painted before the line, so the line covers it */}
+      <circle className="orbit-dot orbit-dot--far" r="13" fill="currentColor" stroke="none" />
+    </g>
 
     {/* the business: steady, and brightening each time XEDA comes past */}
     <line className="orbit-line" x1="18" y1="146" x2="300" y2="146" strokeWidth="9" strokeLinecap="round" />
 
-    {/* XEDA on the near side — painted after the line, so it passes in front */}
-    <circle className="orbit-dot orbit-dot--near" r="13" fill="currentColor" stroke="none" />
+    {/* the lifeline: a pulse runs the length of the business each time XEDA
+        crosses it */}
+    <line
+      className="orbit-lifeline"
+      pathLength={1}
+      x1="18"
+      y1="146"
+      x2="300"
+      y2="146"
+      strokeWidth="9"
+      strokeLinecap="round"
+    />
+
+    {/* XEDA on the near side — its own copy of the tilted plane, painted after
+        the line so it passes in front */}
+    <g className="orbit-plane">
+      <circle className="orbit-dot orbit-dot--near" r="13" fill="currentColor" stroke="none" />
+    </g>
   </svg>
 );
 

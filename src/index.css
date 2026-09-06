@@ -305,7 +305,8 @@ All colors MUST be HSL.
    it at its resting position on the ring and drop the motion entirely. */
 @supports not (offset-path: path("M 0 0 L 1 1")) {
   .orbit-dot { animation: none; visibility: hidden; }
-  .orbit-trail { display: none; }
+  .orbit-trail, .orbit-lifeline { display: none; }
+  .orbit-plane { animation: none; }
   .orbit-dot--near { visibility: visible; cx: 263px; cy: 86px; }
   .orbit-line { animation: none; }
 }
@@ -369,6 +370,53 @@ All colors MUST be HSL.
   100%   { filter: drop-shadow(0 0 5px currentColor); }
 }
 
+
+/* --- Orbit tilt -------------------------------------------------------------
+   The plane swings in 3D around the business line. Rotating about that exact
+   axis is what makes this safe: points on the axis do not move, so the two
+   places the orbit crosses the line stay put and the occlusion hand-over keeps
+   landing on them. The angle never crosses 0, because passing through edge-on
+   would swap which half is nearest and invert the whole near/far illusion. */
+.xeda-orbit {
+  perspective: 620px;
+  transform-style: preserve-3d;
+}
+
+.orbit-plane {
+  transform-box: view-box;
+  /* the business line sits at y=146 of a 255-tall viewBox */
+  transform-origin: 50% 57.25%;
+  animation: orbitTilt calc(var(--orbit-duration, 16s) * 2.5) ease-in-out infinite;
+}
+
+@keyframes orbitTilt {
+  0%   { transform: rotateX(12deg) rotateZ(-2deg); }
+  50%  { transform: rotateX(34deg) rotateZ(2deg); }
+  100% { transform: rotateX(12deg) rotateZ(-2deg); }
+}
+
+/* --- Lifeline ---------------------------------------------------------------
+   A pulse runs the length of the business each time XEDA crosses it — at 0%
+   and 44.9% of the orbit, the two measured crossings. Between sweeps the dash
+   resets while transparent, so the reset is never seen. */
+.orbit-lifeline {
+  stroke: currentColor;
+  stroke-dasharray: 0.14 0.86;
+  opacity: 0;
+  animation: lifelinePulse var(--orbit-duration, 16s) linear infinite;
+}
+
+@keyframes lifelinePulse {
+  0%      { stroke-dashoffset: 1;   opacity: 0.95; }
+  17%     { stroke-dashoffset: 0;   opacity: 0.95; }
+  17.5%   { opacity: 0; }
+  44.4%   { stroke-dashoffset: 1;   opacity: 0; }
+  44.9%   { stroke-dashoffset: 1;   opacity: 0.95; }
+  61.9%   { stroke-dashoffset: 0;   opacity: 0.95; }
+  62.4%   { opacity: 0; }
+  100%    { stroke-dashoffset: 0;   opacity: 0; }
+}
+
 /* --- Entrance sequence ------------------------------------------------------
    Used for the hero on load and for cards as they scroll in. The delay is set
    per element with --enter-delay so one rule covers every stagger. */
@@ -402,7 +450,8 @@ All colors MUST be HSL.
    and everything is shown in its final state rather than merely slowed. */
 @media (prefers-reduced-motion: reduce) {
   .orbit-dot, .orbit-line { animation: none; }
-  .orbit-trail { display: none; }
+  .orbit-trail, .orbit-lifeline { display: none; }
+  .orbit-plane { animation: none; transform: none; }
   .orbit-dot--far { visibility: hidden; }
   .orbit-dot--near { visibility: visible; offset-path: none; cx: 263px; cy: 86px; r: 13px; opacity: 1; }
   .enter { opacity: 1; animation: none; }
