@@ -7,7 +7,7 @@ interface SectionSkeletonProps {
 export function SectionSkeleton({ variant = "content" }: SectionSkeletonProps) {
   if (variant === "hero") {
     return (
-      <div className="py-24 px-6">
+      <div className="py-28 md:py-36 px-6">
         <div className="max-w-4xl mx-auto text-center space-y-6">
           <Skeleton className="h-12 w-3/4 mx-auto" />
           <Skeleton className="h-6 w-1/2 mx-auto" />

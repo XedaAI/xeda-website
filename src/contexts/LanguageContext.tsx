@@ -52,15 +52,16 @@ const translations: Record<SiteLanguage, Record<string, string>> = {
     // How We Work
     "howWeWork.label": "How We Work",
     "howWeWork.title": "From audit to autopilot",
-    "howWeWork.subtitle": "A low-risk path: we prove the value first, build it, then run it for you.",
-    "howWeWork.step1.title": "Audit",
-    "howWeWork.step1.desc": "We map where AI can save you time and money, with real ROI — a fixed-scope sprint, no commitment beyond it.",
-    "howWeWork.step2.title": "Build",
-    "howWeWork.step2.desc": "We build the solution to production, integrated with your existing tools — in weeks, not months.",
-    "howWeWork.step3.title": "Operate",
-    "howWeWork.step3.desc": "We host, monitor, and run it for you, so it keeps working while you focus on your business.",
-    "howWeWork.step4.title": "Scale",
-    "howWeWork.step4.desc": "We extend it as you grow — more automations, more volume, new use cases.",
+    "howWeWork.subtitle": "A low-risk path: we prove the value first, build it, then run it for you. It is also what our name stands for.",
+    // The four steps spell XEDA — the acronym is the delivery model, not a slogan.
+    "howWeWork.step1.title": "eXamine",
+    "howWeWork.step1.desc": "We map how the work actually flows today — the tools, the handoffs, and the hours disappearing into repetitive tasks.",
+    "howWeWork.step2.title": "Evaluate",
+    "howWeWork.step2.desc": "You get an Opportunity Report: what AI can take over, what it saves in hours and euros, and what we would do first. Fixed scope, no commitment beyond it.",
+    "howWeWork.step3.title": "Design",
+    "howWeWork.step3.desc": "We design the system around the tools you already use — CRM, ERP, DATEV, inbox — and build it to production in weeks, not months.",
+    "howWeWork.step4.title": "Activate",
+    "howWeWork.step4.desc": "We deploy it, host it, and monitor it — then extend it as you grow, with more automations and new use cases.",
     // For Businesses
     "forBusinesses.label": "For Businesses",
     "forBusinesses.title": "Adopt AI With Confidence",
@@ -223,6 +224,8 @@ const translations: Record<SiteLanguage, Record<string, string>> = {
     "contact.error.messageRequired": "Message is required",
     "contact.error.messageTooLong": "Message must be less than 2000 characters",
     // Footer
+    // Brand signature from the logo lockup — deliberately not a description.
+    "footer.slogan": "Intelligence surrounding your business.",
     "footer.description": "Germany-based GenAI agency building intelligent solutions for businesses.",
     "footer.careers": "Careers — we're hiring developers →",
     // Blog
@@ -333,15 +336,18 @@ const translations: Record<SiteLanguage, Record<string, string>> = {
     // How We Work
     "howWeWork.label": "Wie wir arbeiten",
     "howWeWork.title": "Vom Audit zum Autopilot",
-    "howWeWork.subtitle": "Ein risikoarmer Weg: Wir beweisen zuerst den Nutzen, bauen es, dann betreiben wir es für Sie.",
-    "howWeWork.step1.title": "Audit",
-    "howWeWork.step1.desc": "Wir zeigen, wo KI Ihnen Zeit und Geld spart — mit echtem ROI. Fester Umfang, keine Verpflichtung darüber hinaus.",
-    "howWeWork.step2.title": "Build",
-    "howWeWork.step2.desc": "Wir bauen die Lösung bis zur Produktion, integriert in Ihre bestehenden Tools — in Wochen, nicht Monaten.",
-    "howWeWork.step3.title": "Betrieb",
-    "howWeWork.step3.desc": "Wir hosten, überwachen und betreiben es für Sie, damit es zuverlässig läuft, während Sie sich auf Ihr Geschäft konzentrieren.",
-    "howWeWork.step4.title": "Skalieren",
-    "howWeWork.step4.desc": "Wir erweitern es mit Ihrem Wachstum — mehr Automatisierung, mehr Volumen, neue Anwendungsfälle.",
+    "howWeWork.subtitle": "Ein risikoarmer Weg: Wir beweisen zuerst den Nutzen, bauen es, dann betreiben wir es für Sie. Dafür steht auch unser Name.",
+    // NOTE: „eXaminieren“ ist bewusst gewählt, damit die vier Schritte XEDA
+    // ergeben. Bitte von einem Muttersprachler prüfen lassen — „analysieren“
+    // wäre natürlicher, bricht aber das Akronym.
+    "howWeWork.step1.title": "eXaminieren",
+    "howWeWork.step1.desc": "Wir erfassen, wie die Arbeit heute tatsächlich läuft — die Tools, die Übergaben und die Stunden, die in wiederkehrenden Aufgaben verschwinden.",
+    "howWeWork.step2.title": "Evaluieren",
+    "howWeWork.step2.desc": "Sie erhalten einen Opportunity-Report: was KI übernehmen kann, was das an Stunden und Euro spart und womit wir anfangen würden. Fester Umfang, keine Verpflichtung darüber hinaus.",
+    "howWeWork.step3.title": "Design",
+    "howWeWork.step3.desc": "Wir entwerfen das System rund um Ihre bestehenden Tools — CRM, ERP, DATEV, Postfach — und bauen es in Wochen bis zur Produktion, nicht in Monaten.",
+    "howWeWork.step4.title": "Aktivieren",
+    "howWeWork.step4.desc": "Wir nehmen es in Betrieb, hosten und überwachen es — und erweitern es mit Ihrem Wachstum um weitere Automatisierungen und Anwendungsfälle.",
     // For Businesses
     "forBusinesses.label": "Für Unternehmen",
     "forBusinesses.title": "KI mit Vertrauen einführen",
@@ -504,6 +510,7 @@ const translations: Record<SiteLanguage, Record<string, string>> = {
     "contact.error.messageRequired": "Nachricht ist erforderlich",
     "contact.error.messageTooLong": "Nachricht muss weniger als 2000 Zeichen haben",
     // Footer
+    "footer.slogan": "Intelligenz, die Ihr Unternehmen umgibt.",
     "footer.description": "Deutsche GenAI-Agentur, die intelligente Lösungen für Unternehmen entwickelt.",
     "footer.careers": "Karriere — wir stellen Entwickler ein →",
     // Blog
