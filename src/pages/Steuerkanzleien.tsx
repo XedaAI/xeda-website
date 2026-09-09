@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { auditBookingUrl } from "@/lib/booking";
 import {
   ArrowRight,
   Clock,
@@ -18,8 +19,9 @@ import SEOHead from "@/components/SEOHead";
 // Campaign landing page for the accounting/tax-firm beachhead ("Where are your 20 hours?").
 // Deliberately single-language (German) and standalone — it's a conversion page for a
 // specific outbound campaign, not part of the multilingual main site.
-const AUDIT_MAILTO =
-  "mailto:contact@xeda.ai?subject=Kostenloses%20KI-Audit%20(Steuerkanzlei)";
+// Free-audit CTA → Saad's 30-min Cal.com booking (BS-5/BS-17). The mailto is kept
+// as a documented fallback should the booking link ever need to change.
+const AUDIT_BOOKING = auditBookingUrl("steuerkanzleien");
 
 const problems = [
   "Belege und Rechnungen werden von Hand für DATEV erfasst.",
@@ -68,7 +70,7 @@ const Steuerkanzleien = () => {
             <span className="font-semibold text-lg text-foreground">xeda.ai</span>
           </Link>
           <Button asChild size="sm">
-            <a href={AUDIT_MAILTO}>Kostenloses Audit</a>
+            <a href={AUDIT_BOOKING} target="_blank" rel="noopener noreferrer">Kostenloses Audit</a>
           </Button>
         </div>
       </header>
@@ -87,7 +89,7 @@ const Steuerkanzleien = () => {
             damit Ihr Team sich auf die Mandanten konzentriert, nicht auf das Abtippen.
           </p>
           <Button asChild size="lg" className="px-8">
-            <a href={AUDIT_MAILTO}>
+            <a href={AUDIT_BOOKING} target="_blank" rel="noopener noreferrer">
               Kostenloses KI-Audit buchen
               <ArrowRight className="ml-2 h-4 w-4" />
             </a>
@@ -164,7 +166,7 @@ const Steuerkanzleien = () => {
             und Geld spart — mit einem klaren Fahrplan und ROI.
           </p>
           <Button asChild size="lg" className="px-8">
-            <a href={AUDIT_MAILTO}>
+            <a href={AUDIT_BOOKING} target="_blank" rel="noopener noreferrer">
               Kostenloses KI-Audit buchen
               <ArrowRight className="ml-2 h-4 w-4" />
             </a>

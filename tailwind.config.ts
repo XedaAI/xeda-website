@@ -23,6 +23,8 @@ export default {
   				DEFAULT: 'hsl(var(--primary))',
   				foreground: 'hsl(var(--primary-foreground))'
   			},
+  			'brand-accent': 'hsl(var(--brand-accent))',
+  			'section-alt': 'hsl(var(--section-alt))',
   			secondary: {
   				DEFAULT: 'hsl(var(--secondary))',
   				foreground: 'hsl(var(--secondary-foreground))'

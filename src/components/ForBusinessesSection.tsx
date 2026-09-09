@@ -1,3 +1,4 @@
+import type React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Building2, Bot, Users, Workflow } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -29,11 +30,11 @@ const ForBusinessesSection = () => {
   ];
 
   return (
-    <section id="for-businesses" className="py-24 bg-background">
+    <section id="for-businesses" className="py-28 md:py-36 bg-background">
       <div className="container mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div>
-            <span className="text-sm font-medium text-primary mb-4 block">{t("forBusinesses.label")}</span>
+            <span className="text-sm font-semibold tracking-wide text-brand-accent mb-4 block">{t("forBusinesses.label")}</span>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
               {t("forBusinesses.title")}
             </h2>
@@ -47,7 +48,7 @@ const ForBusinessesSection = () => {
 
           <div className="grid sm:grid-cols-2 gap-6">
             {offerings.map((offering, index) => (
-              <Card key={index} className="border-border/50 bg-card hover:shadow-md transition-shadow">
+              <Card key={index} className="card-lift enter border-border/50 bg-card hover:shadow-md transition-shadow" style={{ "--enter-delay": `${index * 0.08}s` } as React.CSSProperties}>
                 <CardContent className="p-6">
                   <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                     <offering.icon className="w-5 h-5 text-primary" />

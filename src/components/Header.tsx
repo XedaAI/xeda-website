@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { Menu, Sparkles } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ThemeToggle from "@/components/ThemeToggle";
+import XedaMark from "@/components/XedaMark";
+import XedaWordmark from "@/components/XedaWordmark";
 import LanguageSelector from "@/components/LanguageSelector";
 import { useLanguage } from "@/contexts/LanguageContext";
 import {
@@ -30,9 +32,9 @@ const Header = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-primary" />
-          <span className="font-semibold text-lg text-foreground">xeda.ai</span>
+        <div className="flex items-center gap-2.5">
+          <XedaMark className="h-7 w-auto text-foreground" />
+          <XedaWordmark className="h-5 w-auto text-foreground" />
         </div>
         
         <nav className="hidden md:flex items-center gap-8">
