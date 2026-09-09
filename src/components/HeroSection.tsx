@@ -17,9 +17,13 @@ const HeroSection = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Desaturated rather than recoloured: the photo is from the old purple
+          brand and is the last thing on the page still carrying that hue. The
+          scrim above it is the theme's cool near-black, so once the colour is
+          gone the mesh reads as neutral texture in the site's own palette. */}
       <div
         ref={bgRef}
-        className="absolute top-0 left-0 right-0 h-[140%] bg-cover bg-center will-change-transform"
+        className="absolute top-0 left-0 right-0 h-[140%] bg-cover bg-center will-change-transform grayscale"
         style={{ backgroundImage: `url(${heroBg})` }}
       />
       {/* The hero is always a dark panel (photo + scrim), so its colours are
