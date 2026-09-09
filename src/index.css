@@ -448,6 +448,13 @@ All colors MUST be HSL.
    held down near the noise floor and the sparkle kept bright, so what carries
    the hero is motion — a lit point travelling a barely-there orbit — rather
    than a large dim object. */
+.xeda-orbit--ambient {
+  /* A lap that reads as brisk at logo size is frantic when the sparkle has a
+     1500px ellipse to cover, so the whole clock is slowed here. */
+  --orbit-duration: 17s;
+  transform-style: flat;
+}
+
 .xeda-orbit--ambient .orbit-ring,
 .xeda-orbit--ambient .orbit-line,
 .xeda-orbit--ambient .orbit-lifeline,
@@ -458,41 +465,117 @@ All colors MUST be HSL.
 .xeda-orbit--ambient .orbit-ring     { stroke-width: 1.1px;  opacity: 0.16; }
 .xeda-orbit--ambient .orbit-line     { stroke-width: 1.6px;  opacity: 0.14; }
 .xeda-orbit--ambient .orbit-lifeline { stroke-width: 1.6px;  opacity: 0.4; }
-.xeda-orbit--ambient .orbit-trail--a { stroke-width: 1.4px;  opacity: 0.5; }
-.xeda-orbit--ambient .orbit-trail--b { stroke-width: 1.1px;  opacity: 0.22; }
-.xeda-orbit--ambient .orbit-trail--c { stroke-width: 0.9px;  opacity: 0.1; }
+/* A longer tail than the logo carries. At this size the sparkle is a small
+   bright object on a very large ellipse, and the tail is what tells the eye
+   where it has come from — three dashes, each covering [p-L, p], so the
+   offset has to run from L down to L-1 for the lead edge to stay pinned to
+   the sparkle. */
+.xeda-orbit--ambient .orbit-trail--a {
+  stroke-width: 1.6px;
+  opacity: 0.6;
+  stroke-dasharray: 0.1 0.9;
+  animation: trailAmbientA var(--orbit-duration, 16s) linear infinite;
+}
+
+.xeda-orbit--ambient .orbit-trail--b {
+  stroke-width: 1.2px;
+  opacity: 0.26;
+  stroke-dasharray: 0.22 0.78;
+  animation: trailAmbientB var(--orbit-duration, 16s) linear infinite;
+}
+
+.xeda-orbit--ambient .orbit-trail--c {
+  stroke-width: 1px;
+  opacity: 0.12;
+  stroke-dasharray: 0.38 0.62;
+  animation: trailAmbientC var(--orbit-duration, 16s) linear infinite;
+}
+
+@keyframes trailAmbientA {
+  from { stroke-dashoffset: 0.1; }
+  to   { stroke-dashoffset: -0.9; }
+}
+
+@keyframes trailAmbientB {
+  from { stroke-dashoffset: 0.22; }
+  to   { stroke-dashoffset: -0.78; }
+}
+
+@keyframes trailAmbientC {
+  from { stroke-dashoffset: 0.38; }
+  to   { stroke-dashoffset: -0.62; }
+}
 
 /* The sparkle is the focal point, so it keeps its weight — but at this scale
    the favicon's fine interior detail turns mushy, so it is drawn smaller
    relative to the orbit than it is in the logo. */
-.xeda-orbit--ambient .orbit-dot { opacity: 0.85; }
+.xeda-orbit--ambient .orbit-dot { opacity: 0.95; }
 
 .xeda-orbit--ambient .orbit-dot > g {
-  transform: scale(0.42);
+  transform: scale(0.85);
   transform-box: fill-box;
   transform-origin: center;
+}
+
+/* Drawn only at background scale: at logo size a bloom this wide would just
+   read as a smudge around the mark. */
+.orbit-halo { display: none; }
+.xeda-orbit--ambient .orbit-halo { display: block; }
+
+/* No drop-shadow here, unlike the logo. A filter makes the browser raster the
+   sparkle at its own small user-space size before the viewBox scales it up,
+   so at background scale the shape came out visibly blocky. The drawn halo
+   supplies the glow instead, and orbitDepth already breathes both of them
+   together, so the filter is redundant as well as destructive. */
+.xeda-orbit--ambient .orbit-dot--near,
+.xeda-orbit--ambient .orbit-dot--far {
+  filter: none;
+  animation:
+    orbitTravel var(--orbit-duration, 16s) linear infinite,
+    orbitDepth  var(--orbit-duration, 16s) linear infinite;
 }
 
 .xeda-orbit--ambient .orbit-sparkle-accent {
   stroke-width: 2.4;
 }
 
-/* Feathered edges so the orbit dissolves into the panel instead of being
-   guillotined by the viewport. */
-.xeda-orbit--ambient {
-  -webkit-mask-image: radial-gradient(ellipse 62% 58% at 50% 50%, #000 55%, transparent 100%);
-  mask-image: radial-gradient(ellipse 62% 58% at 50% 50%, #000 55%, transparent 100%);
+/* Feathering is applied to the business line rather than to the mark as a
+   whole. A mask over everything also dims the sparkle — worst exactly when it
+   swings out wide and is at its most visible — whereas the only thing that
+   actually needs softening is the line, which would otherwise stop dead at
+   both ends. The ring is a closed curve and reads fine meeting the viewport. */
+.xeda-orbit--ambient .orbit-line,
+.xeda-orbit--ambient .orbit-lifeline {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 16%, #000 84%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 16%, #000 84%, transparent);
 }
 
 /* The plane is held open here rather than making its full turn. Edge-on, the
    orbit collapses onto the business line — at logo size that is the whole
    trick, but at hero-background scale it empties the panel to a single
-   hairline for seconds at a time. The lockup above the headline still runs
-   the complete rotation, so the dimensional read is kept where it is legible
-   and the background stays a steady orbit for the sparkle to travel. */
+   hairline for seconds at a time. */
 .xeda-orbit--ambient .orbit-plane {
   animation: none;
   transform: none;
+}
+
+/* The dimensional read instead comes from foreshortening the whole mark very
+   slowly, so the orbit reads as a ring being turned in space rather than a
+   flat ellipse — through a range that never approaches edge-on, so it stays
+   open throughout. Transforming the mark rather than the plane also keeps
+   this out of the depth pass in XedaMarkAnimated, which watches the plane.
+
+   Deliberately a 2D squash and not the rotateX it imitates: a 3D transform
+   puts the mark on a composited layer, which is rastered once and then
+   scaled, and at this size that turned the sparkle to mush. scaleY is the
+   same foreshortening and stays vector-sharp. */
+.xeda-orbit--ambient {
+  animation: ambientBreathe 26s ease-in-out infinite;
+}
+
+@keyframes ambientBreathe {
+  0%, 100% { transform: scaleY(1); }
+  50%      { transform: scaleY(0.84); }
 }
 
 /* --- Entrance sequence ------------------------------------------------------
@@ -538,6 +621,12 @@ All colors MUST be HSL.
     opacity: 1;
   }
   .orbit-sparkle-accent { animation: none; opacity: 1; }
+  /* The ambient variant's own rules outrank the single-class resets above, so
+     it has to be stood down by name. */
+  .xeda-orbit--ambient,
+  .xeda-orbit--ambient .orbit-dot--near,
+  .xeda-orbit--ambient .orbit-dot--far { animation: none; }
+  .xeda-orbit--ambient { transform: none; }
   .enter { opacity: 1; animation: none; }
   .card-lift { transition: none; }
   .card-lift:hover { transform: none; }

@@ -9,6 +9,7 @@ import heroBg from "@/assets/hero-bg.jpg";
 const HeroSection = () => {
   const { t } = useLanguage();
   const bgRef = useParallax<HTMLDivElement>(0.3);
+  const orbitRef = useParallax<HTMLDivElement>(-0.12);
 
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -29,33 +30,38 @@ const HeroSection = () => {
       {/* The mark drawn at full-viewport scale behind the content. Weights and
           opacities come from the --ambient variant rather than a blanket
           opacity here, so the orbit stays a hairline and the sparkle keeps its
-          glow — see index.css. */}
-      <div className="absolute inset-0 z-[1] flex items-center justify-center pointer-events-none overflow-hidden">
-        {/* Sized off whichever viewport axis is longer: width alone leaves the
-            orbit stranded in the middle of a tall phone screen. */}
-        <XedaMarkAnimated className="xeda-orbit--ambient w-[clamp(640px,max(92vw,108vh),1400px)] h-auto text-[hsl(220_8%_96%)]" />
+          glow — see index.css. The negative parallax speed makes it lag the
+          page rather than outrun it, so it sits behind the content in depth. */}
+      <div
+        ref={orbitRef}
+        className="absolute inset-0 z-[1] flex items-center justify-center pointer-events-none overflow-hidden"
+      >
+        {/* Height is the binding constraint: the mark is landscape, so sizing
+            it off width alone pushed the ellipse taller than the viewport and
+            the sparkle spent much of each lap out of sight. Capped against
+            both axes, with a floor so it still has presence on a phone, where
+            it bleeds past the sides instead. */}
+        <XedaMarkAnimated className="xeda-orbit--ambient w-[clamp(560px,min(96vw,100vh),1200px)] h-auto text-[hsl(220_8%_96%)]" />
       </div>
 
       <div className="relative z-10 container mx-auto px-6 pt-28 pb-16 text-center max-w-4xl">
-        <XedaMarkAnimated className="h-28 md:h-36 w-auto mx-auto mb-10 text-[hsl(220_8%_96%)]" />
-
-        <div className="enter [--enter-delay:1.25s] inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[hsl(220_8%_96%/0.07)] border border-[hsl(220_8%_96%/0.20)] mb-8">
+        <div className="enter [--enter-delay:0.25s] inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[hsl(220_8%_96%/0.07)] border border-[hsl(220_8%_96%/0.20)] mb-8">
           <span className="w-2 h-2 rounded-full bg-[hsl(220_8%_88%)] animate-pulse" />
           <span className="text-sm text-[hsl(220_8%_96%/0.86)]">{t("hero.badge")}</span>
         </div>
 
-        <h1 className="enter [--enter-delay:1.4s] text-[2.6rem] md:text-6xl lg:text-[4.6rem] font-semibold tracking-[-0.03em] text-[hsl(220_8%_97%)] mb-7 leading-[1.06] text-balance">
+        <h1 className="enter [--enter-delay:0.4s] text-[2.6rem] md:text-6xl lg:text-[4.6rem] font-semibold tracking-[-0.03em] text-[hsl(220_8%_97%)] mb-7 leading-[1.06] text-balance">
           {t("hero.title")}
           {/* Monochrome: the highlight steps down in tone rather than changing
               hue, so emphasis comes from contrast instead of colour. */}
           <span className="text-[hsl(220_7%_66%)]"> {t("hero.titleHighlight")}</span>
         </h1>
 
-        <p className="enter [--enter-delay:1.55s] text-lg md:text-xl text-[hsl(220_7%_88%/0.74)] mb-12 max-w-[38rem] mx-auto leading-[1.65]">
+        <p className="enter [--enter-delay:0.55s] text-lg md:text-xl text-[hsl(220_7%_88%/0.74)] mb-12 max-w-[38rem] mx-auto leading-[1.65]">
           {t("hero.subtitle")}
         </p>
         
-        <div className="enter [--enter-delay:1.7s] flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div className="enter [--enter-delay:0.7s] flex flex-col sm:flex-row items-center justify-center gap-4">
           {/* The hero is a fixed dark panel, so the CTA is fixed too: in light
               mode --primary is near-black, which would sit dark-on-dark here. */}
           <Button
@@ -79,7 +85,7 @@ const HeroSection = () => {
         </div>
       </div>
 
-      <div className="enter [--enter-delay:2.1s] absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+      <div className="enter [--enter-delay:1.05s] absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
         <div className="w-6 h-10 rounded-full border-2 border-[hsl(220_8%_96%/0.30)] flex items-start justify-center pt-2">
           <div className="w-1 h-2 bg-[hsl(220_8%_96%/0.5)] rounded-full" />
         </div>

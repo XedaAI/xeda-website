@@ -132,6 +132,14 @@ const XedaMarkAnimated = ({ className = "" }: { className?: string }) => {
           <stop offset="55%" stopColor="currentColor" stopOpacity="0.88" />
           <stop offset="100%" stopColor="currentColor" stopOpacity="0.55" />
         </radialGradient>
+
+        {/* The bloom around the sparkle. A drop-shadow spreads too thin to
+            read as light at background scale, so the glow is drawn. */}
+        <radialGradient id={`${gradientId}-halo`}>
+          <stop offset="0%" stopColor="currentColor" stopOpacity="0.5" />
+          <stop offset="40%" stopColor="currentColor" stopOpacity="0.14" />
+          <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
+        </radialGradient>
       </defs>
 
       {/* Never painted. This is the geometry the depth maths measures against,
@@ -172,7 +180,11 @@ const XedaMarkAnimated = ({ className = "" }: { className?: string }) => {
         ))}
 
         {/* XEDA on the far side — painted before the line, so the line covers it */}
-        <OrbitSparkle variant="far" gradientId={`${gradientId}-shine`} />
+        <OrbitSparkle
+          variant="far"
+          shineId={`${gradientId}-shine`}
+          haloId={`${gradientId}-halo`}
+        />
       </g>
 
       {/* the business */}
@@ -201,7 +213,11 @@ const XedaMarkAnimated = ({ className = "" }: { className?: string }) => {
       {/* XEDA on the near side — same plane, painted after the line so it
           passes in front */}
       <g className="orbit-plane">
-        <OrbitSparkle variant="near" gradientId={`${gradientId}-shine`} />
+        <OrbitSparkle
+          variant="near"
+          shineId={`${gradientId}-shine`}
+          haloId={`${gradientId}-halo`}
+        />
       </g>
     </svg>
   );
@@ -217,16 +233,21 @@ const SPARKLE_MAIN_D =
 
 const OrbitSparkle = ({
   variant,
-  gradientId,
+  shineId,
+  haloId,
 }: {
   variant: "near" | "far";
-  gradientId: string;
+  shineId: string;
+  haloId: string;
 }) => (
   <g className={`orbit-dot orbit-dot--${variant}`} stroke="none">
+    {/* Sits outside the sparkle's own transform group so the two can be sized
+        independently — the bloom wants to be much larger than the shape. */}
+    <circle className="orbit-halo" r="28" fill={`url(#${haloId})`} />
     <g transform="translate(-12 -12) scale(1.3)">
       <path
         d={SPARKLE_MAIN_D}
-        fill={`url(#${gradientId})`}
+        fill={`url(#${shineId})`}
         stroke="currentColor"
         strokeOpacity="0.4"
         strokeWidth="0.7"
