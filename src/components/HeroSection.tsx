@@ -3,7 +3,6 @@ import { ArrowRight } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { auditBookingUrl } from "@/lib/booking";
 import { useParallax } from "@/hooks/useParallax";
-import AIRobot from "@/components/AIRobot";
 import XedaMarkAnimated from "@/components/XedaMarkAnimated";
 import heroBg from "@/assets/hero-bg.jpg";
 
@@ -27,9 +26,11 @@ const HeroSection = () => {
           themes, which previously flipped this scrim light in dark mode. */}
       <div className="absolute inset-0 bg-gradient-to-b from-[hsl(220_12%_5%/0.90)] via-[hsl(220_12%_6%/0.84)] to-[hsl(220_14%_3%/0.96)]" />
 
-      {/* Robot fills the first viewport behind the content; bursts apart on scroll-down */}
+      {/* The animated mark, blown up large and faded, fills the first viewport
+          behind the content — the same living-orbit brand mark as the small
+          lockup below, just oversized into a quiet background accent. */}
       <div className="absolute inset-0 z-[1] flex items-center justify-center pointer-events-none overflow-hidden">
-        <AIRobot className="opacity-20" />
+        <XedaMarkAnimated className="w-[clamp(480px,78vw,1100px)] h-auto opacity-[0.16] text-[hsl(220_8%_96%)]" />
       </div>
 
       <div className="relative z-10 container mx-auto px-6 pt-28 pb-16 text-center max-w-4xl">

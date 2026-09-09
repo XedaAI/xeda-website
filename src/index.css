@@ -235,15 +235,16 @@ All colors MUST be HSL.
   to   { offset-distance: 100%; }
 }
 
-/* Radius and opacity are keyed to the same clock as the travel, so the dot is
-   biggest and brightest at the front (25%) and smallest and dimmest at the
-   back (75%). At 0% and 50% — the hand-over points — both copies match. */
+/* Scale and opacity are keyed to the same clock as the travel, so the
+   sparkle is biggest and brightest at the front (25%) and smallest and
+   dimmest at the back (75%). At 0% and 50% — the hand-over points — both
+   copies match. Scale (not r) because XEDA is a sparkle path, not a circle. */
 @keyframes orbitDepth {
-  0%     { r: 13px;   opacity: 0.9; }
-  22.4%  { r: 16px;   opacity: 1; }
-  44.9%  { r: 13px;   opacity: 0.9; }
-  72.4%  { r: 11.5px; opacity: 0.7; }
-  100%   { r: 13px;   opacity: 0.9; }
+  0%     { transform: scale(1);      opacity: 0.9; }
+  22.4%  { transform: scale(1.23);   opacity: 1; }
+  44.9%  { transform: scale(1);      opacity: 0.9; }
+  72.4%  { transform: scale(0.885);  opacity: 0.7; }
+  100%   { transform: scale(1);      opacity: 0.9; }
 }
 
 /* Which copy is on screen is decided per frame in XedaMarkAnimated, not here:
@@ -274,6 +275,8 @@ All colors MUST be HSL.
 .orbit-dot {
   offset-path: path("M 258.50 147.19 A 99 105 10 0 1 63.50 112.81 A 99 105 10 0 1 258.50 147.19");
   offset-rotate: 0deg;
+  transform-box: fill-box;
+  transform-origin: center;
   animation:
     orbitTravel var(--orbit-duration, 16s) linear infinite,
     orbitDepth  var(--orbit-duration, 16s) linear infinite;
@@ -299,7 +302,7 @@ All colors MUST be HSL.
   .orbit-dot { animation: none; visibility: hidden; }
   .orbit-trail, .orbit-lifeline { display: none; }
   .orbit-plane { animation: none; }
-  .orbit-dot--near { visibility: visible; cx: 263px; cy: 86px; }
+  .orbit-dot--near { visibility: visible; transform: translate(263px, 86px); }
   .orbit-line { animation: none; }
 }
 
@@ -360,6 +363,20 @@ All colors MUST be HSL.
   44.9%  { filter: drop-shadow(0 0 6px currentColor); }
   72.4%  { filter: drop-shadow(0 0 4px currentColor); }
   100%   { filter: drop-shadow(0 0 6px currentColor); }
+}
+
+/* The two companion sparkles get their own faint, offset twinkle — a small
+   bit of "some graphics" flourish independent of the main travel/depth
+   clock, so the two never fall into lockstep. */
+.orbit-sparkle-accent {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sparkleTwinkle 2.6s ease-in-out infinite;
+}
+
+@keyframes sparkleTwinkle {
+  0%, 100% { opacity: 0.55; transform: scale(0.85); }
+  50%      { opacity: 1;    transform: scale(1.15); }
 }
 
 
@@ -454,33 +471,14 @@ All colors MUST be HSL.
   .orbit-trail, .orbit-lifeline { display: none; }
   .orbit-plane { animation: none; transform: none; }
   .orbit-dot--far { visibility: hidden; }
-  .orbit-dot--near { visibility: visible; offset-path: none; cx: 263px; cy: 86px; r: 13px; opacity: 1; }
+  .orbit-dot--near {
+    visibility: visible;
+    offset-path: none;
+    transform: translate(263px, 86px) scale(1);
+    opacity: 1;
+  }
+  .orbit-sparkle-accent { animation: none; opacity: 1; }
   .enter { opacity: 1; animation: none; }
   .card-lift { transition: none; }
   .card-lift:hover { transform: none; }
-}
-
-/* --- AI robot: subtle idle float only (decorative, faint hero background) --- */
-@keyframes robotFloat {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-}
-
-.robot-part {
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
-.robot-float {
-  animation: robotFloat 5s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .robot-float {
-    animation: none;
-  }
 }

@@ -1,10 +1,16 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 
 // The mark as a living orbit, per the brand story:
 //
 //   the ring is the orbit    — XEDA's intelligence, circling the business
-//   the dot is XEDA          — revolving continuously around it
+//   the dot is XEDA, a sparkle — revolving continuously around it
 //   the line is the business — held steady, with a pulse always running
+//
+// XEDA is drawn as the same four-point sparkle as the shipped favicon (two
+// small companion sparkles included), so the mark and the browser tab agree
+// on what "XEDA" looks like. It carries a radial-gradient shine so it reads
+// as a lit, faceted glint rather than a flat dot — depth still comes from
+// draw order (see below), the gradient just gives that dot some shimmer.
 //
 // The orbit plane makes a FULL rotation about the business line's own axis, so
 // twice per turn it passes edge-on and momentarily aligns with the line.
@@ -30,13 +36,14 @@ import { useEffect, useRef } from "react";
 // unbroken path to travel.
 const XedaMarkAnimated = ({ className = "" }: { className?: string }) => {
   const svgRef = useRef<SVGSVGElement>(null);
+  const gradientId = useId();
 
   useEffect(() => {
     const svg = svgRef.current;
     if (!svg) return;
 
-    const near = svg.querySelector<SVGCircleElement>(".orbit-dot--near");
-    const far = svg.querySelector<SVGCircleElement>(".orbit-dot--far");
+    const near = svg.querySelector<SVGGElement>(".orbit-dot--near");
+    const far = svg.querySelector<SVGGElement>(".orbit-dot--far");
     const plane = svg.querySelector<SVGGElement>(".orbit-plane");
     const probe = svg.querySelector<SVGPathElement>(".orbit-probe");
     if (!near || !far || !plane || !probe) return;
@@ -107,6 +114,16 @@ const XedaMarkAnimated = ({ className = "" }: { className?: string }) => {
       role="presentation"
       aria-hidden="true"
     >
+      <defs>
+        {/* Off-centre highlight so the sparkle reads as a lit, faceted glint
+            rather than a flat currentColor shape. */}
+        <radialGradient id={`${gradientId}-shine`} cx="32%" cy="28%" r="80%">
+          <stop offset="0%" stopColor="currentColor" stopOpacity="1" />
+          <stop offset="55%" stopColor="currentColor" stopOpacity="0.88" />
+          <stop offset="100%" stopColor="currentColor" stopOpacity="0.55" />
+        </radialGradient>
+      </defs>
+
       {/* Never painted. This is the geometry the depth maths measures against,
           kept as the same path string the dot travels so the two can never
           disagree. */}
@@ -145,7 +162,7 @@ const XedaMarkAnimated = ({ className = "" }: { className?: string }) => {
         ))}
 
         {/* XEDA on the far side — painted before the line, so the line covers it */}
-        <circle className="orbit-dot orbit-dot--far" r="13" fill="currentColor" stroke="none" />
+        <OrbitSparkle variant="far" gradientId={`${gradientId}-shine`} />
       </g>
 
       {/* the business */}
@@ -174,10 +191,51 @@ const XedaMarkAnimated = ({ className = "" }: { className?: string }) => {
       {/* XEDA on the near side — same plane, painted after the line so it
           passes in front */}
       <g className="orbit-plane">
-        <circle className="orbit-dot orbit-dot--near" r="13" fill="currentColor" stroke="none" />
+        <OrbitSparkle variant="near" gradientId={`${gradientId}-shine`} />
       </g>
     </svg>
   );
 };
+
+// XEDA itself: the shipped favicon's four-point sparkle plus its two
+// companion accents, traced at the size the orbiting dot used to be. Scale
+// and translate are baked into the transform below so the shape sits centred
+// on its own origin — the offset-path travel and the depth scale/opacity
+// keyframes both pivot around that point.
+const SPARKLE_MAIN_D =
+  "M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z";
+
+const OrbitSparkle = ({
+  variant,
+  gradientId,
+}: {
+  variant: "near" | "far";
+  gradientId: string;
+}) => (
+  <g className={`orbit-dot orbit-dot--${variant}`} stroke="none">
+    <g transform="translate(-12 -12) scale(1.3)">
+      <path
+        d={SPARKLE_MAIN_D}
+        fill={`url(#${gradientId})`}
+        stroke="currentColor"
+        strokeOpacity="0.4"
+        strokeWidth="0.7"
+      />
+      {/* companion sparkles — same little "some graphics" flourish as the
+          favicon, twinkling on their own faint pulse */}
+      <g
+        className="orbit-sparkle-accent"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+      >
+        <path d="M20 3v4" />
+        <path d="M22 5h-4" />
+        <path d="M4 17v2" />
+        <path d="M5 18H3" />
+      </g>
+    </g>
+  </g>
+);
 
 export default XedaMarkAnimated;
