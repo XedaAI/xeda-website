@@ -31,62 +31,85 @@ const HeroSection = () => {
           themes, which previously flipped this scrim light in dark mode. */}
       <div className="absolute inset-0 bg-gradient-to-b from-[hsl(220_12%_5%/0.90)] via-[hsl(220_12%_6%/0.84)] to-[hsl(220_14%_3%/0.96)]" />
 
-      {/* The mark drawn at full-viewport scale behind the content. Weights and
-          opacities come from the --ambient variant rather than a blanket
-          opacity here, so the orbit stays a hairline and the sparkle keeps its
-          glow — see index.css. The negative parallax speed makes it lag the
-          page rather than outrun it, so it sits behind the content in depth. */}
+      {/* Weights and opacities come from the --ambient variant rather than a
+          blanket opacity here, so the orbit stays a hairline and the comet
+          keeps its glow — see index.css. The negative parallax speed makes it
+          lag the page rather than outrun it, so it sits behind the content in
+          depth.
+
+          From lg the panel splits: the copy takes a column on the left and the
+          orbit gets the right side to itself, running off the edge so it reads
+          as a system continuing past the frame rather than a logo parked in a
+          box. Below lg there is no room for two columns, so it goes back to
+          sitting centred behind centred copy. Offsets rather than transforms:
+          the parallax hook owns this element's transform. */}
       <div
         ref={orbitRef}
-        className="absolute inset-0 z-[1] flex items-center justify-center pointer-events-none overflow-hidden"
+        className="absolute inset-0 lg:left-1/2 lg:-right-[16%] z-[1] flex items-center justify-center pointer-events-none overflow-hidden"
       >
-        {/* The system is centred on the panel — the business line is a
-            horizon through the middle of the copy and the rings orbit it —
-            and sized off width alone. Its viewBox is drawn at 1440 wide, so
-            on a desktop viewport one unit is one pixel. The floor keeps it a
-            real object on a phone, where the outer rings bleed past the
-            sides. */}
+        {/* Sized off width alone. Its viewBox is drawn at 1440 wide, so on a
+            desktop viewport one unit is one pixel. The floor keeps it a real
+            object on a phone, where the outer rings bleed past the sides. */}
         <XedaMarkAnimated className="xeda-orbit--ambient w-full min-w-[560px] max-w-[1920px] h-auto text-[hsl(220_8%_96%)]" />
       </div>
 
-      <div className="relative z-10 container mx-auto px-6 pt-28 pb-16 text-center max-w-4xl">
-        <div className="enter [--enter-delay:0.25s] inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[hsl(220_8%_96%/0.07)] border border-[hsl(220_8%_96%/0.20)] mb-8">
-          <span className="w-2 h-2 rounded-full bg-[hsl(220_8%_88%)] animate-pulse" />
-          <span className="text-sm text-[hsl(220_8%_96%/0.86)]">{t("hero.badge")}</span>
-        </div>
+      {/* The narrow cap applies only below lg. At lg the copy is left-aligned,
+          so it has to start on the same line as the header's brand — which
+          means letting the shared container govern its width rather than
+          overriding it here. */}
+      <div className="relative z-10 container mx-auto px-6 pt-28 pb-16 text-center max-lg:max-w-4xl lg:text-left">
+        {/* The copy is held to a column narrow enough to clear the orbit
+            beside it; below lg it fills the container and re-centres. */}
+        <div className="lg:max-w-[32rem] xl:max-w-[36rem]">
+          <div className="enter [--enter-delay:0.25s] inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[hsl(220_8%_96%/0.07)] border border-[hsl(220_8%_96%/0.20)] mb-8">
+            <span className="w-2 h-2 rounded-full bg-[hsl(220_8%_88%)] animate-pulse" />
+            <span className="text-sm text-[hsl(220_8%_96%/0.86)]">
+              {t("hero.badge")}
+            </span>
+          </div>
 
-        <h1 className="enter [--enter-delay:0.4s] text-[2.6rem] md:text-6xl lg:text-[4.6rem] font-semibold tracking-[-0.03em] text-[hsl(220_8%_97%)] mb-7 leading-[1.06] text-balance">
-          {t("hero.title")}
-          {/* Monochrome: the highlight steps down in tone rather than changing
+          {/* Steps down at lg, where the headline moves into the narrower
+            column, then back up at xl once that column has room again. */}
+          <h1 className="enter [--enter-delay:0.4s] text-[2.6rem] md:text-6xl lg:text-[3.3rem] xl:text-[3.9rem] font-semibold tracking-[-0.03em] text-[hsl(220_8%_97%)] mb-7 leading-[1.06] text-balance">
+            {t("hero.title")}
+            {/* Monochrome: the highlight steps down in tone rather than changing
               hue, so emphasis comes from contrast instead of colour. */}
-          <span className="text-[hsl(220_7%_66%)]"> {t("hero.titleHighlight")}</span>
-        </h1>
+            <span className="text-[hsl(220_7%_66%)]">
+              {" "}
+              {t("hero.titleHighlight")}
+            </span>
+          </h1>
 
-        <p className="enter [--enter-delay:0.55s] text-lg md:text-xl text-[hsl(220_7%_88%/0.74)] mb-12 max-w-[38rem] mx-auto leading-[1.65]">
-          {t("hero.subtitle")}
-        </p>
-        
-        <div className="enter [--enter-delay:0.7s] flex flex-col sm:flex-row items-center justify-center gap-4">
-          {/* The hero is a fixed dark panel, so the CTA is fixed too: in light
+          <p className="enter [--enter-delay:0.55s] text-lg md:text-xl text-[hsl(220_7%_88%/0.74)] mb-12 max-w-[38rem] mx-auto lg:mx-0 leading-[1.65]">
+            {t("hero.subtitle")}
+          </p>
+
+          <div className="enter [--enter-delay:0.7s] flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
+            {/* The hero is a fixed dark panel, so the CTA is fixed too: in light
               mode --primary is near-black, which would sit dark-on-dark here. */}
-          <Button
-            size="lg"
-            asChild
-            className="px-8 bg-[hsl(220_8%_96%)] text-[hsl(220_12%_8%)] hover:bg-[hsl(0_0%_100%)]"
-          >
-            <a href={auditBookingUrl("hero")} target="_blank" rel="noopener noreferrer">
-              {t("hero.cta")}
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </a>
-          </Button>
-          <Button 
-            variant="outline" 
-            size="lg"
-            onClick={() => scrollToSection("what-we-do")}
-            className="px-8 bg-transparent border-[hsl(220_8%_96%/0.28)] text-[hsl(220_8%_96%)] hover:bg-[hsl(220_8%_96%/0.10)] hover:text-[hsl(220_8%_99%)]"
-          >
-            {t("hero.secondary")}
-          </Button>
+            <Button
+              size="lg"
+              asChild
+              className="px-8 bg-[hsl(220_8%_96%)] text-[hsl(220_12%_8%)] hover:bg-[hsl(0_0%_100%)]"
+            >
+              <a
+                href={auditBookingUrl("hero")}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {t("hero.cta")}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </a>
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => scrollToSection("what-we-do")}
+              className="px-8 bg-transparent border-[hsl(220_8%_96%/0.28)] text-[hsl(220_8%_96%)] hover:bg-[hsl(220_8%_96%/0.10)] hover:text-[hsl(220_8%_99%)]"
+            >
+              {t("hero.secondary")}
+            </Button>
+          </div>
         </div>
       </div>
 
