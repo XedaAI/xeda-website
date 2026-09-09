@@ -1,0 +1,50 @@
+name: Deploy Supabase
+
+# Closes the gap that caused BS-2: subscribe-newsletter sat merged in main for
+# six weeks while production 404'd, because nothing deployed edge functions or
+# migrations. Cloudflare Pages auto-deploys the frontend on every push; this
+# does the same for the backend so the two can never drift again.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "supabase/**"
+      - ".github/workflows/supabase.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: supabase-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy functions and migrations
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Link project
+        run: supabase link --project-ref "$PROJECT_REF"
+
+      # Functions first, migrations second. The hardening migration drops the
+      # public INSERT policies on the lead tables, so the service-role functions
+      # that replace those writes must already exist -- otherwise the forms are
+      # broken for the window in between.
+      # --use-api bundles server-side. It is the path we validated by hand, and it
+      # avoids depending on Docker or on local file-descriptor limits.
+      - name: Deploy edge functions
+        run: supabase functions deploy --project-ref "$PROJECT_REF" --use-api
+
+      # -p explicitly: SUPABASE_DB_PASSWORD is documented for `link`, not `push`.
+      - name: Push migrations
+        run: supabase db push --linked -p "$SUPABASE_DB_PASSWORD"

@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
+import XedaMark from "@/components/XedaMark";
+import XedaWordmark from "@/components/XedaWordmark";
 
 const Footer = () => {
   const { toast } = useToast();
@@ -43,10 +45,9 @@ const Footer = () => {
           description: t("footer.newsletter.alreadyOnList"),
         });
       } else {
-        supabase.functions.invoke("sync-mailchimp", {
-          body: { email: normalizedEmail },
-        }).catch((err) => console.error("Mailchimp sync error:", err));
-
+        // Mailchimp sync now happens server-side inside subscribe-newsletter.
+        // It used to be a second invoke from here, which left the sync endpoint
+        // open to anyone who read the bundle.
         toast({
           title: t("footer.newsletter.subscribed"),
           description: t("footer.newsletter.thankYou"),
@@ -71,9 +72,14 @@ const Footer = () => {
         <div className="grid md:grid-cols-3 gap-8 mb-8">
           {/* Brand & Social */}
           <div>
-            <span className="font-semibold text-lg text-foreground">xeda.ai</span>
-            <p className="text-sm text-muted-foreground mt-2 mb-4">
-              {t("footer.description")}
+            <div className="flex items-center gap-2.5">
+              <XedaMark className="h-7 w-auto text-foreground" />
+              <XedaWordmark className="h-5 w-auto text-foreground" />
+            </div>
+            {/* Brand signature — the mark is a ring that surrounds a centre,
+                so this line and the logo are one idea. */}
+            <p className="text-sm text-foreground/70 mt-3 mb-4 italic">
+              {t("footer.slogan")}
             </p>
             <Link
               to="/careers"

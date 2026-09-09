@@ -2,6 +2,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Check, CalendarClock, PhoneCall, CalendarCheck } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { auditBookingUrl } from "@/lib/booking";
 import { cn } from "@/lib/utils";
 
 // Real products built and operated by xeda.ai. No fabricated clients or metrics —
@@ -116,7 +117,7 @@ const CaseStudiesSection = () => {
           <Badge variant="outline" className="mb-4">
             What We've Built
           </Badge>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <h2 className="text-3xl md:text-5xl font-semibold tracking-[-0.022em] text-foreground mb-5 text-balance">
             We don't just advise on AI — we ship it
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -133,7 +134,9 @@ const CaseStudiesSection = () => {
 
         <div className="text-center mt-12">
           <a
-            href="#contact"
+            href={auditBookingUrl("case-studies")}
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-medium transition-colors group"
           >
             Want something like this built for your business? Book a free audit

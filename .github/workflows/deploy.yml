@@ -1,11 +1,11 @@
 name: Deploy to GitHub Pages
 
-# Builds and publishes the site to GitHub Pages on every push to main.
-# Free hosting, no third-party account needed. URL: https://xedaai.github.io/xeda-website/
+# Manual-only fallback. Production is Cloudflare Pages (xeda.ai) — see README.
+# Kept so we can republish to https://xedaai.github.io/xeda-website/ if Cloudflare
+# is ever unavailable; the automatic push trigger is deliberately removed so we
+# don't serve two copies of the site from two hosts.
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:

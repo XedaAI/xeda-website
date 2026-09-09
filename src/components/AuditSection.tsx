@@ -1,18 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { Check, ArrowRight, Compass } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { auditBookingUrl } from "@/lib/booking";
 
 const AuditSection = () => {
   const { t } = useLanguage();
 
   const points = ["audit.point1", "audit.point2", "audit.point3", "audit.point4"];
 
-  const scrollToContact = () => {
-    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
-  };
-
   return (
-    <section id="audit" className="py-24 bg-background">
+    <section id="audit" className="py-28 md:py-36 section-ink">
       <div className="container mx-auto px-6">
         <div className="max-w-4xl mx-auto rounded-3xl border border-primary/20 bg-primary/5 p-8 md:p-12">
           <div className="flex flex-col md:flex-row md:items-start gap-8">
@@ -21,10 +18,10 @@ const AuditSection = () => {
             </div>
 
             <div className="flex-1">
-              <span className="text-sm font-medium text-primary mb-3 block">
+              <span className="text-sm font-semibold tracking-wide text-brand-accent mb-3 block">
                 {t("audit.label")}
               </span>
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              <h2 className="text-3xl md:text-5xl font-semibold tracking-[-0.022em] text-foreground mb-5 text-balance">
                 {t("audit.title")}
               </h2>
               <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
@@ -40,9 +37,11 @@ const AuditSection = () => {
                 ))}
               </ul>
 
-              <Button size="lg" onClick={scrollToContact} className="px-8">
-                {t("audit.cta")}
-                <ArrowRight className="ml-2 h-4 w-4" />
+              <Button size="lg" asChild className="px-8">
+                <a href={auditBookingUrl("audit-section")} target="_blank" rel="noopener noreferrer">
+                  {t("audit.cta")}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </a>
               </Button>
             </div>
           </div>
