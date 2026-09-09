@@ -34,14 +34,15 @@ const HeroSection = () => {
           page rather than outrun it, so it sits behind the content in depth. */}
       <div
         ref={orbitRef}
-        className="absolute inset-0 z-[1] flex items-center justify-center pointer-events-none overflow-hidden"
+        className="absolute inset-0 z-[1] flex items-end justify-center pointer-events-none overflow-hidden"
       >
-        {/* Height is the binding constraint: the mark is landscape, so sizing
-            it off width alone pushed the ellipse taller than the viewport and
-            the sparkle spent much of each lap out of sight. Capped against
-            both axes, with a floor so it still has presence on a phone, where
-            it bleeds past the sides instead. */}
-        <XedaMarkAnimated className="xeda-orbit--ambient w-[clamp(560px,min(96vw,100vh),1200px)] h-auto text-[hsl(220_8%_96%)]" />
+        {/* The scene is composed low in the panel — the business line is a
+            horizon below the copy and the rings orbit it — so it is anchored
+            to the bottom and sized off width alone. Its viewBox is drawn at
+            1440 wide, so on a desktop viewport one unit is one pixel. The
+            floor keeps it a real object on a phone, where the outer rings
+            bleed past the sides. */}
+        <XedaMarkAnimated className="xeda-orbit--ambient w-full min-w-[560px] max-w-[1920px] h-auto text-[hsl(220_8%_96%)]" />
       </div>
 
       <div className="relative z-10 container mx-auto px-6 pt-28 pb-16 text-center max-w-4xl">
