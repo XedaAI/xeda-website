@@ -55,6 +55,16 @@ const XedaMarkAnimated = ({ className = "" }: { className?: string }) => {
       return;
     }
 
+    // A held-open plane (the ambient hero variant) never reverses its near and
+    // far halves, so there is nothing to track per frame. Park the sparkle
+    // behind the line — at that variant's hairline weight the occlusion is a
+    // couple of pixels — and skip the loop entirely.
+    if (plane.getAnimations().length === 0) {
+      near.style.visibility = "hidden";
+      far.style.visibility = "visible";
+      return;
+    }
+
     const AXIS_Y = 146; // the business line, in viewBox units
     const pathLen = probe.getTotalLength();
     let frame = 0;

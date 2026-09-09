@@ -26,14 +26,14 @@ const HeroSection = () => {
           themes, which previously flipped this scrim light in dark mode. */}
       <div className="absolute inset-0 bg-gradient-to-b from-[hsl(220_12%_5%/0.90)] via-[hsl(220_12%_6%/0.84)] to-[hsl(220_14%_3%/0.96)]" />
 
-      {/* The animated mark, blown up large, fills the first viewport behind
-          the content — the same living-orbit brand mark as the small lockup
-          below, just oversized into a background accent. A blurred, dimmer
-          copy sits behind the crisp one as an ambient glow, so the shape
-          reads even where it overlaps the headline text. */}
+      {/* The mark drawn at full-viewport scale behind the content. Weights and
+          opacities come from the --ambient variant rather than a blanket
+          opacity here, so the orbit stays a hairline and the sparkle keeps its
+          glow — see index.css. */}
       <div className="absolute inset-0 z-[1] flex items-center justify-center pointer-events-none overflow-hidden">
-        <XedaMarkAnimated className="absolute w-[clamp(560px,86vw,1300px)] h-auto opacity-40 blur-2xl text-[hsl(220_8%_96%)]" />
-        <XedaMarkAnimated className="relative w-[clamp(560px,86vw,1300px)] h-auto opacity-[0.4] text-[hsl(220_8%_96%)]" />
+        {/* Sized off whichever viewport axis is longer: width alone leaves the
+            orbit stranded in the middle of a tall phone screen. */}
+        <XedaMarkAnimated className="xeda-orbit--ambient w-[clamp(640px,max(92vw,108vh),1400px)] h-auto text-[hsl(220_8%_96%)]" />
       </div>
 
       <div className="relative z-10 container mx-auto px-6 pt-28 pb-16 text-center max-w-4xl">

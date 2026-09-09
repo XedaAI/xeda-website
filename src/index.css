@@ -435,6 +435,66 @@ All colors MUST be HSL.
   to   { stroke-dashoffset: -0.25; }
 }
 
+/* --- Ambient variant: the mark drawn at hero-background scale ---------------
+   Strokes in an SVG scale with the drawing. At logo size the mark's 9-unit
+   stroke is a confident line; blown up behind the hero it renders ~35px wide
+   and the mark collapses into grey bands lying across the headline. So here
+   the strokes are pinned to screen pixels instead — the orbit stays a fine
+   line however large it is drawn.
+
+   The second half of this is hierarchy. One flat opacity over the whole mark
+   makes the static ring compete with the travelling sparkle, and a big static
+   shape behind text always loses that fight badly. The structure is therefore
+   held down near the noise floor and the sparkle kept bright, so what carries
+   the hero is motion — a lit point travelling a barely-there orbit — rather
+   than a large dim object. */
+.xeda-orbit--ambient .orbit-ring,
+.xeda-orbit--ambient .orbit-line,
+.xeda-orbit--ambient .orbit-lifeline,
+.xeda-orbit--ambient .orbit-trail {
+  vector-effect: non-scaling-stroke;
+}
+
+.xeda-orbit--ambient .orbit-ring     { stroke-width: 1.1px;  opacity: 0.16; }
+.xeda-orbit--ambient .orbit-line     { stroke-width: 1.6px;  opacity: 0.14; }
+.xeda-orbit--ambient .orbit-lifeline { stroke-width: 1.6px;  opacity: 0.4; }
+.xeda-orbit--ambient .orbit-trail--a { stroke-width: 1.4px;  opacity: 0.5; }
+.xeda-orbit--ambient .orbit-trail--b { stroke-width: 1.1px;  opacity: 0.22; }
+.xeda-orbit--ambient .orbit-trail--c { stroke-width: 0.9px;  opacity: 0.1; }
+
+/* The sparkle is the focal point, so it keeps its weight — but at this scale
+   the favicon's fine interior detail turns mushy, so it is drawn smaller
+   relative to the orbit than it is in the logo. */
+.xeda-orbit--ambient .orbit-dot { opacity: 0.85; }
+
+.xeda-orbit--ambient .orbit-dot > g {
+  transform: scale(0.42);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.xeda-orbit--ambient .orbit-sparkle-accent {
+  stroke-width: 2.4;
+}
+
+/* Feathered edges so the orbit dissolves into the panel instead of being
+   guillotined by the viewport. */
+.xeda-orbit--ambient {
+  -webkit-mask-image: radial-gradient(ellipse 62% 58% at 50% 50%, #000 55%, transparent 100%);
+  mask-image: radial-gradient(ellipse 62% 58% at 50% 50%, #000 55%, transparent 100%);
+}
+
+/* The plane is held open here rather than making its full turn. Edge-on, the
+   orbit collapses onto the business line — at logo size that is the whole
+   trick, but at hero-background scale it empties the panel to a single
+   hairline for seconds at a time. The lockup above the headline still runs
+   the complete rotation, so the dimensional read is kept where it is legible
+   and the background stays a steady orbit for the sparkle to travel. */
+.xeda-orbit--ambient .orbit-plane {
+  animation: none;
+  transform: none;
+}
+
 /* --- Entrance sequence ------------------------------------------------------
    Used for the hero on load and for cards as they scroll in. The delay is set
    per element with --enter-delay so one rule covers every stagger. */
