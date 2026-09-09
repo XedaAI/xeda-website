@@ -34,14 +34,14 @@ const HeroSection = () => {
           page rather than outrun it, so it sits behind the content in depth. */}
       <div
         ref={orbitRef}
-        className="absolute inset-0 z-[1] flex items-end justify-center pointer-events-none overflow-hidden"
+        className="absolute inset-0 z-[1] flex items-center justify-center pointer-events-none overflow-hidden"
       >
-        {/* The scene is composed low in the panel — the business line is a
-            horizon below the copy and the rings orbit it — so it is anchored
-            to the bottom and sized off width alone. Its viewBox is drawn at
-            1440 wide, so on a desktop viewport one unit is one pixel. The
-            floor keeps it a real object on a phone, where the outer rings
-            bleed past the sides. */}
+        {/* The system is centred on the panel — the business line is a
+            horizon through the middle of the copy and the rings orbit it —
+            and sized off width alone. Its viewBox is drawn at 1440 wide, so
+            on a desktop viewport one unit is one pixel. The floor keeps it a
+            real object on a phone, where the outer rings bleed past the
+            sides. */}
         <XedaMarkAnimated className="xeda-orbit--ambient w-full min-w-[560px] max-w-[1920px] h-auto text-[hsl(220_8%_96%)]" />
       </div>
 

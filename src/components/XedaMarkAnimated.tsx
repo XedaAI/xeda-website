@@ -44,11 +44,13 @@ import { useEffect, useId, useRef, type CSSProperties } from "react";
 
 // --- Scene geometry, in viewBox units -----------------------------------
 // Drawn at 1440 wide so that on a desktop viewport one unit is one CSS pixel,
-// which keeps the sizes below easy to reason about. The scene is anchored to
-// the bottom of the hero and scales with width.
+// which keeps the sizes below easy to reason about. The scene is centred in
+// the hero and scales with width.
 const VIEW_W = 1440;
 const VIEW_H = 660;
-const AXIS_Y = 475; // the business line — the horizon everything orbits
+// The business line — the horizon everything orbits. Kept at the vertical
+// middle of the viewBox so centring the SVG in the hero centres the system.
+const AXIS_Y = VIEW_H / 2;
 const CX = VIEW_W / 2; // must stay at 50%: the planes pivot on the viewBox centre
 const TILT = 7; // degrees, echoing the logo's tilted ring
 
