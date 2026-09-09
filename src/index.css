@@ -215,40 +215,46 @@ All colors MUST be HSL.
 }
 
 /* --- Brand mark: the orbit --------------------------------------------------
-   XEDA (the dot) revolves around the business (the line). Depth is faked with
-   occlusion plus a breathing radius, which is cheaper and more robust than
-   real 3D transforms and survives every browser that supports offset-path.
+   XEDA (the comet) revolves around the business (the line) on a ring that
+   turns in 3D about the line's own axis.
 
-   The percentages below are measured off the path, not guessed: the orbit
-   crosses the business line at 44.9% and ~0%, its nearest point (bottom) is
-   22.4% and its furthest (top) is 72.4%. The visibility swap MUST land on the
-   crossings — swapping at a round 50% left the dot painted in front for ~0.8s
-   after it had already passed behind.
+   The geometry lives in XedaMarkAnimated, which hands it over as custom
+   properties on the <svg>: --orbit-path (the ellipse the comet travels, the
+   same path string the ring is drawn from), --orbit-rest (where the head parks
+   when motion is off) and --orbit-axis (the business line, as a fraction of
+   the viewBox height, for the planes' pivot). Nothing here hardcodes a
+   coordinate, so the scene can be resized without touching this file.
 
-   Path below traces the same ellipse the ring is drawn with — the major-axis
-   endpoints are computed from cx/cy/rx and the 10deg rotation, so the dot
-   never drifts off the ring. Sweeping clockwise from the right-hand end means
-   25% of the way round is the BOTTOM (nearest the viewer) and 75% is the TOP
-   (furthest away). */
+   The path starts at the right-hand end and sweeps clockwise on screen, so 25%
+   of the way round is the BOTTOM of the orbit and 75% is the TOP. */
 @keyframes orbitTravel {
   from { offset-distance: 0%; }
   to   { offset-distance: 100%; }
 }
 
-/* Radius and opacity are keyed to the same clock as the travel, so the dot is
-   biggest and brightest at the front (25%) and smallest and dimmest at the
-   back (75%). At 0% and 50% — the hand-over points — both copies match. */
-@keyframes orbitDepth {
-  0%     { r: 13px;   opacity: 0.9; }
-  22.4%  { r: 16px;   opacity: 1; }
-  44.9%  { r: 13px;   opacity: 0.9; }
-  72.4%  { r: 11.5px; opacity: 0.7; }
-  100%   { r: 13px;   opacity: 0.9; }
+/* The travel clock runs on the never-painted probe; the head is not on the
+   path itself. XedaMarkAnimated reads the clock and the plane's transform each
+   frame, projects the head's point through it and writes back --orbit-pos
+   (where to draw it, in root SVG units) and --orbit-depth (-1 far .. 1 near).
+   Positioning the head outside the turning plane is what keeps a ball round:
+   inside the plane it would be foreshortened along with the ring. */
+.orbit-probe {
+  offset-path: var(--orbit-path);
+  offset-rotate: 0deg;
+  animation: orbitTravel var(--orbit-duration, 16s) linear infinite;
 }
 
-/* Which copy is on screen is decided per frame in XedaMarkAnimated, not here:
-   with the plane making a full rotation, the answer depends on the orbit phase
-   AND the tilt phase together, which CSS keyframes cannot express. */
+.orbit-dot {
+  --orbit-depth: 0;
+  --orbit-pos: var(--orbit-rest);
+  transform-box: fill-box;
+  transform-origin: center;
+  /* Bigger and brighter as it comes forward, smaller and dimmer at the back.
+     The ring's own perspective is mild; this exaggerates it for the head so
+     the depth is unmistakable. */
+  transform: var(--orbit-pos) scale(calc(1 + 0.3 * var(--orbit-depth)));
+  opacity: calc(0.72 + 0.28 * var(--orbit-depth));
+}
 
 /* The business line quickens as XEDA passes through its plane (0% and 50%). */
 @keyframes orbitLinePulse {
@@ -258,11 +264,11 @@ All colors MUST be HSL.
 
 .xeda-orbit { overflow: visible; }
 
-/* Slightly held back from the line so the travelling dot stays the focus, but
-   close enough in weight that this still reads as the logo rather than a
+/* Slightly held back from the line so the travelling comet stays the focus,
+   but close enough in weight that this still reads as the logo rather than a
    different mark. */
 .orbit-ring {
-  /* Kept clearly legible: when the dot dims at the back of the orbit, a
+  /* Kept clearly legible: when the comet dims at the back of the orbit, a
      readable path is what lets the eye complete the circle. */
   opacity: 0.62;
 }
@@ -271,44 +277,26 @@ All colors MUST be HSL.
   animation: orbitLinePulse var(--orbit-duration, 16s) linear infinite;
 }
 
-.orbit-dot {
-  offset-path: path("M 258.50 147.19 A 99 105 10 0 1 63.50 112.81 A 99 105 10 0 1 258.50 147.19");
-  offset-rotate: 0deg;
-  animation:
-    orbitTravel var(--orbit-duration, 16s) linear infinite,
-    orbitDepth  var(--orbit-duration, 16s) linear infinite;
-}
-
-.orbit-dot--near {
-  animation:
-    orbitTravel   var(--orbit-duration, 16s) linear infinite,
-    orbitDepth    var(--orbit-duration, 16s) linear infinite,
-    orbitGlow     var(--orbit-duration, 16s) linear infinite;
-}
-
-.orbit-dot--far {
-  animation:
-    orbitTravel  var(--orbit-duration, 16s) linear infinite,
-    orbitDepth   var(--orbit-duration, 16s) linear infinite,
-    orbitGlow    var(--orbit-duration, 16s) linear infinite;
-}
-
-/* Fallback: without offset-path the dot would pile up at the origin, so park
-   it at its resting position on the ring and drop the motion entirely. */
+/* Fallback: without offset-path there is no clock. XedaMarkAnimated parks the
+   head at its resting position and the rest of the motion is dropped. */
 @supports not (offset-path: path("M 0 0 L 1 1")) {
-  .orbit-dot { animation: none; visibility: hidden; }
+  .orbit-probe { animation: none; }
   .orbit-trail, .orbit-lifeline { display: none; }
-  .orbit-plane { animation: none; }
-  .orbit-dot--near { visibility: visible; cx: 263px; cy: 86px; }
+  .orbit-plane { animation: none; transform: none; }
   .orbit-line { animation: none; }
 }
 
 
-/* --- Comet trail ------------------------------------------------------------
-   Each layer is a dash of length L on the same ellipse. To sit BEHIND the dot
-   rather than ahead of it, the dash must cover [p-L, p] where p is the dot's
+/* --- Comet tail -------------------------------------------------------------
+   Each layer is a dash of length L on the same ellipse. To sit BEHIND the head
+   rather than ahead of it, the dash must cover [p-L, p] where p is the head's
    position — so the offset runs from L down to L-1 across one revolution.
-   Same linear clock as the dot, so the leading edge never separates from it. */
+   Same linear clock as the head, so the leading edge never separates from it.
+
+   Three lengths stacked: at the head all three overlap, further back only the
+   longest remains, so the tail fades out along its length rather than
+   stopping. The longer layers are also a touch wider, giving the tail the
+   classic taper — thin and bright at the head, soft and broad behind. */
 .orbit-trail {
   fill: none;
   stroke: currentColor;
@@ -316,84 +304,89 @@ All colors MUST be HSL.
 }
 
 .orbit-trail--a {
-  stroke-width: 8;
-  stroke-dasharray: 0.05 0.95;
-  opacity: 0.8;
+  stroke-width: 1.6;
+  opacity: 0.7;
+  stroke-dasharray: 0.06 0.94;
   animation: trailA var(--orbit-duration, 16s) linear infinite;
 }
 
 .orbit-trail--b {
-  stroke-width: 6.5;
-  stroke-dasharray: 0.11 0.89;
-  opacity: 0.34;
+  stroke-width: 2.2;
+  opacity: 0.22;
+  stroke-dasharray: 0.16 0.84;
   animation: trailB var(--orbit-duration, 16s) linear infinite;
 }
 
 .orbit-trail--c {
-  stroke-width: 5;
-  stroke-dasharray: 0.2 0.8;
-  opacity: 0.15;
+  stroke-width: 3;
+  opacity: 0.09;
+  stroke-dasharray: 0.32 0.68;
   animation: trailC var(--orbit-duration, 16s) linear infinite;
 }
 
 @keyframes trailA {
-  from { stroke-dashoffset: 0.05; }
-  to   { stroke-dashoffset: -0.95; }
+  from { stroke-dashoffset: 0.06; }
+  to   { stroke-dashoffset: -0.94; }
 }
 
 @keyframes trailB {
-  from { stroke-dashoffset: 0.11; }
-  to   { stroke-dashoffset: -0.89; }
+  from { stroke-dashoffset: 0.16; }
+  to   { stroke-dashoffset: -0.84; }
 }
 
 @keyframes trailC {
-  from { stroke-dashoffset: 0.2; }
-  to   { stroke-dashoffset: -0.8; }
-}
-
-/* Glow, keyed to the same depth clock: brightest and widest at the front of
-   the orbit, almost extinguished at the back. currentColor keeps it monochrome
-   and makes it inherit whatever the surrounding text colour is. */
-@keyframes orbitGlow {
-  0%     { filter: drop-shadow(0 0 6px currentColor); }
-  22.4%  { filter: drop-shadow(0 0 14px currentColor); }
-  44.9%  { filter: drop-shadow(0 0 6px currentColor); }
-  72.4%  { filter: drop-shadow(0 0 4px currentColor); }
-  100%   { filter: drop-shadow(0 0 6px currentColor); }
+  from { stroke-dashoffset: 0.32; }
+  to   { stroke-dashoffset: -0.68; }
 }
 
 
 /* --- Orbit rotation --------------------------------------------------------
-   The plane makes a full turn about the business line's own axis. Rotating
+   Each plane makes a full turn about the business line's own axis. Rotating
    about that exact axis is what keeps it coherent: points on the axis do not
-   move, so the two places the orbit meets the line stay put however far it
-   turns, and twice per rotation the orbit passes edge-on and briefly aligns
+   move, so the two places an orbit meets the line stay put however far it
+   turns, and twice per rotation each orbit passes edge-on and briefly aligns
    with the line.
 
-   Over a full rotation the near and far halves reverse each half turn — as the
-   plane passes face-on, where everything is momentarily at zero depth. That
-   depends on the orbit phase and the tilt phase together, which CSS keyframes
-   cannot express, so the draw-order decision lives in XedaMarkAnimated. */
+   The three planes turn at different rates, the outer one the other way, so
+   the system is never flat as a whole: when one ring is edge-on another is
+   open. The comet's ring is the reference (2.2 laps per turn); the others are
+   set against it in ratios that take a long time to realign.
+
+   The rotation is applied to inner <g> elements, never to the <svg> itself: a
+   3D transform on the root puts the whole mark on a composited layer that is
+   rastered once and then scaled, which turns everything to mush. On a group
+   the browser projects the geometry as vectors and it stays sharp. */
 .xeda-orbit {
-  /* One lever for the whole orbit. Travel, depth, glow, the two visibility
-     swaps, all three trail layers and the tilt are all derived from this, so
-     they can never drift out of sync with each other. */
+  /* One lever for the whole orbit. Travel, depth, tail, the visibility swap
+     and every tilt are derived from this, so they can never drift out of
+     sync with each other. */
   --orbit-duration: 6s;
 
-  perspective: 620px;
-  transform-style: preserve-3d;
+  /* Tuned for the mark at logo size; the ambient variant rescales it. */
+  --orbit-perspective: 620px;
 }
 
 .orbit-plane {
   transform-box: view-box;
-  /* the business line sits at y=146 of a 255-tall viewBox */
-  transform-origin: 50% 57.25%;
+  transform-origin: 50% var(--orbit-axis, 57.25%);
   animation: orbitTilt calc(var(--orbit-duration, 16s) * 2.2) linear infinite;
 }
 
+.orbit-plane--inner {
+  animation-duration: calc(var(--orbit-duration, 16s) * 1.55);
+}
+
+.orbit-plane--outer {
+  animation-duration: calc(var(--orbit-duration, 16s) * 3.3);
+  animation-direction: reverse;
+}
+
+/* The perspective rides inside the transform rather than as a property on
+   the <svg>: SVG content is not a 3D rendering context, so a parent
+   `perspective` would not reach the group. */
 @keyframes orbitTilt {
-  from { transform: rotateX(0deg); }
-  to   { transform: rotateX(360deg); }
+  from { transform: perspective(var(--orbit-perspective, 620px)) rotateX(0deg); }
+  to   { transform: perspective(var(--orbit-perspective, 620px)) rotateX(360deg); }
 }
 
 /* --- Lifeline ---------------------------------------------------------------
@@ -402,13 +395,13 @@ All colors MUST be HSL.
    travel the length continuously.
 
    The loop is seamless because the offset travels exactly ONE dash period
-   (0.05 + 0.20 = 0.25) — at the end of the cycle every dash has moved into the
+   (0.04 + 0.21 = 0.25) — at the end of the cycle every dash has moved into the
    position its neighbour just left, so the restart is invisible. Animating a
    whole path length instead would visibly jump. */
 .orbit-lifeline {
   stroke: currentColor;
   stroke-linecap: round;
-  stroke-dasharray: 0.05 0.2;
+  stroke-dasharray: 0.04 0.21;
   opacity: 0.9;
   animation: lifelineFlow 2.8s linear infinite;
 }
@@ -416,6 +409,104 @@ All colors MUST be HSL.
 @keyframes lifelineFlow {
   from { stroke-dashoffset: 0; }
   to   { stroke-dashoffset: -0.25; }
+}
+
+/* --- Ambient variant: the mark drawn at hero-background scale ---------------
+   Strokes in an SVG scale with the drawing. At logo size the mark's 9-unit
+   stroke is a confident line; blown up behind the hero it renders ~35px wide
+   and the mark collapses into grey bands lying across the copy. So here the
+   strokes are pinned to screen pixels instead — the orbits stay fine lines
+   however large they are drawn.
+
+   The second half of this is hierarchy. One flat opacity over the whole mark
+   makes the rings compete with the travelling comet, and a big static shape
+   behind text always loses that fight badly. The structure is therefore held
+   down near the noise floor and the comet kept bright, so what carries the
+   hero is motion — a lit point and its tail travelling a turning system of
+   barely-there rings — rather than a large dim object. */
+.xeda-orbit--ambient {
+  /* A lap that reads as brisk at logo size is stately when the comet has a
+     700px ellipse to cover, so the whole clock is slowed here. The comet's
+     plane turns once per 2.2 laps, so ~37s. */
+  --orbit-duration: 17s;
+
+  /* Perspective scales with the drawing: the logo's 620px on a mark this
+     size is a fisheye. Around five times the rendered ring height makes the
+     near half of a ring visibly closer without bending the horizon. */
+  --orbit-perspective: 1800px;
+}
+
+/* Strokes are in user units, NOT vector-effect: non-scaling-stroke. The scene
+   is drawn at 1440 units wide, so on a desktop viewport a unit is a pixel and
+   these are hairlines as written; the breakpoints below thicken them where the
+   scene is drawn smaller. non-scaling-stroke was the obvious tool but it
+   misbehaves under the planes' 3D transform — as a ring nears edge-on its
+   stroke balloons into a band several pixels deep. A user-unit stroke instead
+   thins as the ring flattens and thickens slightly on the near side of the
+   perspective, both of which are the right depth cues anyway.
+
+   The ring XEDA rides is the clearest; the inner and outer rings are quieter
+   so the system has depth without three equal lines. */
+.xeda-orbit--ambient .orbit-ring--main   { stroke-width: 1.1; opacity: 0.2; }
+.xeda-orbit--ambient .orbit-ring--inner  { stroke-width: 1;   opacity: 0.1; }
+.xeda-orbit--ambient .orbit-ring--outer  { stroke-width: 1;   opacity: 0.12; }
+.xeda-orbit--ambient .orbit-line         { stroke-width: 1.5; opacity: 0.16; }
+.xeda-orbit--ambient .orbit-lifeline     { stroke-width: 1.5; opacity: 0.34; animation-duration: 5.2s; }
+
+@media (max-width: 1100px) {
+  .xeda-orbit--ambient .orbit-ring,
+  .xeda-orbit--ambient .orbit-line,
+  .xeda-orbit--ambient .orbit-lifeline,
+  .xeda-orbit--ambient .orbit-trail { stroke-width: 1.4; }
+  .xeda-orbit--ambient .orbit-trail--b { stroke-width: 2.4; }
+  .xeda-orbit--ambient .orbit-trail--c { stroke-width: 3.4; }
+}
+
+/* The outer ring carries the gap the static logo has in its ring, drifting
+   slowly round as the ring turns — a second, independent motion without a
+   second bright object to compete with the comet. */
+.xeda-orbit--ambient .orbit-ring--outer {
+  stroke-linecap: round;
+  stroke-dasharray: 0.82 0.18;
+  animation: ringDrift calc(var(--orbit-duration, 16s) * 2.6) linear infinite;
+}
+
+@keyframes ringDrift {
+  from { stroke-dashoffset: 0; }
+  to   { stroke-dashoffset: 1; }
+}
+
+/* The bloom is drawn only at background scale: at logo size a glow this wide
+   would just read as a smudge around the mark. */
+.orbit-halo { display: none; }
+.xeda-orbit--ambient .orbit-halo { display: block; }
+
+/* On a phone the whole scene is drawn at ~40% size (560 units to 390px), so
+   the strokes are thickened back to hairlines and the head is scaled up to
+   stay a readable object. */
+@media (max-width: 767px) {
+  .xeda-orbit--ambient .orbit-ring,
+  .xeda-orbit--ambient .orbit-line,
+  .xeda-orbit--ambient .orbit-lifeline { stroke-width: 2.6; }
+  .xeda-orbit--ambient .orbit-trail--a { stroke-width: 3; }
+  .xeda-orbit--ambient .orbit-trail--b { stroke-width: 4.2; }
+  .xeda-orbit--ambient .orbit-trail--c { stroke-width: 5.6; }
+  .xeda-orbit--ambient .orbit-dot > * {
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: scale(1.6);
+  }
+}
+
+/* Feathering is applied to the business line rather than to the mark as a
+   whole. A mask over everything also dims the comet — worst exactly when it
+   swings out wide and is at its most visible — whereas the only thing that
+   actually needs softening is the line, which would otherwise stop dead at
+   both ends. The rings are closed curves and need no help. */
+.xeda-orbit--ambient .orbit-line,
+.xeda-orbit--ambient .orbit-lifeline {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent);
 }
 
 /* --- Entrance sequence ------------------------------------------------------
@@ -450,37 +541,20 @@ All colors MUST be HSL.
 /* Motion is decorative throughout: with reduced motion the sequence is skipped
    and everything is shown in its final state rather than merely slowed. */
 @media (prefers-reduced-motion: reduce) {
-  .orbit-dot, .orbit-line { animation: none; }
+  .orbit-probe, .orbit-line { animation: none; }
   .orbit-trail, .orbit-lifeline { display: none; }
   .orbit-plane { animation: none; transform: none; }
   .orbit-dot--far { visibility: hidden; }
-  .orbit-dot--near { visibility: visible; offset-path: none; cx: 263px; cy: 86px; r: 13px; opacity: 1; }
+  .orbit-dot--near {
+    visibility: visible;
+    transform: var(--orbit-rest) scale(1);
+    opacity: 1;
+  }
+  /* The ambient variant's own rules outrank the single-class resets above, so
+     they have to be stood down by name. */
+  .xeda-orbit--ambient .orbit-ring--outer { animation: none; stroke-dasharray: none; }
+  .xeda-orbit--ambient .orbit-lifeline { display: none; }
   .enter { opacity: 1; animation: none; }
   .card-lift { transition: none; }
   .card-lift:hover { transform: none; }
-}
-
-/* --- AI robot: subtle idle float only (decorative, faint hero background) --- */
-@keyframes robotFloat {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-}
-
-.robot-part {
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
-.robot-float {
-  animation: robotFloat 5s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .robot-float {
-    animation: none;
-  }
 }
