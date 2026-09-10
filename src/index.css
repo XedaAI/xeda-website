@@ -459,28 +459,3 @@ All colors MUST be HSL.
   .card-lift { transition: none; }
   .card-lift:hover { transform: none; }
 }
-
-/* --- AI robot: subtle idle float only (decorative, faint hero background) --- */
-@keyframes robotFloat {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-}
-
-.robot-part {
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
-.robot-float {
-  animation: robotFloat 5s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .robot-float {
-    animation: none;
-  }
-}

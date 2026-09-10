@@ -3,9 +3,13 @@ import { ArrowRight } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { auditBookingUrl } from "@/lib/booking";
 import { useParallax } from "@/hooks/useParallax";
-import AIRobot from "@/components/AIRobot";
+import { lazy, Suspense } from "react";
 import XedaMarkAnimated from "@/components/XedaMarkAnimated";
 import heroBg from "@/assets/hero-bg.jpg";
+
+// Three.js is ~150KB gzipped, so the 3D network loads on demand rather than in
+// the main bundle; the hero renders its text immediately and the scene fades in.
+const NetworkScene = lazy(() => import("@/components/NetworkScene"));
 
 const HeroSection = () => {
   const { t } = useLanguage();
@@ -27,9 +31,13 @@ const HeroSection = () => {
           themes, which previously flipped this scrim light in dark mode. */}
       <div className="absolute inset-0 bg-gradient-to-b from-[hsl(220_12%_5%/0.90)] via-[hsl(220_12%_6%/0.84)] to-[hsl(220_14%_3%/0.96)]" />
 
-      {/* Robot fills the first viewport behind the content; bursts apart on scroll-down */}
-      <div className="absolute inset-0 z-[1] flex items-center justify-center pointer-events-none overflow-hidden">
-        <AIRobot className="opacity-20" />
+      {/* 3D network of a client's systems connected through the AI core — the
+          integration story rendered. Assembles on load, re-bursts on scroll,
+          tilts with the cursor. Behind the content, never interactive. */}
+      <div className="absolute inset-0 z-[1] pointer-events-none overflow-hidden">
+        <Suspense fallback={null}>
+          <NetworkScene className="absolute inset-0 opacity-60" />
+        </Suspense>
       </div>
 
       <div className="relative z-10 container mx-auto px-6 pt-28 pb-16 text-center max-w-4xl">

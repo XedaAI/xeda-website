@@ -24,6 +24,9 @@ export default defineConfig(({ mode }) => ({
         // Keep the React runtime in its own long-cache chunk, separate from app code.
         manualChunks: {
           "react-vendor": ["react", "react-dom", "react-router-dom"],
+          // Three.js is large and only used by the lazy hero scene — keep it in
+          // its own long-cache chunk so it never bloats the app bundle.
+          three: ["three"],
         },
       },
     },
