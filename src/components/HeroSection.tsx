@@ -3,17 +3,16 @@ import { ArrowRight } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { auditBookingUrl } from "@/lib/booking";
 import { useParallax } from "@/hooks/useParallax";
-import { lazy, Suspense } from "react";
+import { useRef } from "react";
 import XedaMarkAnimated from "@/components/XedaMarkAnimated";
+import PaperField from "@/components/PaperField";
 import heroBg from "@/assets/hero-bg.jpg";
-
-// Three.js is ~150KB gzipped, so the 3D network loads on demand rather than in
-// the main bundle; the hero renders its text immediately and the scene fades in.
-const NetworkScene = lazy(() => import("@/components/NetworkScene"));
 
 const HeroSection = () => {
   const { t } = useLanguage();
   const bgRef = useParallax<HTMLDivElement>(0.3);
+  // The paper converges on the mark, so PaperField needs to know where it is.
+  const markRef = useRef<HTMLDivElement>(null);
 
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -31,17 +30,23 @@ const HeroSection = () => {
           themes, which previously flipped this scrim light in dark mode. */}
       <div className="absolute inset-0 bg-gradient-to-b from-[hsl(220_12%_5%/0.90)] via-[hsl(220_12%_6%/0.84)] to-[hsl(220_14%_3%/0.96)]" />
 
-      {/* 3D network of a client's systems connected through the AI core — the
-          integration story rendered. Assembles on load, re-bursts on scroll,
-          tilts with the cursor. Behind the content, never interactive. */}
-      <div className="absolute inset-0 z-[1] pointer-events-none overflow-hidden">
-        <Suspense fallback={null}>
-          <NetworkScene className="absolute inset-0 opacity-60" />
-        </Suspense>
-      </div>
+      {/* Front-desk paperwork streaming into the AI core and coming out sorted —
+          the automation story rendered. Behind the content, never interactive. */}
+      <PaperField coreRef={markRef} className="absolute inset-0 z-[1]" />
+      {/* Legibility scrim: the paper stays saturated at the edges, but dims under
+          the text column so a sheet drifting behind the headline never fights it. */}
+      <div
+        className="absolute inset-0 z-[2] pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 58% 56% at 50% 54%, hsl(220 12% 5% / 0.9) 0%, hsl(220 12% 5% / 0.55) 42%, transparent 72%)",
+        }}
+      />
 
       <div className="relative z-10 container mx-auto px-6 pt-28 pb-16 text-center max-w-4xl">
-        <XedaMarkAnimated className="h-28 md:h-36 w-auto mx-auto mb-10 text-[hsl(220_8%_96%)]" />
+        <div ref={markRef} className="w-fit mx-auto mb-10">
+          <XedaMarkAnimated className="h-28 md:h-36 w-auto text-[hsl(220_8%_96%)]" />
+        </div>
 
         <div className="enter [--enter-delay:1.25s] inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[hsl(220_8%_96%/0.07)] border border-[hsl(220_8%_96%/0.20)] mb-8">
           <span className="w-2 h-2 rounded-full bg-[hsl(220_8%_88%)] animate-pulse" />
