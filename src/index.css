@@ -485,6 +485,9 @@ All colors MUST be HSL.
 .pf-b   { height: 4px; width: 36%; background: hsl(220 12% 22%); border-radius: 2px; }
 .pf-tag { font-family: Inconsolata, ui-monospace, monospace; font-size: 8px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: hsl(220 10% 38%); line-height: 1; white-space: nowrap; }
 .paper-sheet--near .pf-tag { font-size: 9px; }
+/* the brand line printed on a document — dark ink on paper, set in the site face */
+.pf-quote { font-family: 'Work Sans', system-ui, sans-serif; font-weight: 600; font-size: 11px; line-height: 1.25; letter-spacing: -0.01em; color: hsl(220 12% 16%); text-wrap: balance; }
+.paper-sheet--near .pf-quote, .paper-stack .pf-quote { font-size: 12.5px; }
 .pf-stamp { position: absolute; right: 9px; top: 9px; width: 22px; height: 22px; border: 1.5px solid hsl(220 10% 45% / .7); border-radius: 50%; }
 .pf-row { display: flex; align-items: center; gap: 5px; } .pf-row .pf-ln { flex: 1; }
 .pf-chk { width: 8px; height: 8px; border: 1.2px solid hsl(220 10% 45%); border-radius: 1px; flex: none; }
@@ -533,6 +536,7 @@ All colors MUST be HSL.
   .paper-sheet--mid  { width: 76px; height: 98px;  padding: 7px; gap: 4px; }
   .paper-sheet--near { width: 96px; height: 124px; padding: 8px; gap: 5px; }
   .pf-hd { height: 4px; } .pf-ln { height: 2px; } .pf-tag { font-size: 6px; } .pf-b { height: 3px; }
+  .pf-quote { font-size: 8.5px; } .paper-sheet--near .pf-quote { font-size: 10px; }
   .paper-stack { display: none; }
   .paper-pulse { width: 150px; height: 150px; margin: -75px 0 0 -75px; }
 }
