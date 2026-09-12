@@ -67,7 +67,7 @@ const ContactSection = () => {
       if (error instanceof z.ZodError) {
         toast({
           title: t("contact.error.validation"),
-          description: error.errors[0].message,
+          description: error.issues[0].message,
           variant: "destructive",
         });
       } else {
