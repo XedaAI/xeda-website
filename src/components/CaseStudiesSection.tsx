@@ -4,6 +4,7 @@ import { ArrowRight, Check, CalendarClock, PhoneCall, CalendarCheck } from "luci
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { auditBookingUrl } from "@/lib/booking";
 import { cn } from "@/lib/utils";
+import TiltWrapper from "@/components/TiltWrapper";
 
 // Real products built and operated by xeda.ai. No fabricated clients or metrics —
 // these are our own GenAI/software products, described by what they actually do.
@@ -61,10 +62,11 @@ const ProductCard = ({ product, index }: { product: typeof products[0]; index: n
   const Icon = product.icon;
 
   return (
+    <TiltWrapper>
     <Card
       ref={ref}
       className={cn(
-        "bg-card/50 backdrop-blur-sm border-border/50 transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-lg hover:shadow-primary/10 hover:border-primary/30 overflow-hidden",
+        "h-full bg-card/50 backdrop-blur-sm border-border/50 transition-all duration-300 ease-out hover:shadow-lg hover:shadow-primary/10 hover:border-primary/30 overflow-hidden",
         delays[index % 3],
         isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
       )}
@@ -106,6 +108,7 @@ const ProductCard = ({ product, index }: { product: typeof products[0]; index: n
         </div>
       </CardContent>
     </Card>
+    </TiltWrapper>
   );
 };
 

@@ -2,6 +2,7 @@ import type React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Receipt, Factory, ShoppingCart, Building2, Stethoscope, HardHat } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import TiltWrapper from "@/components/TiltWrapper";
 
 // Illustrative use cases — examples of what we build, NOT specific client data.
 const cases = [
@@ -27,9 +28,9 @@ const UseCasesSection = () => {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mt-12">
           {cases.map(({ icon: Icon, key }, index) => (
+            <TiltWrapper key={key}>
             <Card
-              key={key}
-              className="card-lift enter bg-card border-border/50 hover:shadow-lg"
+              className="card-lift enter h-full bg-card border-border/50 hover:shadow-lg"
               style={{ "--enter-delay": `${index * 0.07}s` } as React.CSSProperties}
             >
               <CardContent className="p-6">
@@ -51,6 +52,7 @@ const UseCasesSection = () => {
                 </p>
               </CardContent>
             </Card>
+            </TiltWrapper>
           ))}
         </div>
       </div>

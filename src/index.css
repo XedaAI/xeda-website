@@ -460,27 +460,89 @@ All colors MUST be HSL.
   .card-lift:hover { transform: none; }
 }
 
-/* --- AI robot: subtle idle float only (decorative, faint hero background) --- */
-@keyframes robotFloat {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
+/* --- Paper field: front-desk documents streaming into the AI core (hero) ---
+   Sheets drift from the edges toward the XEDA mark (their --dx/--dy are measured
+   in PaperField.tsx against the live mark position), then land as tidy stacks in
+   the bottom corners. Sizes here must match SIZE / SIZE_SMALL in PaperField.tsx. */
+.paper-field { pointer-events: none; overflow: hidden; --paper-alpha: 1; }
+.paper-layer { position: absolute; inset: 0; will-change: transform; }
+
+.paper-sheet {
+  position: absolute; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px;
+  padding: 10px; border-radius: 4px; background: hsl(220 8% 96%);
+  box-shadow: 0 8px 30px hsl(220 14% 2% / .5); transform-origin: center; opacity: 0;
+  animation: paperDrift var(--d) cubic-bezier(.45, 0, .7, .4) infinite; animation-delay: var(--dl);
+  will-change: transform, opacity;
+}
+.paper-sheet--far  { width: 84px;  height: 108px; padding: 7px;  gap: 4px; }
+.paper-sheet--mid  { width: 112px; height: 144px; }
+.paper-sheet--near { width: 140px; height: 180px; padding: 12px; gap: 8px; }
+
+.pf-hd  { height: 6px; width: 55%; background: hsl(220 12% 22%); border-radius: 2px; }
+.pf-ln  { height: 3px; width: 100%; background: hsl(220 10% 55% / .55); border-radius: 2px; }
+.pf-ln--s { width: 70%; } .pf-ln--xs { width: 45%; }
+.pf-tot { margin-top: auto; display: flex; justify-content: flex-end; align-items: center; gap: 4px; }
+.pf-b   { height: 4px; width: 36%; background: hsl(220 12% 22%); border-radius: 2px; }
+.pf-tag { font-family: Inconsolata, ui-monospace, monospace; font-size: 8px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: hsl(220 10% 38%); line-height: 1; white-space: nowrap; }
+.paper-sheet--near .pf-tag { font-size: 9px; }
+/* the brand line printed on a document — dark ink on paper, set in the site face */
+.pf-quote { font-family: 'Work Sans', system-ui, sans-serif; font-weight: 600; font-size: 11px; line-height: 1.25; letter-spacing: -0.01em; color: hsl(220 12% 16%); text-wrap: balance; }
+.paper-sheet--near .pf-quote, .paper-stack .pf-quote { font-size: 12.5px; }
+.pf-stamp { position: absolute; right: 9px; top: 9px; width: 22px; height: 22px; border: 1.5px solid hsl(220 10% 45% / .7); border-radius: 50%; }
+.pf-row { display: flex; align-items: center; gap: 5px; } .pf-row .pf-ln { flex: 1; }
+.pf-chk { width: 8px; height: 8px; border: 1.2px solid hsl(220 10% 45%); border-radius: 1px; flex: none; }
+.pf-tear { border-top: 1px dashed hsl(220 10% 55% / .7); margin-top: 2px; }
+
+@keyframes paperDrift {
+  0%   { transform: translate(0, 0) rotate(var(--r0)) scale(1); opacity: 0; }
+  10%  { opacity: calc(var(--a) * var(--paper-alpha)); }
+  82%  { opacity: calc(var(--a) * var(--paper-alpha)); }
+  100% { transform: translate(var(--dx, 0px), var(--dy, 0px)) rotate(var(--r1)) scale(.45); opacity: 0; }
 }
 
-.robot-part {
-  transform-box: fill-box;
-  transform-origin: center;
+/* processed output: booked / answered, in the bottom corners */
+.paper-stack { position: absolute; bottom: 9%; width: 150px; height: 190px; }
+.paper-stack--left  { left: 5.5%; }
+.paper-stack--right { right: 5.5%; }
+.paper-stack .pf-sh {
+  position: absolute; inset: 0; box-sizing: border-box; display: flex; flex-direction: column; gap: 7px;
+  padding: 12px; border-radius: 4px; background: hsl(220 8% 96%); box-shadow: 0 10px 30px hsl(220 14% 2% / .55);
+}
+.paper-stack .pf-sh:nth-child(1) { transform: translate(-14px, 14px); opacity: calc(.42 * var(--paper-alpha)); }
+.paper-stack .pf-sh:nth-child(2) { transform: translate(-7px, 7px);   opacity: calc(.6 * var(--paper-alpha)); }
+.paper-stack .pf-sh:nth-child(3) { animation: paperLand 9s ease-out infinite; animation-delay: var(--dl, 0s); }
+.pf-badge { position: absolute; right: -10px; top: -10px; width: 30px; height: 30px; border-radius: 50%; background: hsl(220 8% 96%); display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 18px hsl(220 14% 2% / .5); }
+.pf-lbl { position: absolute; left: -24px; right: -24px; top: 100%; margin-top: 30px; text-align: center; font-family: Inconsolata, ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: hsl(220 7% 66%); white-space: nowrap; }
+@keyframes paperLand {
+  0%   { transform: translate(0, -44px) rotate(-7deg); opacity: 0; }
+  9%   { transform: translate(0, 0) rotate(0deg); opacity: calc(.92 * var(--paper-alpha)); }
+  100% { transform: translate(0, 0) rotate(0deg); opacity: calc(.92 * var(--paper-alpha)); }
 }
 
-.robot-float {
-  animation: robotFloat 5s ease-in-out infinite;
+/* processing pulses, centred on the measured core */
+.paper-pulse { position: absolute; left: var(--core-x, 50%); top: var(--core-y, 30%); width: 200px; height: 200px; margin: -100px 0 0 -100px; border-radius: 50%; border: 1px solid hsl(220 8% 96% / .35); animation: paperPulse 3.4s ease-out infinite; }
+.paper-pulse--2 { animation-delay: 1.7s; }
+@keyframes paperPulse { 0% { transform: scale(.5); opacity: .5; } 100% { transform: scale(2); opacity: 0; } }
+
+/* off-screen: hold every animation instead of burning frames */
+.paper-field.is-paused .paper-sheet,
+.paper-field.is-paused .paper-stack .pf-sh,
+.paper-field.is-paused .paper-pulse { animation-play-state: paused; }
+
+/* small screens: fewer, smaller sheets; no corner stacks (they'd sit on the CTAs) */
+@media (max-width: 767px) {
+  .paper-sheet--desk { display: none; }
+  .paper-sheet--far  { width: 56px; height: 72px;  padding: 5px; gap: 3px; }
+  .paper-sheet--mid  { width: 76px; height: 98px;  padding: 7px; gap: 4px; }
+  .paper-sheet--near { width: 96px; height: 124px; padding: 8px; gap: 5px; }
+  .pf-hd { height: 4px; } .pf-ln { height: 2px; } .pf-tag { font-size: 6px; } .pf-b { height: 3px; }
+  .pf-quote { font-size: 8.5px; } .paper-sheet--near .pf-quote { font-size: 10px; }
+  .paper-stack { display: none; }
+  .paper-pulse { width: 150px; height: 150px; margin: -75px 0 0 -75px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .robot-float {
-    animation: none;
-  }
+  .paper-sheet { animation: none; opacity: calc(var(--a) * var(--paper-alpha)); transform: translate(calc(var(--dx, 0px) * .35), calc(var(--dy, 0px) * .35)) rotate(var(--r1)) scale(.8); }
+  .paper-stack .pf-sh:nth-child(3) { animation: none; opacity: calc(.92 * var(--paper-alpha)); }
+  .paper-pulse { animation: none; }
 }
