@@ -24,10 +24,40 @@
     <priority>0.6</priority>
   </url>
 
-  <!-- Landing: Steuerkanzleien (accounting firms) -->
+  <!-- Vertical outbound-campaign landing pages (German, one per industry) -->
   <url>
     <loc>https://xeda.ai/steuerkanzleien</loc>
-    <lastmod>2026-07-13</lastmod>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://xeda.ai/fertigung</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://xeda.ai/e-commerce</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://xeda.ai/immobilien</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://xeda.ai/arztpraxis</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://xeda.ai/handwerk</loc>
+    <lastmod>2026-09-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
