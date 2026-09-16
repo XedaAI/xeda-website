@@ -11,7 +11,8 @@ const AuditSection = () => {
   return (
     <section id="audit" className="py-28 md:py-36 section-ink">
       <div className="container mx-auto px-6">
-        <div className="max-w-4xl mx-auto rounded-3xl border border-primary/20 bg-primary/5 p-8 md:p-12">
+        {/* data-dust-frame: the card is the visual block, not the section. */}
+          <div className="max-w-4xl mx-auto rounded-3xl border border-primary/20 bg-primary/5 p-8 md:p-12" data-dust-frame>
           <div className="flex flex-col md:flex-row md:items-start gap-8">
             <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center flex-shrink-0">
               <Compass className="w-7 h-7 text-primary" />

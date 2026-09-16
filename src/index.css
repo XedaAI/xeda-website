@@ -850,3 +850,15 @@ All colors MUST be HSL.
   .al-ball--far { animation: none; opacity: 0; }
   .al-ball--near { animation: none; offset-distance: 66%; }
 }
+
+/* --- Section dust -----------------------------------------------------------
+   A fixed layer that frames "How we work", streams down the screen's sides as
+   you scroll to "Start with a free AI audit", and frames that instead. Above
+   the sections' own backgrounds so it is visible at all, below the header and
+   the chat so it never sits on a control. `color` is what SectionDust.tsx
+   paints the grains with — it is read from here so the dust stays legible in
+   both themes rather than being white on a light section. */
+.section-dust {
+  position: fixed; inset: 0; z-index: 40; pointer-events: none;
+  color: hsl(var(--foreground) / 0.85);
+}
