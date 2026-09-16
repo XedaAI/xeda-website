@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import SEOHead from "@/components/SEOHead";
 import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
+import PhaseIllustration from "@/components/PhaseIllustration";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { auditBookingUrl } from "@/lib/booking";
 import { PROCESS } from "@/data/process";
@@ -79,7 +80,15 @@ const Process = () => {
             <div className="space-y-6">
               {c.phases.map((p) => (
                 <Card key={p.n} className="card-lift bg-card border-border/50">
-                  <CardContent className="p-6 md:p-8">
+                  <CardContent className="p-6 md:p-8 flex flex-col sm:flex-row gap-6 sm:gap-8">
+                    {/* The drawing carries the phase at a glance; on a phone it sits
+                        above the text rather than squeezing it. */}
+                    <PhaseIllustration
+                      n={p.n}
+                      className="w-[104px] h-[104px] sm:w-[124px] sm:h-[124px] shrink-0 text-foreground/90"
+                    />
+
+                    <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-3 mb-4">
                       <span className="w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm font-bold flex items-center justify-center flex-none">
                         {p.n}
@@ -120,6 +129,7 @@ const Process = () => {
                         <span className="font-semibold text-foreground/70">{c.gateLabel} </span>
                         {p.gate}
                       </p>
+                    </div>
                     </div>
                   </CardContent>
                 </Card>
