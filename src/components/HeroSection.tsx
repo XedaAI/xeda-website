@@ -5,13 +5,13 @@ import { auditBookingUrl } from "@/lib/booking";
 import { useParallax } from "@/hooks/useParallax";
 import { useRef } from "react";
 import XedaMarkAnimated from "@/components/XedaMarkAnimated";
-import PaperField from "@/components/PaperField";
+import AssemblyLine from "@/components/AssemblyLine";
 import heroBg from "@/assets/hero-bg.jpg";
 
 const HeroSection = () => {
   const { t } = useLanguage();
   const bgRef = useParallax<HTMLDivElement>(0.3);
-  // The paper converges on the mark, so PaperField needs to know where it is.
+  // Both streams meet at the mark, so the line needs to know where it is.
   const markRef = useRef<HTMLDivElement>(null);
 
   const scrollToSection = (id: string) => {
@@ -30,16 +30,16 @@ const HeroSection = () => {
           themes, which previously flipped this scrim light in dark mode. */}
       <div className="absolute inset-0 bg-gradient-to-b from-[hsl(220_12%_5%/0.90)] via-[hsl(220_12%_6%/0.84)] to-[hsl(220_14%_3%/0.96)]" />
 
-      {/* Front-desk paperwork streaming into the AI core and coming out sorted —
-          the automation story rendered. Behind the content, never interactive. */}
-      <PaperField coreRef={markRef} className="absolute inset-0 z-[1]" />
-      {/* Legibility scrim: the paper stays saturated at the edges, but dims under
-          the text column so a sheet drifting behind the headline never fights it. */}
+      {/* Chaos in from the left, order out to the right, the mark in the middle —
+          what we do, watchable. Behind the content, never interactive. */}
+      <AssemblyLine coreRef={markRef} className="absolute inset-0 z-[1]" />
+      {/* Legibility scrim: the line stays saturated at the edges, but dims under
+          the text column so nothing drifting past ever fights the headline. */}
       <div
         className="absolute inset-0 z-[2] pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 58% 56% at 50% 54%, hsl(220 12% 5% / 0.9) 0%, hsl(220 12% 5% / 0.55) 42%, transparent 72%)",
+            "radial-gradient(ellipse 54% 52% at 50% 58%, hsl(220 12% 5% / 0.92) 0%, hsl(220 12% 5% / 0.58) 44%, transparent 74%)",
         }}
       />
 

@@ -460,89 +460,174 @@ All colors MUST be HSL.
   .card-lift:hover { transform: none; }
 }
 
-/* --- Paper field: front-desk documents streaming into the AI core (hero) ---
-   Sheets drift from the edges toward the XEDA mark (their --dx/--dy are measured
-   in PaperField.tsx against the live mark position), then land as tidy stacks in
-   the bottom corners. Sizes here must match SIZE / SIZE_SMALL in PaperField.tsx. */
-.paper-field { pointer-events: none; overflow: hidden; --paper-alpha: 1; }
-.paper-layer { position: absolute; inset: 0; will-change: transform; }
+/* --- Assembly line: the hero's centre argument, rendered ---------------------
+   Left = what arrives: torn, crumpled and scribbled paper, dense forms, and raw
+   unstructured data (binary, half-written subject lines). It all travels right
+   into the XEDA mark. Right = what leaves: flat, squared, labelled output.
 
-.paper-sheet {
-  position: absolute; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px;
-  padding: 10px; border-radius: 4px; background: hsl(220 8% 96%);
-  box-shadow: 0 8px 30px hsl(220 14% 2% / .5); transform-origin: center; opacity: 0;
-  animation: paperDrift var(--d) cubic-bezier(.45, 0, .7, .4) infinite; animation-delay: var(--dl);
-  will-change: transform, opacity;
-}
-.paper-sheet--far  { width: 84px;  height: 108px; padding: 7px;  gap: 4px; }
-.paper-sheet--mid  { width: 112px; height: 144px; }
-.paper-sheet--near { width: 140px; height: 180px; padding: 12px; gap: 8px; }
+   The transformation reads as two streams meeting at the mark — chaos fades INTO
+   it, order emerges FROM it — rather than one element morphing, which CSS cannot
+   do convincingly at this size.
 
-.pf-hd  { height: 6px; width: 55%; background: hsl(220 12% 22%); border-radius: 2px; }
-.pf-ln  { height: 3px; width: 100%; background: hsl(220 10% 55% / .55); border-radius: 2px; }
-.pf-ln--s { width: 70%; } .pf-ln--xs { width: 45%; }
-.pf-tot { margin-top: auto; display: flex; justify-content: flex-end; align-items: center; gap: 4px; }
-.pf-b   { height: 4px; width: 36%; background: hsl(220 12% 22%); border-radius: 2px; }
-.pf-tag { font-family: Inconsolata, ui-monospace, monospace; font-size: 8px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: hsl(220 10% 38%); line-height: 1; white-space: nowrap; }
-.paper-sheet--near .pf-tag { font-size: 9px; }
-/* the brand line printed on a document — dark ink on paper, set in the site face */
-.pf-quote { font-family: 'Work Sans', system-ui, sans-serif; font-weight: 600; font-size: 11px; line-height: 1.25; letter-spacing: -0.01em; color: hsl(220 12% 16%); text-wrap: balance; }
-.paper-sheet--near .pf-quote, .paper-stack .pf-quote { font-size: 12.5px; }
-.pf-stamp { position: absolute; right: 9px; top: 9px; width: 22px; height: 22px; border: 1.5px solid hsl(220 10% 45% / .7); border-radius: 50%; }
-.pf-row { display: flex; align-items: center; gap: 5px; } .pf-row .pf-ln { flex: 1; }
-.pf-chk { width: 8px; height: 8px; border: 1.2px solid hsl(220 10% 45%); border-radius: 1px; flex: none; }
-.pf-tear { border-top: 1px dashed hsl(220 10% 55% / .7); margin-top: 2px; }
+   --dx/--dy are measured in AssemblyLine.tsx against the live mark position, so
+   both streams aim at the mark wherever it lands at the current viewport size. */
+.al-field { pointer-events: none; overflow: hidden; --al-alpha: 1; }
+.al-layer { position: absolute; inset: 0; will-change: transform; }
 
-@keyframes paperDrift {
+.al-item { position: absolute; will-change: transform, opacity; opacity: 0; }
+.al-in  { animation: alIn  var(--d) cubic-bezier(.42, 0, .72, .45) infinite; animation-delay: var(--dl); }
+.al-out { animation: alOut var(--d) cubic-bezier(.28, .6, .58, 1) infinite;  animation-delay: var(--dl); }
+
+@keyframes alIn {
   0%   { transform: translate(0, 0) rotate(var(--r0)) scale(1); opacity: 0; }
-  10%  { opacity: calc(var(--a) * var(--paper-alpha)); }
-  82%  { opacity: calc(var(--a) * var(--paper-alpha)); }
-  100% { transform: translate(var(--dx, 0px), var(--dy, 0px)) rotate(var(--r1)) scale(.45); opacity: 0; }
+  9%   { opacity: calc(var(--a) * var(--al-alpha)); }
+  74%  { opacity: calc(var(--a) * var(--al-alpha)); }
+  100% { transform: translate(var(--dx, 0px), var(--dy, 0px)) rotate(var(--r1)) scale(.28); opacity: 0; }
+}
+@keyframes alOut {
+  0%   { transform: translate(0, 0) scale(.3); opacity: 0; }
+  16%  { opacity: calc(var(--a) * var(--al-alpha)); }
+  78%  { opacity: calc(var(--a) * var(--al-alpha)); }
+  100% { transform: translate(var(--dx, 0px), var(--dy, 0px)) scale(1); opacity: 0; }
 }
 
-/* processed output: booked / answered, in the bottom corners */
-.paper-stack { position: absolute; bottom: 9%; width: 150px; height: 190px; }
-.paper-stack--left  { left: 5.5%; }
-.paper-stack--right { right: 5.5%; }
-.paper-stack .pf-sh {
-  position: absolute; inset: 0; box-sizing: border-box; display: flex; flex-direction: column; gap: 7px;
-  padding: 12px; border-radius: 4px; background: hsl(220 8% 96%); box-shadow: 0 10px 30px hsl(220 14% 2% / .55);
+/* ---- paper on the way in ---- */
+.al-paper {
+  box-sizing: border-box; display: flex; flex-direction: column; gap: 5px;
+  padding: 9px; background: hsl(220 8% 96%); border-radius: 3px;
+  box-shadow: 0 8px 26px hsl(220 14% 2% / .5);
 }
-.paper-stack .pf-sh:nth-child(1) { transform: translate(-14px, 14px); opacity: calc(.42 * var(--paper-alpha)); }
-.paper-stack .pf-sh:nth-child(2) { transform: translate(-7px, 7px);   opacity: calc(.6 * var(--paper-alpha)); }
-.paper-stack .pf-sh:nth-child(3) { animation: paperLand 9s ease-out infinite; animation-delay: var(--dl, 0s); }
-.pf-badge { position: absolute; right: -10px; top: -10px; width: 30px; height: 30px; border-radius: 50%; background: hsl(220 8% 96%); display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 18px hsl(220 14% 2% / .5); }
-.pf-lbl { position: absolute; left: -24px; right: -24px; top: 100%; margin-top: 30px; text-align: center; font-family: Inconsolata, ui-monospace, monospace; font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: hsl(220 7% 66%); white-space: nowrap; }
-@keyframes paperLand {
-  0%   { transform: translate(0, -44px) rotate(-7deg); opacity: 0; }
-  9%   { transform: translate(0, 0) rotate(0deg); opacity: calc(.92 * var(--paper-alpha)); }
-  100% { transform: translate(0, 0) rotate(0deg); opacity: calc(.92 * var(--paper-alpha)); }
+.al-paper--sm { width: 84px;  height: 106px; padding: 7px; gap: 4px; }
+.al-paper--md { width: 108px; height: 138px; }
+.al-paper--lg { width: 134px; height: 170px; padding: 12px; gap: 7px; }
+
+/* Torn along the bottom: a real jagged outline, not a fade. */
+.al-torn {
+  clip-path: polygon(0 0, 100% 0, 100% 86%, 93% 93%, 86% 85%, 79% 94%, 71% 86%,
+    64% 95%, 56% 87%, 49% 94%, 41% 86%, 34% 95%, 26% 87%, 19% 93%, 11% 85%, 4% 93%, 0 86%);
+}
+/* Crumpled: an irregular outline plus creases across the sheet. */
+.al-crumple {
+  clip-path: polygon(3% 2%, 38% 0, 71% 4%, 100% 1%, 97% 34%, 100% 66%, 96% 98%,
+    62% 100%, 29% 97%, 2% 100%, 5% 63%, 0 31%);
+  position: relative;
+}
+.al-crease {
+  position: absolute; left: -12%; right: -12%; height: 1px;
+  background: hsl(220 10% 55% / .5);
 }
 
-/* processing pulses, centred on the measured core */
-.paper-pulse { position: absolute; left: var(--core-x, 50%); top: var(--core-y, 30%); width: 200px; height: 200px; margin: -100px 0 0 -100px; border-radius: 50%; border: 1px solid hsl(220 8% 96% / .35); animation: paperPulse 3.4s ease-out infinite; }
-.paper-pulse--2 { animation-delay: 1.7s; }
-@keyframes paperPulse { 0% { transform: scale(.5); opacity: .5; } 100% { transform: scale(2); opacity: 0; } }
+.al-hd { height: 5px; width: 54%; background: hsl(220 12% 22%); border-radius: 2px; flex: none; }
+.al-ln { height: 3px; width: 100%; background: hsl(220 10% 55% / .55); border-radius: 2px; flex: none; }
+.al-ln--s { width: 68%; }
+.al-ln--xs { width: 42%; }
+/* A dense form: many short lines packed tight, so it reads as "a lot of info". */
+.al-dense { display: flex; flex-direction: column; gap: 2.5px; }
+.al-dense .al-ln { height: 2px; }
+.al-scribble { stroke: hsl(220 10% 45% / .75); fill: none; stroke-width: 2; stroke-linecap: round; }
+.al-tag {
+  font-family: Inconsolata, ui-monospace, monospace; font-size: 8px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; color: hsl(220 10% 38%);
+  line-height: 1; white-space: nowrap; flex: none;
+}
+.al-quote {
+  font-family: 'Work Sans', system-ui, sans-serif; font-weight: 600; font-size: 11px;
+  line-height: 1.25; letter-spacing: -0.01em; color: hsl(220 12% 16%); text-wrap: balance;
+}
+.al-paper--lg .al-quote { font-size: 12.5px; }
+.al-foot { margin-top: auto; display: flex; align-items: center; gap: 4px; flex: none; }
+.al-amt { height: 4px; width: 34%; background: hsl(220 12% 22%); border-radius: 2px; }
 
-/* off-screen: hold every animation instead of burning frames */
-.paper-field.is-paused .paper-sheet,
-.paper-field.is-paused .paper-stack .pf-sh,
-.paper-field.is-paused .paper-pulse { animation-play-state: paused; }
+/* ---- raw data on the way in: no paper, just unstructured characters ---- */
+.al-raw {
+  font-family: Inconsolata, ui-monospace, monospace; font-size: 13px; letter-spacing: .06em;
+  color: hsl(220 8% 96% / .62); white-space: nowrap;
+}
+.al-raw--bin { letter-spacing: .18em; color: hsl(220 8% 96% / .5); }
 
-/* small screens: fewer, smaller sheets; no corner stacks (they'd sit on the CTAs) */
+/* ---- structured output on the way out ---- */
+.al-card {
+  box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; padding: 10px 12px;
+  background: hsl(220 8% 96%); border-radius: 4px; box-shadow: 0 8px 26px hsl(220 14% 2% / .5);
+  min-width: 128px;
+}
+.al-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.al-key {
+  font-family: Inconsolata, ui-monospace, monospace; font-size: 8.5px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase; color: hsl(220 10% 44%);
+}
+.al-val {
+  font-family: Inconsolata, ui-monospace, monospace; font-size: 10px; font-weight: 700;
+  color: hsl(220 12% 16%);
+}
+.al-chip {
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 9999px;
+  background: hsl(220 8% 96%); box-shadow: 0 8px 22px hsl(220 14% 2% / .5);
+  font-family: Inconsolata, ui-monospace, monospace; font-size: 10px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; color: hsl(220 12% 16%); white-space: nowrap;
+}
+.al-badge {
+  width: 18px; height: 18px; border-radius: 50%; background: hsl(220 12% 16%);
+  display: flex; align-items: center; justify-content: center; flex: none;
+}
+
+/* ---- the core, and the captions that name the two ends ---- */
+.al-pulse {
+  position: absolute; left: var(--core-x, 50%); top: var(--core-y, 30%);
+  width: 220px; height: 220px; margin: -110px 0 0 -110px; border-radius: 50%;
+  border: 1px solid hsl(220 8% 96% / .3); animation: alPulse 3.6s ease-out infinite;
+}
+.al-pulse--2 { animation-delay: 1.8s; }
+@keyframes alPulse {
+  0%   { transform: scale(.42); opacity: .45; }
+  100% { transform: scale(2.1); opacity: 0; }
+}
+
+.al-caption {
+  position: absolute; top: var(--core-y, 30%); transform: translateY(-50%);
+  font-family: Inconsolata, ui-monospace, monospace; font-size: 10px; font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase; color: hsl(220 8% 96% / .4);
+  white-space: nowrap;
+}
+.al-caption--in  { left: 3%; }
+.al-caption--out { right: 3%; text-align: right; }
+
+/* Off-screen: hold every animation rather than burning frames. */
+.al-field.is-paused .al-item,
+.al-field.is-paused .al-pulse { animation-play-state: paused; }
+
+/* Small screens: fewer, smaller items and no zone captions (no room). */
 @media (max-width: 767px) {
-  .paper-sheet--desk { display: none; }
-  .paper-sheet--far  { width: 56px; height: 72px;  padding: 5px; gap: 3px; }
-  .paper-sheet--mid  { width: 76px; height: 98px;  padding: 7px; gap: 4px; }
-  .paper-sheet--near { width: 96px; height: 124px; padding: 8px; gap: 5px; }
-  .pf-hd { height: 4px; } .pf-ln { height: 2px; } .pf-tag { font-size: 6px; } .pf-b { height: 3px; }
-  .pf-quote { font-size: 8.5px; } .paper-sheet--near .pf-quote { font-size: 10px; }
-  .paper-stack { display: none; }
-  .paper-pulse { width: 150px; height: 150px; margin: -75px 0 0 -75px; }
+  .al-item--desk { display: none; }
+  .al-paper--sm { width: 58px; height: 74px;  padding: 5px; gap: 3px; }
+  .al-paper--md { width: 74px; height: 94px;  padding: 6px; gap: 4px; }
+  .al-paper--lg { width: 92px; height: 118px; padding: 8px; gap: 5px; }
+  .al-hd { height: 4px; }
+  .al-ln { height: 2px; }
+  .al-tag { font-size: 6px; }
+  .al-quote { font-size: 8.5px; }
+  .al-paper--lg .al-quote { font-size: 10px; }
+  .al-raw { font-size: 10px; }
+  .al-card { min-width: 96px; padding: 8px 10px; }
+  .al-key { font-size: 7px; }
+  .al-val { font-size: 8.5px; }
+  .al-chip { font-size: 8px; padding: 5px 9px; }
+  .al-caption { display: none; }
+  .al-pulse { width: 150px; height: 150px; margin: -75px 0 0 -75px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .paper-sheet { animation: none; opacity: calc(var(--a) * var(--paper-alpha)); transform: translate(calc(var(--dx, 0px) * .35), calc(var(--dy, 0px) * .35)) rotate(var(--r1)) scale(.8); }
-  .paper-stack .pf-sh:nth-child(3) { animation: none; opacity: calc(.92 * var(--paper-alpha)); }
-  .paper-pulse { animation: none; }
+  /* One still frame of the line: the left half on its way in, the right half
+     already out, so the argument survives without any movement. */
+  .al-in {
+    animation: none;
+    opacity: calc(var(--a) * var(--al-alpha));
+    transform: translate(calc(var(--dx, 0px) * .3), calc(var(--dy, 0px) * .3)) rotate(var(--r1));
+  }
+  .al-out {
+    animation: none;
+    opacity: calc(var(--a) * var(--al-alpha));
+    transform: translate(calc(var(--dx, 0px) * .55), calc(var(--dy, 0px) * .55));
+  }
+  .al-pulse { animation: none; }
 }
