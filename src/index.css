@@ -461,9 +461,13 @@ All colors MUST be HSL.
 }
 
 /* --- Assembly line: the hero's centre argument, rendered ---------------------
-   Left = what arrives: torn, crumpled and scribbled paper, dense forms, and raw
-   unstructured data (binary, half-written subject lines). It all travels right
-   into the XEDA mark. Right = what leaves: flat, squared, labelled output.
+   Left = raw unstructured input and nothing else: binary, hex, magic bytes,
+   half-written subject lines, scan filenames, a stray CSV header. Deliberately
+   no paper and no container — the point is that none of it has a shape yet.
+   Right = structured output, every item boxed and labelled.
+
+   The contrast carries the message: loose characters floating on the left,
+   contained and named on the right.
 
    The transformation reads as two streams meeting at the mark — chaos fades INTO
    it, order emerges FROM it — rather than one element morphing, which CSS cannot
@@ -491,61 +495,15 @@ All colors MUST be HSL.
   100% { transform: translate(var(--dx, 0px), var(--dy, 0px)) scale(1); opacity: 0; }
 }
 
-/* ---- paper on the way in ---- */
-.al-paper {
-  box-sizing: border-box; display: flex; flex-direction: column; gap: 5px;
-  padding: 9px; background: hsl(220 8% 96%); border-radius: 3px;
-  box-shadow: 0 8px 26px hsl(220 14% 2% / .5);
-}
-.al-paper--sm { width: 84px;  height: 106px; padding: 7px; gap: 4px; }
-.al-paper--md { width: 108px; height: 138px; }
-.al-paper--lg { width: 134px; height: 170px; padding: 12px; gap: 7px; }
-
-/* Torn along the bottom: a real jagged outline, not a fade. */
-.al-torn {
-  clip-path: polygon(0 0, 100% 0, 100% 86%, 93% 93%, 86% 85%, 79% 94%, 71% 86%,
-    64% 95%, 56% 87%, 49% 94%, 41% 86%, 34% 95%, 26% 87%, 19% 93%, 11% 85%, 4% 93%, 0 86%);
-}
-/* Crumpled: an irregular outline plus creases across the sheet. */
-.al-crumple {
-  clip-path: polygon(3% 2%, 38% 0, 71% 4%, 100% 1%, 97% 34%, 100% 66%, 96% 98%,
-    62% 100%, 29% 97%, 2% 100%, 5% 63%, 0 31%);
-  position: relative;
-}
-.al-crease {
-  position: absolute; left: -12%; right: -12%; height: 1px;
-  background: hsl(220 10% 55% / .5);
-}
-
-.al-hd { height: 5px; width: 54%; background: hsl(220 12% 22%); border-radius: 2px; flex: none; }
-.al-ln { height: 3px; width: 100%; background: hsl(220 10% 55% / .55); border-radius: 2px; flex: none; }
-.al-ln--s { width: 68%; }
-.al-ln--xs { width: 42%; }
-/* A dense form: many short lines packed tight, so it reads as "a lot of info". */
-.al-dense { display: flex; flex-direction: column; gap: 2.5px; }
-.al-dense .al-ln { height: 2px; }
-.al-scribble { stroke: hsl(220 10% 45% / .75); fill: none; stroke-width: 2; stroke-linecap: round; }
-.al-tag {
-  font-family: Inconsolata, ui-monospace, monospace; font-size: 8px; font-weight: 700;
-  letter-spacing: .12em; text-transform: uppercase; color: hsl(220 10% 38%);
-  line-height: 1; white-space: nowrap; flex: none;
-}
-.al-quote {
-  font-family: 'Work Sans', system-ui, sans-serif; font-weight: 600; font-size: 11px;
-  line-height: 1.25; letter-spacing: -0.01em; color: hsl(220 12% 16%); text-wrap: balance;
-}
-.al-paper--lg .al-quote { font-size: 12.5px; }
-.al-foot { margin-top: auto; display: flex; align-items: center; gap: 4px; flex: none; }
-.al-amt { height: 4px; width: 34%; background: hsl(220 12% 22%); border-radius: 2px; }
-
-/* ---- raw data on the way in: no paper, just unstructured characters ---- */
+/* ---- inbound: raw data, no paper, no box ---- */
 .al-raw {
   font-family: Inconsolata, ui-monospace, monospace; font-size: 13px; letter-spacing: .06em;
   color: hsl(220 8% 96% / .62); white-space: nowrap;
 }
+/* Machine noise sits a touch dimmer and wider than anything a person typed. */
 .al-raw--bin { letter-spacing: .18em; color: hsl(220 8% 96% / .5); }
 
-/* ---- structured output on the way out ---- */
+/* ---- outbound: structured output, every item contained ---- */
 .al-card {
   box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; padding: 10px 12px;
   background: hsl(220 8% 96%); border-radius: 4px; box-shadow: 0 8px 26px hsl(220 14% 2% / .5);
@@ -570,6 +528,22 @@ All colors MUST be HSL.
   width: 18px; height: 18px; border-radius: 50%; background: hsl(220 12% 16%);
   display: flex; align-items: center; justify-content: center; flex: none;
 }
+
+/* The two sheets that carry a brand line out of the mark. */
+.al-paper {
+  box-sizing: border-box; display: flex; flex-direction: column; gap: 5px;
+  padding: 9px; background: hsl(220 8% 96%); border-radius: 3px;
+  box-shadow: 0 8px 26px hsl(220 14% 2% / .5);
+}
+.al-paper--md { width: 108px; height: 138px; }
+.al-hd { height: 5px; width: 54%; background: hsl(220 12% 22%); border-radius: 2px; flex: none; }
+.al-ln { height: 3px; width: 100%; background: hsl(220 10% 55% / .55); border-radius: 2px; flex: none; }
+.al-ln--s { width: 68%; }
+.al-quote {
+  font-family: 'Work Sans', system-ui, sans-serif; font-weight: 600; font-size: 11px;
+  line-height: 1.25; letter-spacing: -0.01em; color: hsl(220 12% 16%); text-wrap: balance;
+}
+.al-foot { margin-top: auto; display: flex; align-items: center; gap: 4px; flex: none; }
 
 /* ---- the core, and the captions that name the two ends ---- */
 .al-pulse {
@@ -599,15 +573,11 @@ All colors MUST be HSL.
 /* Small screens: fewer, smaller items and no zone captions (no room). */
 @media (max-width: 767px) {
   .al-item--desk { display: none; }
-  .al-paper--sm { width: 58px; height: 74px;  padding: 5px; gap: 3px; }
-  .al-paper--md { width: 74px; height: 94px;  padding: 6px; gap: 4px; }
-  .al-paper--lg { width: 92px; height: 118px; padding: 8px; gap: 5px; }
+  .al-raw { font-size: 10px; }
+  .al-paper--md { width: 74px; height: 94px; padding: 6px; gap: 4px; }
   .al-hd { height: 4px; }
   .al-ln { height: 2px; }
-  .al-tag { font-size: 6px; }
   .al-quote { font-size: 8.5px; }
-  .al-paper--lg .al-quote { font-size: 10px; }
-  .al-raw { font-size: 10px; }
   .al-card { min-width: 96px; padding: 8px 10px; }
   .al-key { font-size: 7px; }
   .al-val { font-size: 8.5px; }

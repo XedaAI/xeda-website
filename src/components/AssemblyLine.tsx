@@ -5,23 +5,24 @@ import { useParallax } from "@/hooks/useParallax";
 
 // The hero's argument as a production line, running left to right.
 //
-//   LEFT   what arrives — torn, crumpled and scribbled paper, forms crammed with
-//          detail, and raw unstructured data: binary, half-written subject lines,
-//          scan filenames. Tilted, uneven, travelling right.
+//   LEFT   raw, unstructured input and nothing else — binary, hex, half-written
+//          subject lines, scan filenames, a stray CSV header. Deliberately no
+//          paper and no container: the point is that none of it has a shape yet.
 //   CENTRE the XEDA mark. Everything is drawn into it.
-//   RIGHT  what leaves — flat, squared, labelled: a booked invoice with its
-//          account, an answered enquiry with its appointment, a clean sheet.
+//   RIGHT  structured output — every item boxed and labelled: an invoice with
+//          its account, "Gebucht · DATEV", an appointment, a client record.
 //
-// Someone who knows nothing about software should be able to watch this once and
-// say what we do. That is the whole design brief, and it is why the line runs in
-// one direction and why the right-hand items carry real labels.
+// The contrast is the message: loose characters floating on the left, contained
+// and named on the right. Someone who knows nothing about software should be
+// able to watch this once and say what we do.
 //
 // Chaos fades INTO the mark and order emerges FROM it, as two streams meeting,
 // rather than one element morphing — CSS cannot morph convincingly at this size,
 // and two streams read more clearly anyway.
 
 type Tier = "far" | "mid" | "near";
-type InKind = "torn" | "crumpled" | "dense" | "scribble" | "invoice" | "bin" | "phrase";
+/** bin = machine noise (binary, hex, magic bytes); phrase = human fragments. */
+type InKind = "bin" | "phrase";
 type OutKind = "booked" | "answered" | "appointment" | "record" | "client" | "quoteA" | "quoteB";
 
 interface InItem {
@@ -30,6 +31,10 @@ interface InItem {
   /** Start, % of hero height. */
   y: number;
   kind: InKind;
+  /** Literal, language-neutral text (binary, hex, filenames). */
+  text?: string;
+  /** Index into the localised phrase list, for anything a person typed. */
+  phrase?: number;
   tier: Tier;
   r0: number;
   r1: number;
@@ -50,22 +55,24 @@ interface OutItem {
   mobile?: boolean;
 }
 
-// Everything starts left of centre and lands right of it. Vertical spread stays
-// in the upper band, where the mark sits — the headline owns the middle.
+// Each item carries its own text rather than deriving it from its index — an
+// earlier version picked by `i % list.length`, which silently dropped one phrase
+// and printed the same binary string twice.
 const IN_ITEMS: InItem[] = [
-  { x: 1, y: 6, kind: "torn", tier: "mid", r0: -13, r1: 4, a: 0.42, d: 12, dl: -1, mobile: true },
-  { x: 9, y: 26, kind: "invoice", tier: "near", r0: 8, r1: -3, a: 0.52, d: 10.5, dl: -4.5, mobile: true },
-  { x: 3, y: 42, kind: "crumpled", tier: "mid", r0: -17, r1: 5, a: 0.4, d: 13.5, dl: -8, mobile: true },
-  { x: 17, y: 12, kind: "dense", tier: "far", r0: 10, r1: -2, a: 0.3, d: 15, dl: -6 },
-  { x: 14, y: 52, kind: "scribble", tier: "far", r0: -7, r1: 3, a: 0.28, d: 14, dl: -11 },
-  { x: 24, y: 33, kind: "torn", tier: "far", r0: 12, r1: -4, a: 0.26, d: 13, dl: -2.5 },
-  // Raw data — no paper, just characters that have not been made sense of yet.
-  { x: 2, y: 18, kind: "bin", tier: "far", r0: 0, r1: 0, a: 0.5, d: 11, dl: -3, mobile: true },
-  { x: 12, y: 3, kind: "phrase", tier: "mid", r0: 0, r1: 0, a: 0.55, d: 12.5, dl: -7 },
-  { x: 6, y: 58, kind: "phrase", tier: "mid", r0: 0, r1: 0, a: 0.5, d: 13, dl: -9.5, mobile: true },
-  { x: 20, y: 46, kind: "bin", tier: "far", r0: 0, r1: 0, a: 0.44, d: 10, dl: -5.5 },
-  { x: 16, y: 63, kind: "phrase", tier: "far", r0: 0, r1: 0, a: 0.42, d: 14.5, dl: -12 },
-  { x: 26, y: 20, kind: "bin", tier: "mid", r0: 0, r1: 0, a: 0.4, d: 11.5, dl: -8.5 },
+  { x: 1, y: 8, kind: "bin", text: "01001101 0110 1011", tier: "mid", r0: -4, r1: 2, a: 0.58, d: 11.5, dl: -1, mobile: true },
+  { x: 11, y: 2, kind: "phrase", phrase: 0, tier: "mid", r0: 3, r1: -1, a: 0.6, d: 12.5, dl: -6.5 },
+  { x: 3, y: 20, kind: "phrase", phrase: 1, tier: "near", r0: -6, r1: 3, a: 0.66, d: 10.5, dl: -3.5, mobile: true },
+  { x: 19, y: 13, kind: "bin", text: "0110 1001 1100 0101", tier: "far", r0: 5, r1: -2, a: 0.42, d: 14, dl: -9 },
+  { x: 7, y: 32, kind: "bin", text: "89 50 4E 47 0D 0A", tier: "far", r0: -3, r1: 1, a: 0.44, d: 13, dl: -11.5 },
+  { x: 24, y: 26, kind: "phrase", phrase: 2, tier: "mid", r0: 4, r1: -2, a: 0.54, d: 12, dl: -5 },
+  { x: 2, y: 44, kind: "phrase", phrase: 3, tier: "mid", r0: -5, r1: 2, a: 0.56, d: 13.5, dl: -8, mobile: true },
+  { x: 15, y: 39, kind: "bin", text: "%PDF-1.4", tier: "near", r0: 6, r1: -3, a: 0.62, d: 11, dl: -2 },
+  { x: 27, y: 46, kind: "bin", text: "1010 0111 0010 1101", tier: "far", r0: -4, r1: 2, a: 0.4, d: 15, dl: -12.5 },
+  { x: 9, y: 55, kind: "phrase", phrase: 4, tier: "far", r0: 3, r1: -1, a: 0.46, d: 14.5, dl: -7 },
+  { x: 20, y: 60, kind: "bin", text: "datum;betrag;konto", tier: "mid", r0: -6, r1: 3, a: 0.52, d: 12.8, dl: -10.5, mobile: true },
+  { x: 4, y: 66, kind: "phrase", phrase: 5, tier: "far", r0: 5, r1: -2, a: 0.42, d: 13.8, dl: -4 },
+  { x: 29, y: 6, kind: "bin", text: "IMG_2291.jpeg", tier: "far", r0: -3, r1: 1, a: 0.38, d: 15.5, dl: -13.5 },
+  { x: 13, y: 71, kind: "bin", text: "beleg_final_v2.pdf", tier: "mid", r0: 4, r1: -2, a: 0.48, d: 12.2, dl: -9.5 },
 ];
 
 const OUT_ITEMS: OutItem[] = [
@@ -88,12 +95,14 @@ const COPY = {
   de: {
     capIn: "Eingang · ungeordnet",
     capOut: "Ausgang · geprüft & gebucht",
-    receipt: "Beleg",
-    note: "Notiz",
-    form: "Formular",
-    invoice: "Rechnung",
-    sum: "Summe",
-    phrases: ["re: rechnung?? anbei", "scan_0043.pdf", "AW: AW: Beleg fehlt", "Bitte prüfen — eilig"],
+    phrases: [
+      "re: rechnung?? anbei",
+      "AW: AW: Beleg fehlt",
+      "Bitte prüfen — eilig",
+      "kein Datum?",
+      "Betrag unklar…",
+      "Rechnung 4711?",
+    ],
     booked: "Gebucht · DATEV",
     answered: "Beantwortet · Kalender",
     appointment: "Termin · 14:30",
@@ -111,12 +120,14 @@ const COPY = {
   en: {
     capIn: "Incoming · unsorted",
     capOut: "Outgoing · checked & booked",
-    receipt: "Receipt",
-    note: "Note",
-    form: "Form",
-    invoice: "Invoice",
-    sum: "Total",
-    phrases: ["re: invoice?? attached", "scan_0043.pdf", "FW: FW: receipt missing", "Please check — urgent"],
+    phrases: [
+      "re: invoice?? attached",
+      "FW: FW: receipt missing",
+      "Please check — urgent",
+      "no date?",
+      "amount unclear…",
+      "Invoice 4711?",
+    ],
     booked: "Booked · DATEV",
     answered: "Answered · Calendar",
     appointment: "Appointment · 14:30",
@@ -140,73 +151,6 @@ const Check = () => (
     <path d="M20 6 9 17l-5-5" />
   </svg>
 );
-
-const Scribble = () => (
-  <svg viewBox="0 0 80 34" className="al-scribble" width="100%" height="22" aria-hidden="true">
-    <path d="M4 10c8-7 13 6 21 0s12 7 20 1 13 5 21-1" />
-    <path d="M4 24c10-5 16 4 26 0s16 4 26-2" />
-  </svg>
-);
-
-function InBody({ kind, L, phrase }: { kind: InKind; L: Copy; phrase: string }) {
-  switch (kind) {
-    case "torn":
-      return (
-        <>
-          <div className="al-hd" />
-          <span className="al-tag">{L.receipt}</span>
-          <div className="al-ln" />
-          <div className="al-ln al-ln--s" />
-        </>
-      );
-    case "invoice":
-      return (
-        <>
-          <div className="al-hd" />
-          <span className="al-tag">{L.invoice}</span>
-          <div className="al-ln" />
-          <div className="al-ln" />
-          <div className="al-ln al-ln--s" />
-          <div className="al-foot">
-            <span className="al-tag">{L.sum}</span>
-            <div className="al-amt" />
-          </div>
-        </>
-      );
-    case "crumpled":
-      return (
-        <>
-          <span className="al-crease" style={{ top: "28%", transform: "rotate(-7deg)" }} />
-          <span className="al-crease" style={{ top: "62%", transform: "rotate(5deg)" }} />
-          <div className="al-hd" />
-          <span className="al-tag">{L.note}</span>
-          <Scribble />
-        </>
-      );
-    case "dense":
-      return (
-        <>
-          <div className="al-hd" />
-          <span className="al-tag">{L.form}</span>
-          <div className="al-dense">
-            {Array.from({ length: 9 }, (_, i) => (
-              <div key={i} className={`al-ln${i % 3 === 2 ? " al-ln--s" : ""}`} />
-            ))}
-          </div>
-        </>
-      );
-    case "scribble":
-      return (
-        <>
-          <div className="al-hd" />
-          <Scribble />
-          <Scribble />
-        </>
-      );
-    default:
-      return <span>{phrase}</span>;
-  }
-}
 
 function OutBody({ kind, L }: { kind: OutKind; L: Copy }) {
   switch (kind) {
@@ -253,14 +197,6 @@ function OutBody({ kind, L }: { kind: OutKind; L: Copy }) {
       );
   }
 }
-
-const PAPER_SIZE: Partial<Record<InKind, string>> = {
-  torn: "al-paper--md",
-  invoice: "al-paper--lg",
-  crumpled: "al-paper--md",
-  dense: "al-paper--sm",
-  scribble: "al-paper--sm",
-};
 
 function Layer({ scroll, mouse, children }: { scroll: number; mouse: number; children: ReactNode }) {
   const scrollRef = useParallax<HTMLDivElement>(scroll);
@@ -337,22 +273,12 @@ const AssemblyLine = ({ coreRef, className = "" }: AssemblyLineProps) => {
     <div ref={rootRef} className={`al-field ${className}`} aria-hidden="true">
       {TIERS.map(({ tier, scroll, mouse }) => (
         <Layer key={tier} scroll={scroll} mouse={mouse}>
-          {IN_ITEMS.map((it, i) => {
-            if (it.tier !== tier) return null;
-            const isRaw = it.kind === "bin" || it.kind === "phrase";
-            const phrase =
-              it.kind === "bin"
-                ? i % 2 === 0
-                  ? "01001101 0110 1011"
-                  : "1010 0111 0010 1101"
-                : L.phrases[i % L.phrases.length];
-            return (
+          {IN_ITEMS.map((it, i) =>
+            it.tier !== tier ? null : (
               <div
                 key={`in-${i}`}
-                className={`al-item al-in ${it.mobile ? "" : "al-item--desk"} ${
-                  isRaw ? `al-raw${it.kind === "bin" ? " al-raw--bin" : ""}` : `al-paper ${PAPER_SIZE[it.kind]} ${
-                    it.kind === "torn" || it.kind === "invoice" ? "al-torn" : ""
-                  } ${it.kind === "crumpled" ? "al-crumple" : ""}`
+                className={`al-item al-in al-raw ${it.kind === "bin" ? "al-raw--bin" : ""} ${
+                  it.mobile ? "" : "al-item--desk"
                 }`}
                 style={
                   {
@@ -366,10 +292,10 @@ const AssemblyLine = ({ coreRef, className = "" }: AssemblyLineProps) => {
                   } as CSSProperties
                 }
               >
-                <InBody kind={it.kind} L={L} phrase={phrase} />
+                {it.text ?? L.phrases[it.phrase ?? 0]}
               </div>
-            );
-          })}
+            )
+          )}
 
           {OUT_ITEMS.map((it, i) =>
             it.tier !== tier ? null : (
