@@ -860,5 +860,24 @@ All colors MUST be HSL.
    both themes rather than being white on a light section. */
 .section-dust {
   position: fixed; inset: 0; z-index: 40; pointer-events: none;
-  color: hsl(var(--foreground) / 0.85);
+
+  /* The palette SectionDust.tsx paints with, read from here so it has a light
+     and a dark set and stays legible in both. The site is monochrome by design,
+     so --dust-5 is the foreground and carries most of the grains; the four
+     tints are held well down in saturation and are a minority — dust catching
+     the light, not confetti. Deleting the four tints leaves the whole thing
+     monochrome again with nothing else to change. */
+  --dust-1: hsl(212 48% 42%);
+  --dust-2: hsl(32 55% 44%);
+  --dust-3: hsl(266 38% 48%);
+  --dust-4: hsl(172 40% 34%);
+  --dust-5: hsl(var(--foreground));
+}
+/* Dark sections need the tints lifted, or they vanish into the panel. */
+.dark .section-dust {
+  --dust-1: hsl(210 62% 70%);
+  --dust-2: hsl(36 70% 66%);
+  --dust-3: hsl(268 50% 74%);
+  --dust-4: hsl(168 46% 62%);
+  --dust-5: hsl(var(--foreground));
 }
