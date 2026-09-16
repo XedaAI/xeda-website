@@ -7,8 +7,9 @@ import { useParallax } from "@/hooks/useParallax";
 //
 //   LEFT    raw, unstructured input and nothing else — binary, hex, half-written
 //           subject lines, scan filenames, a stray CSV header. Deliberately no
-//           paper and no container: none of it has a shape yet. It funnels into
-//           an opening and shrinks away INTO it, so it visibly goes in.
+//           paper and no container: none of it has a shape yet. All of it
+//           converges on ONE opening, along drawn guides, and shrinks away INTO
+//           it, so it visibly goes in at a single point.
 //   BORE    the same material, travelling inside the pipe. Up to the mark it is
 //           still crooked and off-axis; at the mark it snaps straight and onto a
 //           lane. That one second is the promise, shown rather than claimed.
@@ -43,6 +44,18 @@ interface InItem {
   phrase?: number;
   tier: Tier;
   r0: number;
+  a: number;
+  d: number;
+  dl: number;
+  mobile?: boolean;
+}
+
+/** A light streak down the bore. Light, not data — hence its own timing. */
+interface RayItem {
+  /** Start offset from the pipe axis at the intake, px. */
+  y0: number;
+  w: number;
+  h: number;
   a: number;
   d: number;
   dl: number;
@@ -109,6 +122,23 @@ const BORE_ITEMS: BoreItem[] = [
   { y0: -18, lane: -7, kind: "bin", text: "IMG_2291.jpeg", r0: 4, a: 0.44, d: 11.5, dl: -9 },
   { y0: 15, lane: 0, kind: "bin", text: "beleg_final_v2.pdf", r0: -4, a: 0.48, d: 14.5, dl: -13 },
 ];
+
+// Rays run the bore in about three seconds where a document takes thirteen.
+// That gap is deliberate: it is what keeps light and material readable as two
+// different things rather than one busy stream.
+// Weighted toward the upper half: the tube's own shading runs to near-black
+// along the bottom, and a ray placed there is simply swallowed.
+const RAY_ITEMS: RayItem[] = [
+  { y0: -18, w: 190, h: 2.5, a: 0.5, d: 3.2, dl: -0.2, mobile: true },
+  { y0: -8, w: 220, h: 2.5, a: 0.58, d: 2.6, dl: -1.4, mobile: true },
+  { y0: 2, w: 150, h: 2, a: 0.42, d: 3.6, dl: -2.1, mobile: true },
+  { y0: 12, w: 175, h: 2, a: 0.34, d: 2.9, dl: -0.8 },
+  { y0: -24, w: 140, h: 2, a: 0.36, d: 4.2, dl: -3 },
+  { y0: -13, w: 165, h: 2, a: 0.3, d: 3.4, dl: -2.6 },
+];
+
+/** The guides that fan out from the intake, as degrees off horizontal. */
+const FUNNEL_DEG = [32, 15, -4, -24, -48];
 
 const OUT_ITEMS: OutItem[] = [
   { lane: 2, kind: "booked", tier: "near", a: 0.92, d: 11, dl: -2, mobile: true },
@@ -366,8 +396,16 @@ const AssemblyLine = ({ coreRef, className = "" }: AssemblyLineProps) => {
 
   return (
     <div ref={rootRef} className={`al-field ${className}`} aria-hidden="true">
+      {/* Everything on the left arrives at one opening — drawn, so it reads at
+          a glance instead of having to be inferred from the motion. */}
+      <div className="al-funnel">
+        {FUNNEL_DEG.map((deg, i) => (
+          <span key={i} className="al-fray" style={{ "--deg": `${deg}deg` } as CSSProperties} />
+        ))}
+      </div>
       {/* Draws the eye to the opening without drawing a single hard line. */}
       <div className="al-glow" />
+      <div className="al-spark" />
 
       {/* The collar's far half and the ball's far pass, under the pipe. */}
       <div className="al-collar-wrap">
@@ -395,6 +433,27 @@ const AssemblyLine = ({ coreRef, className = "" }: AssemblyLineProps) => {
       <div className="al-lanes">
         {LANE_DEG.map((deg, i) => (
           <span key={i} className="al-lane" style={{ "--deg": `${deg.toFixed(2)}deg` } as CSSProperties} />
+        ))}
+      </div>
+
+      {/* Light down the bore, behind the material it is carrying. */}
+      <div className="al-rays">
+        {RAY_ITEMS.map((it, i) => (
+          <span
+            key={`ray-${i}`}
+            className={`al-ray ${it.mobile ? "" : "al-item--desk"}`}
+            style={
+              {
+                "--y0": `${it.y0}px`,
+                "--y3": `${-16 - it.y0}px`,
+                "--rw": `${it.w}px`,
+                "--rh": `${it.h}px`,
+                "--a": it.a,
+                "--d": `${it.d}s`,
+                "--dl": `${it.dl}s`,
+              } as CSSProperties
+            }
+          />
         ))}
       </div>
 

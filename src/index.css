@@ -591,6 +591,59 @@ All colors MUST be HSL.
 @keyframes alBallFar  { 0% { opacity: .5; } 50% { opacity: 0; } 100% { opacity: 0; } }
 @keyframes alBallNear { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 1; } }
 
+/* ---- the intake, as one point ----
+   Everything on the left converges on a single opening. Drawn guides make that
+   readable at a glance instead of leaving it to be inferred from the motion:
+   faint at the frame's edge, firmer as they close on the mouth, so the eye
+   follows them inward rather than reading them as decoration. */
+.al-funnel {
+  position: absolute; left: 0; width: var(--al-x0); height: 0;
+  top: calc(var(--core-y, 240px) + var(--al-pipe-h) * .077);
+}
+.al-fray {
+  position: absolute; right: 16px; top: 0; width: 132%; height: 1px;
+  transform-origin: right center; transform: rotate(var(--deg));
+  background: linear-gradient(90deg, hsl(220 8% 96% / 0), hsl(220 8% 96% / .18));
+}
+/* The aperture itself, breathing. Small and slow: it marks the point, it does
+   not compete with the collar for attention. */
+.al-spark {
+  position: absolute; left: var(--al-x0); top: calc(var(--core-y, 240px) + var(--al-pipe-h) * .077);
+  width: 86px; height: 86px; margin: -43px 0 0 -43px; border-radius: 50%;
+  background: radial-gradient(closest-side, hsl(220 8% 96% / .4), transparent);
+  animation: alSpark 3.4s ease-in-out infinite;
+}
+@keyframes alSpark {
+  0%, 100% { transform: scale(.72); opacity: .35; }
+  50%      { transform: scale(1); opacity: .7; }
+}
+
+/* ---- rays down the bore ----
+   Light, not data: they run in about three seconds where a document takes
+   thirteen, which is what keeps the two readable as different things. They
+   converge on the axis and shrink as they recede, like everything else in the
+   tube, and they carry no snap — only the data earns that beat. */
+.al-rays {
+  position: absolute; left: var(--al-x0); right: calc(100% - var(--al-x1));
+  top: calc(var(--core-y, 240px) - var(--al-pipe-h) * .404); height: var(--al-pipe-h);
+  clip-path: polygon(0% 9.6%, 100% 3.8%, 100% 61.6%, 0% 86.6%);
+}
+.al-ray {
+  position: absolute; left: 22px; top: calc(var(--al-pipe-h) * .48 + var(--y0) * var(--al-y));
+  width: var(--rw); height: var(--rh); border-radius: 9999px; opacity: 0;
+  background: linear-gradient(90deg, hsl(220 8% 96% / 0), hsl(220 8% 96%) 58%, hsl(220 8% 96% / 0));
+  /* Static halo, animated opacity: a shadow that only fades composites, one
+     recomputed per frame does not. */
+  box-shadow: 0 0 7px hsl(220 8% 96% / .45);
+  animation: alRay var(--d) linear infinite; animation-delay: var(--dl);
+}
+@keyframes alRay {
+  0%   { transform: translate(0, 0) scale(1); opacity: 0; }
+  12%  { opacity: calc(var(--a) * var(--al-alpha)); }
+  72%  { opacity: calc(var(--a) * var(--al-alpha)); }
+  100% { transform: translate(calc(var(--bore-dx, 300px) - 40px), calc(var(--y3) * var(--al-y))) scale(.42); opacity: 0; }
+}
+
 /* ---- lanes: order you can see even between items ---- */
 .al-lanes {
   position: absolute; left: var(--al-x1); right: 0; top: calc(var(--core-y, 240px) - var(--al-pipe-h) * .077); height: 0;
@@ -717,6 +770,8 @@ All colors MUST be HSL.
 /* Off-screen: hold every animation rather than burning frames. */
 .al-field.is-paused .al-item,
 .al-field.is-paused .al-boreitem,
+.al-field.is-paused .al-ray,
+.al-field.is-paused .al-spark,
 .al-field.is-paused .al-ball { animation-play-state: paused; }
 
 /* Small screens: a shorter pipe, fewer and smaller items, no stage captions. */
@@ -730,6 +785,7 @@ All colors MUST be HSL.
   .al-mouth-bore { width: 10px; }
   .al-outlet { width: 14px; border-width: 1.5px; }
   .al-glow { width: 160px; height: 110px; }
+  .al-spark { width: 56px; height: 56px; margin: -28px 0 0 -28px; }
   .al-note { width: 132px; padding: 6px 9px; gap: 6px; }
   .al-quote { font-size: 8.5px; }
   .al-card { min-width: 96px; padding: 8px 10px; }
@@ -757,6 +813,12 @@ All colors MUST be HSL.
     animation: none;
     opacity: calc(var(--a) * var(--al-alpha));
     transform: translate(calc(var(--out-dx, 200px) * .6), calc(var(--out-dx, 200px) * var(--slope, 0) * .6)) scale(.85);
+  }
+  .al-spark { animation: none; opacity: .5; }
+  .al-ray {
+    animation: none;
+    opacity: calc(var(--a) * var(--al-alpha));
+    transform: translate(calc((var(--bore-dx, 300px) - 40px) * .5), calc(var(--y3) * var(--al-y) * .5)) scale(.7);
   }
   .al-ball--far { animation: none; opacity: 0; }
   .al-ball--near { animation: none; offset-distance: 66%; }
