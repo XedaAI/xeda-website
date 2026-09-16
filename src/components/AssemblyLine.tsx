@@ -13,6 +13,11 @@ import { useParallax } from "@/hooks/useParallax";
 //           still crooked and off-axis; at the mark it snaps straight and onto a
 //           lane. That one second is the promise, shown rather than claimed.
 //   RIGHT   out of the outlet, every item boxed and labelled and riding its lane.
+//   CENTRE  the mark, as a collar the pipe runs THROUGH. Turned 58° about the
+//           vertical, its plane crosses the pipe instead of lying along it —
+//           the difference between "beside" and "through". Its far half is
+//           drawn under the pipe and its near half over it, so the run is
+//           genuinely threaded rather than merely overlapped.
 //
 // The pipe tapers away to the right, so the run has depth: the intake is near and
 // wide, the outlet further off and narrower. Someone who knows nothing about
@@ -236,6 +241,31 @@ function OutBody({ kind, L }: { kind: OutKind; L: Copy }) {
   }
 }
 
+/** The band is shaded across its width — dark at the inner rim, bright along
+ *  the middle, dark again at the outer rim — so it reads as a round tube and
+ *  not a flat hoop. `k` keeps the two copies' gradient ids apart. */
+function CollarBand({ k, lit }: { k: string; lit: [number, number, number, number] }) {
+  return (
+    <svg viewBox="0 0 244 244" width="244" height="244" fill="none" aria-hidden="true">
+      <defs>
+        <radialGradient id={`al-tube-${k}`} cx="122" cy="122" r="118" gradientUnits="userSpaceOnUse">
+          <stop offset="74.5%" stopColor="hsl(220 8% 96%)" stopOpacity={lit[0]} />
+          <stop offset="84%" stopColor="hsl(220 8% 96%)" stopOpacity={lit[1]} />
+          <stop offset="92%" stopColor="hsl(220 8% 96%)" stopOpacity={lit[2]} />
+          <stop offset="100%" stopColor="hsl(220 8% 96%)" stopOpacity={lit[3]} />
+        </radialGradient>
+        <linearGradient id={`al-lit-${k}`} x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="hsl(0 0% 100%)" stopOpacity=".3" />
+          <stop offset="55%" stopColor="hsl(220 14% 2%)" stopOpacity="0" />
+          <stop offset="100%" stopColor="hsl(220 14% 2%)" stopOpacity=".5" />
+        </linearGradient>
+      </defs>
+      <circle cx="122" cy="122" r="103" stroke={`url(#al-tube-${k})`} strokeWidth="30" />
+      <circle cx="122" cy="122" r="103" stroke={`url(#al-lit-${k})`} strokeWidth="30" />
+    </svg>
+  );
+}
+
 function Layer({ scroll, mouse, children }: { scroll: number; mouse: number; children: ReactNode }) {
   const scrollRef = useParallax<HTMLDivElement>(scroll);
   const mouseRef = useMouseParallax<HTMLDivElement>(mouse);
@@ -272,10 +302,22 @@ const AssemblyLine = ({ coreRef, className = "" }: AssemblyLineProps) => {
       const rootRect = root.getBoundingClientRect();
       const coreRect = core.getBoundingClientRect();
       const W = rootRect.width;
-      const cx = coreRect.left - rootRect.left + coreRect.width / 2;
+      // Only the vertical anchor is taken from the box; the collar rides the
+      // pipe's midpoint horizontally, which is not the text column's centre
+      // once the run shifts left to leave the output room.
       const cy = coreRect.top - rootRect.top + coreRect.height / 2;
-      root.style.setProperty("--core-x", `${cx}px`);
       root.style.setProperty("--core-y", `${cy}px`);
+
+      // One source of truth for the whole composition: the anchor box in the
+      // hero is the collar's diameter, and the pipe is sized off it in the same
+      // 2.35 : 1 ratio the design was drawn at. The collar is authored at 244px
+      // and scaled, because offset-path takes absolute coordinates and will not
+      // follow a fluid box.
+      const collar = coreRect.height;
+      const pipeH = collar / 2.346;
+      root.style.setProperty("--al-collar-k", `${(collar / 244).toFixed(4)}`);
+      root.style.setProperty("--al-pipe-h", `${pipeH.toFixed(1)}px`);
+      root.style.setProperty("--al-y", `${(pipeH / 104).toFixed(3)}`);
       // Both travel distances come from the pipe as it actually rendered, so
       // they follow --al-x0/--al-x1 rather than repeating them.
       const pipe = root.querySelector(".al-pipe");
@@ -327,14 +369,21 @@ const AssemblyLine = ({ coreRef, className = "" }: AssemblyLineProps) => {
       {/* Draws the eye to the opening without drawing a single hard line. */}
       <div className="al-glow" />
 
+      {/* The collar's far half and the ball's far pass, under the pipe. */}
+      <div className="al-collar-wrap">
+        <div className="al-half-far">
+          <div className="al-collar"><CollarBand k="far" lit={[0.22, 0.9, 0.62, 0.2]} /></div>
+        </div>
+      </div>
+      <div className="al-collar-wrap">
+        <div className="al-collar"><div className="al-ball al-ball--far" /></div>
+      </div>
+
       {/* The pipe: an outer trapezoid for the lit edges, an inner one two pixels
           smaller for the skin, so the edge follows the taper at any width. */}
       <div className="al-pipe">
         <div className="al-pipe-skin" />
       </div>
-
-      {/* The pipe recedes under the mark rather than cutting across it. */}
-      <div className="al-core-shade" />
 
       {/* The intake we can see into, and the outlet further away. */}
       <div className="al-mouth">
@@ -371,6 +420,16 @@ const AssemblyLine = ({ coreRef, className = "" }: AssemblyLineProps) => {
             {it.text ?? L.phrases[it.phrase ?? 0]}
           </div>
         ))}
+      </div>
+
+      {/* The collar's near half and the ball's near pass, over the pipe. */}
+      <div className="al-collar-wrap">
+        <div className="al-half-near">
+          <div className="al-collar"><CollarBand k="near" lit={[0.24, 0.95, 0.66, 0.22]} /></div>
+        </div>
+      </div>
+      <div className="al-collar-wrap">
+        <div className="al-collar"><div className="al-ball al-ball--near" /></div>
       </div>
 
       {TIERS.map(({ tier, scroll, mouse }) => (
@@ -419,9 +478,6 @@ const AssemblyLine = ({ coreRef, className = "" }: AssemblyLineProps) => {
           )}
         </Layer>
       ))}
-
-      <div className="al-pulse" />
-      <div className="al-pulse al-pulse--2" />
 
       {/* Names the three stages, so the direction of the run is never ambiguous. */}
       <span className="al-caption al-caption--in">{L.capIn}</span>

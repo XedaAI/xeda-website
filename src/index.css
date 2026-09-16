@@ -485,7 +485,7 @@ All colors MUST be HSL.
    --bore-dx and --out-dx are measured too; everything else is percentages. */
 .al-field {
   pointer-events: none; overflow: hidden; --al-alpha: 1;
-  --al-pipe-h: 88px; --al-y: .85;
+  --al-pipe-h: 100px; --al-y: .96;
   /* Where the pipe starts and ends. Everything hung off it reads these, and
      AssemblyLine.tsx measures the result rather than re-deriving it, so the two
      can never drift apart. */
@@ -538,13 +538,58 @@ All colors MUST be HSL.
   background: radial-gradient(closest-side, hsl(220 8% 96% / .15), transparent);
 }
 
-/* The pipe recedes under the mark instead of cutting across it. Dimmed, not
-   hidden: the run still reads as continuous behind the logo. */
-.al-core-shade {
-  position: absolute; left: var(--core-x, 50%); top: var(--core-y, 240px);
-  width: 320px; height: 210px; transform: translate(-50%, -50%);
-  background: radial-gradient(closest-side, hsl(220 12% 5% / .8), transparent 72%);
+/* ---- the collar: the mark, as a ring the pipe runs through ----
+   The hero's mark used to be a hoop lying ALONG the business line, so the line
+   could only pass it, never go through it. Turned 58° about the vertical, the
+   ring's plane crosses the pipe instead — which is the whole difference between
+   "beside" and "through", and it says literally what the brand claims.
+
+   Turned that way the right half is always the far one, so depth needs no
+   timing trick: the right half and the ball's right pass are drawn under the
+   pipe, the left half and its left pass over it. The two halves cross-fade over
+   about seven pixels at the silhouette; a hard cut there leaves a hairline and
+   an overlap of two translucent strokes leaves a bright seam.
+
+   Authored at 244px and scaled by --al-collar-k, because offset-path takes
+   absolute coordinates and would not follow a fluid box. */
+.al-collar-wrap {
+  position: absolute; left: calc(var(--al-x0) / 2 + var(--al-x1) / 2); top: var(--core-y, 240px);
+  width: 244px; height: 244px; margin: -122px 0 0 -122px;
+  perspective: 700px; perspective-origin: 50% 50%;
+  transform: scale(var(--al-collar-k, 1));
 }
+.al-collar {
+  position: absolute; inset: 0; transform-style: preserve-3d;
+  transform: rotateY(58deg) rotateZ(-2.2deg);
+}
+.al-collar svg { display: block; overflow: visible; }
+.al-half-far {
+  position: absolute; inset: 0;
+  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0) 49%, rgba(0,0,0,1) 52%, rgba(0,0,0,.38) 100%);
+          mask-image: linear-gradient(to right, rgba(0,0,0,0) 49%, rgba(0,0,0,1) 52%, rgba(0,0,0,.38) 100%);
+}
+.al-half-near {
+  position: absolute; inset: 0;
+  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 48%, rgba(0,0,0,0) 51%);
+          mask-image: linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 48%, rgba(0,0,0,0) 51%);
+}
+
+/* The ball circles the collar, so it circles the pipe. Its size comes from the
+   perspective itself rather than from a scripted pulse: nearer on the left,
+   smaller on the right. Two copies, swapped at the top and bottom of the
+   circle, where it sits on the silhouette and is neither in front nor behind. */
+.al-ball {
+  position: absolute; left: 0; top: 0; width: 30px; height: 30px; border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, hsl(0 0% 100%) 0%, hsl(220 8% 96%) 42%, hsl(220 6% 64%) 100%);
+  transform: rotateZ(2.2deg) rotateY(-58deg);
+  offset-path: path('M 122 19 A 103 103 0 0 1 122 225 A 103 103 0 0 1 122 19');
+  offset-rotate: 0deg;
+}
+.al-ball--far  { filter: blur(.5px); animation: alRide 10s linear infinite, alBallFar 10s step-end infinite; }
+.al-ball--near { box-shadow: 0 0 18px hsl(220 8% 96% / .55); animation: alRide 10s linear infinite, alBallNear 10s step-end infinite; }
+@keyframes alRide { from { offset-distance: 0%; } to { offset-distance: 100%; } }
+@keyframes alBallFar  { 0% { opacity: .5; } 50% { opacity: 0; } 100% { opacity: 0; } }
+@keyframes alBallNear { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 1; } }
 
 /* ---- lanes: order you can see even between items ---- */
 .al-lanes {
@@ -658,36 +703,25 @@ All colors MUST be HSL.
   line-height: 1.3; letter-spacing: -0.01em; color: hsl(220 12% 16%); text-wrap: balance;
 }
 
-/* ---- the core, and the captions that name the three stages ---- */
-.al-pulse {
-  position: absolute; left: var(--core-x, 50%); top: var(--core-y, 30%);
-  width: 220px; height: 220px; margin: -110px 0 0 -110px; border-radius: 50%;
-  border: 1px solid hsl(220 8% 96% / .3); animation: alPulse 3.6s ease-out infinite;
-}
-.al-pulse--2 { animation-delay: 1.8s; }
-@keyframes alPulse {
-  0%   { transform: scale(.42); opacity: .45; }
-  100% { transform: scale(2.1); opacity: 0; }
-}
-
+/* ---- the captions that name the three stages ---- */
 .al-caption {
   position: absolute;
   font-family: Inconsolata, ui-monospace, monospace; font-size: 10px; font-weight: 700;
   letter-spacing: .16em; text-transform: uppercase; color: hsl(220 8% 96% / .4);
   white-space: nowrap;
 }
-.al-caption--in  { left: calc(var(--al-x0) + 24px); top: calc(var(--core-y, 240px) + var(--al-pipe-h) * .62 + 12px); }
-.al-caption--mid { left: var(--core-x, 50%); transform: translateX(-50%); top: calc(var(--core-y, 240px) - var(--al-pipe-h) * .62 - 26px); }
-.al-caption--out { left: var(--al-x1); top: calc(var(--core-y, 240px) - var(--al-pipe-h) * .62 - 14px); }
+.al-caption--in  { left: calc(var(--al-x0) - 28px); top: calc(var(--core-y, 240px) + var(--al-pipe-h) * .98); }
+.al-caption--mid { left: calc(var(--al-x0) / 2 + var(--al-x1) / 2); transform: translateX(-50%); top: calc(var(--core-y, 240px) + var(--al-pipe-h) * 1.3); }
+.al-caption--out { left: calc(var(--al-x1) - 20px); top: calc(var(--core-y, 240px) + var(--al-pipe-h) * .52); }
 
 /* Off-screen: hold every animation rather than burning frames. */
 .al-field.is-paused .al-item,
 .al-field.is-paused .al-boreitem,
-.al-field.is-paused .al-pulse { animation-play-state: paused; }
+.al-field.is-paused .al-ball { animation-play-state: paused; }
 
 /* Small screens: a shorter pipe, fewer and smaller items, no stage captions. */
 @media (max-width: 767px) {
-  .al-field { --al-pipe-h: 56px; --al-y: .55; --al-x0: 6%; --al-x1: 54%; }
+  .al-field { --al-x0: 6%; --al-x1: 54%; }
   .al-item--desk { display: none; }
   .al-raw { font-size: 10px; }
   .al-boreitem { font-size: 7px; }
@@ -703,7 +737,6 @@ All colors MUST be HSL.
   .al-val { font-size: 8.5px; }
   .al-chip { font-size: 8px; padding: 5px 9px; }
   .al-caption { display: none; }
-  .al-pulse { width: 150px; height: 150px; margin: -75px 0 0 -75px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -725,5 +758,6 @@ All colors MUST be HSL.
     opacity: calc(var(--a) * var(--al-alpha));
     transform: translate(calc(var(--out-dx, 200px) * .6), calc(var(--out-dx, 200px) * var(--slope, 0) * .6)) scale(.85);
   }
-  .al-pulse { animation: none; }
+  .al-ball--far { animation: none; opacity: 0; }
+  .al-ball--near { animation: none; offset-distance: 66%; }
 }
