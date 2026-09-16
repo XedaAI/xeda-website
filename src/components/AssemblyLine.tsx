@@ -1,5 +1,6 @@
 import { useEffect, useRef, type CSSProperties, type ReactNode, type RefObject } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import PipeDust from "@/components/PipeDust";
 import { useMouseParallax } from "@/hooks/useMouseParallax";
 import { useParallax } from "@/hooks/useParallax";
 
@@ -316,6 +317,8 @@ const AssemblyLine = ({ coreRef, className = "" }: AssemblyLineProps) => {
   const { language } = useLanguage();
   const L = COPY[language === "de" ? "de" : "en"];
   const rootRef = useRef<HTMLDivElement>(null);
+  // The dust needs the pipe's own box: it is that surface coming apart.
+  const pipeRef = useRef<HTMLDivElement>(null);
 
   // Measure once per size change. The pipe's ends sit at 25% and 75% of the
   // width in CSS, but three things still need real pixels: the vertical anchor
@@ -419,9 +422,12 @@ const AssemblyLine = ({ coreRef, className = "" }: AssemblyLineProps) => {
 
       {/* The pipe: an outer trapezoid for the lit edges, an inner one two pixels
           smaller for the skin, so the edge follows the taper at any width. */}
-      <div className="al-pipe">
+      <div ref={pipeRef} className="al-pipe">
         <div className="al-pipe-skin" />
       </div>
+      {/* Hover it and the skin comes apart into grains; move off and they
+          settle. Sits with the pipe in the stack, because it is the pipe. */}
+      <PipeDust pipeRef={pipeRef} />
 
       {/* The intake we can see into, and the outlet further away. */}
       <div className="al-mouth">

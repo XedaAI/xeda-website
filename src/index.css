@@ -512,6 +512,33 @@ All colors MUST be HSL.
     hsl(220 12% 5%);
 }
 
+/* ---- the surface, as dust ----
+   PipeDust.tsx draws the grains and drives these four values. The mask is what
+   turns specks ON the pipe into the pipe itself coming apart: a soft hole under
+   the cursor, plus an overall fade from how fast the cursor is moving. Both are
+   only attached while the effect is awake — a mask recomputed every frame on a
+   pipe nobody is touching is pure cost.
+
+   The 60px offsets mirror PAD in PipeDust.tsx: the canvas is larger than the
+   pipe so grains have somewhere to drift. Its width and height are set there,
+   from the pipe's measured box. */
+.al-dust {
+  position: absolute; pointer-events: none;
+  left: calc(var(--al-x0) - 60px);
+  top: calc(var(--core-y, 240px) - var(--al-pipe-h) * .404 - 60px);
+  /* Zero until PipeDust sizes it. On touch and under reduced motion it bails
+     before sizing, so the element stays genuinely nothing rather than a
+     canvas's default 300x150 sitting over the hero. */
+  width: 0; height: 0;
+}
+.al-pipe.is-dusting {
+  opacity: calc(1 - var(--burn-a, 0) * .8);
+  -webkit-mask-image: radial-gradient(circle var(--burn-r, 0px) at var(--burn-x, -400px) var(--burn-y, -400px),
+    transparent 0%, transparent 38%, #000 100%);
+          mask-image: radial-gradient(circle var(--burn-r, 0px) at var(--burn-x, -400px) var(--burn-y, -400px),
+    transparent 0%, transparent 38%, #000 100%);
+}
+
 /* The intake: a dark bore behind a bright rim, so it reads as an opening and
    not as a cap. Its height matches the pipe's near edge exactly. */
 .al-mouth {
