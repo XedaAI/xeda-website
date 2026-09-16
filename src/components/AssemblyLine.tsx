@@ -3,22 +3,23 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { useMouseParallax } from "@/hooks/useMouseParallax";
 import { useParallax } from "@/hooks/useParallax";
 
-// The hero's argument as a production line, running left to right.
+// The hero's argument as a pipe, running left to right through the mark.
 //
-//   LEFT   raw, unstructured input and nothing else — binary, hex, half-written
-//          subject lines, scan filenames, a stray CSV header. Deliberately no
-//          paper and no container: the point is that none of it has a shape yet.
-//   CENTRE the XEDA mark. Everything is drawn into it.
-//   RIGHT  structured output — every item boxed and labelled: an invoice with
-//          its account, "Gebucht · DATEV", an appointment, a client record.
+//   LEFT    raw, unstructured input and nothing else — binary, hex, half-written
+//           subject lines, scan filenames, a stray CSV header. Deliberately no
+//           paper and no container: none of it has a shape yet. It funnels into
+//           an opening and shrinks away INTO it, so it visibly goes in.
+//   BORE    the same material, travelling inside the pipe. Up to the mark it is
+//           still crooked and off-axis; at the mark it snaps straight and onto a
+//           lane. That one second is the promise, shown rather than claimed.
+//   RIGHT   out of the outlet, every item boxed and labelled and riding its lane.
 //
-// The contrast is the message: loose characters floating on the left, contained
-// and named on the right. Someone who knows nothing about software should be
-// able to watch this once and say what we do.
+// The pipe tapers away to the right, so the run has depth: the intake is near and
+// wide, the outlet further off and narrower. Someone who knows nothing about
+// software should be able to watch this once and say what we do.
 //
-// Chaos fades INTO the mark and order emerges FROM it, as two streams meeting,
-// rather than one element morphing — CSS cannot morph convincingly at this size,
-// and two streams read more clearly anyway.
+// The pipe is built from clip-path trapezoids rather than SVG so it stretches
+// with the viewport without distorting stroke widths or the two mouths.
 
 type Tier = "far" | "mid" | "near";
 /** bin = machine noise (binary, hex, magic bytes); phrase = human fragments. */
@@ -26,7 +27,7 @@ type InKind = "bin" | "phrase";
 type OutKind = "booked" | "answered" | "appointment" | "record" | "client" | "quoteA" | "quoteB";
 
 interface InItem {
-  /** Start, % of hero width from the left. */
+  /** Start, % of hero width from the left. Everything stays left of the intake. */
   x: number;
   /** Start, % of hero height. */
   y: number;
@@ -37,7 +38,21 @@ interface InItem {
   phrase?: number;
   tier: Tier;
   r0: number;
-  r1: number;
+  a: number;
+  d: number;
+  dl: number;
+  mobile?: boolean;
+}
+
+interface BoreItem {
+  /** Start offset from the pipe axis at the intake, px. */
+  y0: number;
+  /** Lane to snap onto at the mark, px from the axis. */
+  lane: number;
+  kind: InKind;
+  text?: string;
+  phrase?: number;
+  r0: number;
   a: number;
   d: number;
   dl: number;
@@ -45,8 +60,8 @@ interface InItem {
 }
 
 interface OutItem {
-  /** Lane to settle into by the right edge, % of hero height. */
-  y: number;
+  /** Lane index, 0–4 — top to bottom. Sets the angle it leaves the outlet on. */
+  lane: number;
   kind: OutKind;
   tier: Tier;
   a: number;
@@ -59,31 +74,56 @@ interface OutItem {
 // earlier version picked by `i % list.length`, which silently dropped one phrase
 // and printed the same binary string twice.
 const IN_ITEMS: InItem[] = [
-  { x: 1, y: 8, kind: "bin", text: "01001101 0110 1011", tier: "mid", r0: -4, r1: 2, a: 0.58, d: 11.5, dl: -1, mobile: true },
-  { x: 11, y: 2, kind: "phrase", phrase: 0, tier: "mid", r0: 3, r1: -1, a: 0.6, d: 12.5, dl: -6.5 },
-  { x: 3, y: 20, kind: "phrase", phrase: 1, tier: "near", r0: -6, r1: 3, a: 0.66, d: 10.5, dl: -3.5, mobile: true },
-  { x: 19, y: 13, kind: "bin", text: "0110 1001 1100 0101", tier: "far", r0: 5, r1: -2, a: 0.42, d: 14, dl: -9 },
-  { x: 7, y: 32, kind: "bin", text: "89 50 4E 47 0D 0A", tier: "far", r0: -3, r1: 1, a: 0.44, d: 13, dl: -11.5 },
-  { x: 24, y: 26, kind: "phrase", phrase: 2, tier: "mid", r0: 4, r1: -2, a: 0.54, d: 12, dl: -5 },
-  { x: 2, y: 44, kind: "phrase", phrase: 3, tier: "mid", r0: -5, r1: 2, a: 0.56, d: 13.5, dl: -8, mobile: true },
-  { x: 15, y: 39, kind: "bin", text: "%PDF-1.4", tier: "near", r0: 6, r1: -3, a: 0.62, d: 11, dl: -2 },
-  { x: 27, y: 46, kind: "bin", text: "1010 0111 0010 1101", tier: "far", r0: -4, r1: 2, a: 0.4, d: 15, dl: -12.5 },
-  { x: 9, y: 55, kind: "phrase", phrase: 4, tier: "far", r0: 3, r1: -1, a: 0.46, d: 14.5, dl: -7 },
-  { x: 20, y: 60, kind: "bin", text: "datum;betrag;konto", tier: "mid", r0: -6, r1: 3, a: 0.52, d: 12.8, dl: -10.5, mobile: true },
-  { x: 4, y: 66, kind: "phrase", phrase: 5, tier: "far", r0: 5, r1: -2, a: 0.42, d: 13.8, dl: -4 },
-  { x: 29, y: 6, kind: "bin", text: "IMG_2291.jpeg", tier: "far", r0: -3, r1: 1, a: 0.38, d: 15.5, dl: -13.5 },
-  { x: 13, y: 71, kind: "bin", text: "beleg_final_v2.pdf", tier: "mid", r0: 4, r1: -2, a: 0.48, d: 12.2, dl: -9.5 },
+  { x: 1, y: 10, kind: "bin", text: "01001101 0110 1011", tier: "mid", r0: -4, a: 0.58, d: 11.5, dl: -1, mobile: true },
+  { x: 8, y: 3, kind: "phrase", phrase: 0, tier: "mid", r0: 3, a: 0.6, d: 12.5, dl: -6.5 },
+  { x: 2, y: 22, kind: "phrase", phrase: 1, tier: "near", r0: -6, a: 0.66, d: 10.5, dl: -3.5, mobile: true },
+  { x: 13, y: 15, kind: "bin", text: "0110 1001 1100 0101", tier: "far", r0: 5, a: 0.42, d: 14, dl: -9 },
+  { x: 5, y: 36, kind: "bin", text: "89 50 4E 47 0D 0A", tier: "far", r0: -3, a: 0.44, d: 13, dl: -11.5 },
+  { x: 15, y: 30, kind: "phrase", phrase: 2, tier: "mid", r0: 4, a: 0.54, d: 12, dl: -5 },
+  { x: 1, y: 50, kind: "phrase", phrase: 3, tier: "mid", r0: -5, a: 0.56, d: 13.5, dl: -8, mobile: true },
+  { x: 10, y: 44, kind: "bin", text: "%PDF-1.4", tier: "near", r0: 6, a: 0.62, d: 11, dl: -2 },
+  { x: 17, y: 53, kind: "bin", text: "1010 0111 0010 1101", tier: "far", r0: -4, a: 0.4, d: 15, dl: -12.5 },
+  { x: 6, y: 63, kind: "phrase", phrase: 4, tier: "far", r0: 3, a: 0.46, d: 14.5, dl: -7 },
+  { x: 13, y: 69, kind: "bin", text: "datum;betrag;konto", tier: "mid", r0: -6, a: 0.52, d: 12.8, dl: -10.5, mobile: true },
+  { x: 2, y: 78, kind: "phrase", phrase: 5, tier: "far", r0: 5, a: 0.42, d: 13.8, dl: -4 },
+  { x: 18, y: 7, kind: "bin", text: "IMG_2291.jpeg", tier: "far", r0: -3, a: 0.38, d: 15.5, dl: -13.5 },
+  { x: 9, y: 86, kind: "bin", text: "beleg_final_v2.pdf", tier: "mid", r0: 4, a: 0.48, d: 12.2, dl: -9.5 },
+];
+
+// Inside the bore: the same material, not an invented fluid. y1/y2/y3 are the
+// vertical offsets at the mark (still crooked), just after it (snapped onto a
+// lane) and at the outlet — derived from y0 and lane, see the block comment on
+// `alBore` in index.css.
+const BORE_ITEMS: BoreItem[] = [
+  { y0: -14, lane: -7, kind: "phrase", phrase: 1, r0: -5, a: 0.55, d: 13, dl: -1, mobile: true },
+  { y0: 12, lane: 0, kind: "bin", text: "01001101 0110 1011", r0: 4, a: 0.48, d: 12, dl: -4.5, mobile: true },
+  { y0: -5, lane: 7, kind: "bin", text: "scan_0043.pdf", r0: 3, a: 0.55, d: 14, dl: -8, mobile: true },
+  { y0: 18, lane: -7, kind: "bin", text: "datum;betrag;konto", r0: -4, a: 0.46, d: 13.5, dl: -11 },
+  { y0: -11, lane: 0, kind: "phrase", phrase: 4, r0: 5, a: 0.5, d: 12.5, dl: -6.5 },
+  { y0: 6, lane: 7, kind: "bin", text: "89 50 4E 47 0D 0A", r0: -3, a: 0.42, d: 15, dl: -2.5 },
+  { y0: -18, lane: -7, kind: "bin", text: "IMG_2291.jpeg", r0: 4, a: 0.44, d: 11.5, dl: -9 },
+  { y0: 15, lane: 0, kind: "bin", text: "beleg_final_v2.pdf", r0: -4, a: 0.48, d: 14.5, dl: -13 },
 ];
 
 const OUT_ITEMS: OutItem[] = [
-  { y: 10, kind: "booked", tier: "near", a: 0.92, d: 11, dl: -2, mobile: true },
-  { y: 27, kind: "record", tier: "near", a: 0.9, d: 12, dl: -6.5, mobile: true },
-  { y: 44, kind: "answered", tier: "mid", a: 0.88, d: 11.5, dl: -9, mobile: true },
-  { y: 60, kind: "appointment", tier: "mid", a: 0.85, d: 13, dl: -4 },
-  { y: 17, kind: "quoteA", tier: "mid", a: 0.8, d: 14, dl: -11.5 },
-  { y: 52, kind: "client", tier: "far", a: 0.72, d: 12.5, dl: -7.5 },
-  { y: 35, kind: "quoteB", tier: "far", a: 0.7, d: 15, dl: -13 },
+  { lane: 2, kind: "booked", tier: "near", a: 0.92, d: 11, dl: -2, mobile: true },
+  { lane: 1, kind: "record", tier: "near", a: 0.9, d: 12, dl: -6.5, mobile: true },
+  { lane: 4, kind: "answered", tier: "mid", a: 0.88, d: 11.5, dl: -9 },
+  { lane: 0, kind: "appointment", tier: "mid", a: 0.85, d: 13, dl: -4 },
+  { lane: 0, kind: "quoteA", tier: "mid", a: 0.8, d: 13, dl: -10.5 },
+  { lane: 3, kind: "client", tier: "far", a: 0.72, d: 12.5, dl: -7.5, mobile: true },
+  { lane: 4, kind: "quoteB", tier: "far", a: 0.7, d: 11.5, dl: -3.25 },
 ];
+
+// The five lanes leaving the outlet, as the tangent of their angle. --dy is
+// derived from --out-dx in CSS, so the fan keeps its shape at any width.
+const LANE_SLOPE = [-0.42, -0.18, 0.04, 0.26, 0.48];
+// The same angles in degrees, for the drawn guides. CSS has atan(), but its
+// support is younger than the rest of this stylesheet relies on, so the
+// conversion happens here where it costs nothing.
+const LANE_DEG = LANE_SLOPE.map((s) => (Math.atan(s) * 180) / Math.PI);
+/** Vertical offset each lane starts at, so items do not leave stacked. */
+const LANE_START = [-8, -4, 0, 4, 8];
 
 const TIERS: Array<{ tier: Tier; scroll: number; mouse: number }> = [
   { tier: "far", scroll: 0.07, mouse: 4 },
@@ -93,8 +133,9 @@ const TIERS: Array<{ tier: Tier; scroll: number; mouse: number }> = [
 
 const COPY = {
   de: {
-    capIn: "Eingang · ungeordnet",
-    capOut: "Ausgang · geprüft & gebucht",
+    capIn: "Eingang · alles, roh",
+    capMid: "Verarbeitung",
+    capOut: "Ausgang · geprüft",
     phrases: [
       "re: rechnung?? anbei",
       "AW: AW: Beleg fehlt",
@@ -118,8 +159,9 @@ const COPY = {
     quoteB: "Papier rein. Entscheidungen raus.",
   },
   en: {
-    capIn: "Incoming · unsorted",
-    capOut: "Outgoing · checked & booked",
+    capIn: "Incoming · all of it, raw",
+    capMid: "Processing",
+    capOut: "Outgoing · checked",
     phrases: [
       "re: invoice?? attached",
       "FW: FW: receipt missing",
@@ -186,13 +228,9 @@ function OutBody({ kind, L }: { kind: OutKind; L: Copy }) {
       );
     default:
       return (
-        <div className="al-paper al-paper--md">
-          <div className="al-hd" />
-          <div className="al-quote">{kind === "quoteA" ? L.quoteA : L.quoteB}</div>
-          <div className="al-ln al-ln--s" />
-          <div className="al-foot">
-            <span className="al-badge"><Check /></span>
-          </div>
+        <div className="al-note">
+          <span className="al-badge"><Check /></span>
+          <span className="al-quote">{kind === "quoteA" ? L.quoteA : L.quoteB}</span>
         </div>
       );
   }
@@ -209,7 +247,7 @@ function Layer({ scroll, mouse, children }: { scroll: number; mouse: number; chi
 }
 
 interface AssemblyLineProps {
-  /** The element both streams meet at — the XEDA mark in the hero. */
+  /** The mark in the hero. The pipe is hung off it and runs through it. */
   coreRef: RefObject<HTMLElement>;
   className?: string;
 }
@@ -219,9 +257,11 @@ const AssemblyLine = ({ coreRef, className = "" }: AssemblyLineProps) => {
   const L = COPY[language === "de" ? "de" : "en"];
   const rootRef = useRef<HTMLDivElement>(null);
 
-  // Measure once per size change: inbound items need a vector to the mark,
-  // outbound items a vector from the mark to their lane at the right edge. Doing
-  // it in JS is what keeps the line aimed correctly at any viewport width.
+  // Measure once per size change. The pipe's ends sit at 25% and 75% of the
+  // width in CSS, but three things still need real pixels: the vertical anchor
+  // (the mark moves with the type), how far bore items travel, and how far
+  // outbound items run before they leave. Inbound items are aimed at the intake
+  // rather than at the mark — they have to disappear INTO the opening.
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
@@ -232,24 +272,37 @@ const AssemblyLine = ({ coreRef, className = "" }: AssemblyLineProps) => {
       const rootRect = root.getBoundingClientRect();
       const coreRect = core.getBoundingClientRect();
       const W = rootRect.width;
-      const H = rootRect.height;
       const cx = coreRect.left - rootRect.left + coreRect.width / 2;
       const cy = coreRect.top - rootRect.top + coreRect.height / 2;
       root.style.setProperty("--core-x", `${cx}px`);
       root.style.setProperty("--core-y", `${cy}px`);
+      // Both travel distances come from the pipe as it actually rendered, so
+      // they follow --al-x0/--al-x1 rather than repeating them.
+      const pipe = root.querySelector(".al-pipe");
+      const mouth = root.querySelector(".al-mouth");
+      if (!pipe || !mouth) return;
+      const pipeRect = pipe.getBoundingClientRect();
+      const pipeRight = pipeRect.right - rootRect.left;
 
+      // Bore: intake to outlet, less the width of the two mouths.
+      root.style.setProperty("--bore-dx", `${Math.max(pipeRect.width - 34, 40)}px`);
+      // Outbound: as far as the tail allows once the widest card is accounted
+      // for, so nothing is still at full opacity while half off-screen.
+      const run = Math.min(Math.max(W - pipeRight - 118, 56), 220);
+      root.style.setProperty("--out-dx", `${run}px`);
+
+      // Inbound is aimed at the intake itself rather than at the mark — it has
+      // to disappear INTO the opening. Measuring the mouth instead of deriving
+      // its position keeps this correct whenever the pipe moves or resizes.
+      const mouthRect = mouth.getBoundingClientRect();
+      const mx = mouthRect.left - rootRect.left + mouthRect.width / 2;
+      const my = mouthRect.top - rootRect.top + mouthRect.height / 2;
       root.querySelectorAll<HTMLElement>(".al-in").forEach((el) => {
         const r = el.getBoundingClientRect();
         const ex = r.left - rootRect.left + r.width / 2;
         const ey = r.top - rootRect.top + r.height / 2;
-        el.style.setProperty("--dx", `${cx - ex}px`);
-        el.style.setProperty("--dy", `${cy - ey}px`);
-      });
-
-      root.querySelectorAll<HTMLElement>(".al-out").forEach((el) => {
-        const lane = Number(el.dataset.lane) || 0;
-        el.style.setProperty("--dx", `${W + 170 - cx}px`);
-        el.style.setProperty("--dy", `${(lane / 100) * H - cy}px`);
+        el.style.setProperty("--dx", `${mx - ex}px`);
+        el.style.setProperty("--dy", `${my - ey}px`);
       });
     };
 
@@ -271,6 +324,55 @@ const AssemblyLine = ({ coreRef, className = "" }: AssemblyLineProps) => {
 
   return (
     <div ref={rootRef} className={`al-field ${className}`} aria-hidden="true">
+      {/* Draws the eye to the opening without drawing a single hard line. */}
+      <div className="al-glow" />
+
+      {/* The pipe: an outer trapezoid for the lit edges, an inner one two pixels
+          smaller for the skin, so the edge follows the taper at any width. */}
+      <div className="al-pipe">
+        <div className="al-pipe-skin" />
+      </div>
+
+      {/* The pipe recedes under the mark rather than cutting across it. */}
+      <div className="al-core-shade" />
+
+      {/* The intake we can see into, and the outlet further away. */}
+      <div className="al-mouth">
+        <div className="al-mouth-bore" />
+      </div>
+      <div className="al-outlet" />
+
+      {/* Past the outlet: ruled lanes. Order you can see between the items. */}
+      <div className="al-lanes">
+        {LANE_DEG.map((deg, i) => (
+          <span key={i} className="al-lane" style={{ "--deg": `${deg.toFixed(2)}deg` } as CSSProperties} />
+        ))}
+      </div>
+
+      {/* Inside the bore: what fell in, on its way through. */}
+      <div className="al-bore">
+        {BORE_ITEMS.map((it, i) => (
+          <div
+            key={`bore-${i}`}
+            className={`al-boreitem ${it.kind === "bin" ? "al-raw--bin" : ""} ${it.mobile ? "" : "al-item--desk"}`}
+            style={
+              {
+                "--y0": `${it.y0}px`,
+                "--y1": `${(-8 - 0.2 * it.y0).toFixed(1)}px`,
+                "--y2": `${(-8 + it.lane - it.y0).toFixed(1)}px`,
+                "--y3": `${(-16 + 0.6 * it.lane - it.y0).toFixed(1)}px`,
+                "--r0": `${it.r0}deg`,
+                "--a": it.a,
+                "--d": `${it.d}s`,
+                "--dl": `${it.dl}s`,
+              } as CSSProperties
+            }
+          >
+            {it.text ?? L.phrases[it.phrase ?? 0]}
+          </div>
+        ))}
+      </div>
+
       {TIERS.map(({ tier, scroll, mouse }) => (
         <Layer key={tier} scroll={scroll} mouse={mouse}>
           {IN_ITEMS.map((it, i) =>
@@ -285,7 +387,6 @@ const AssemblyLine = ({ coreRef, className = "" }: AssemblyLineProps) => {
                     left: `${it.x}%`,
                     top: `${it.y}%`,
                     "--r0": `${it.r0}deg`,
-                    "--r1": `${it.r1}deg`,
                     "--a": it.a,
                     "--d": `${it.d}s`,
                     "--dl": `${it.dl}s`,
@@ -301,12 +402,11 @@ const AssemblyLine = ({ coreRef, className = "" }: AssemblyLineProps) => {
             it.tier !== tier ? null : (
               <div
                 key={`out-${i}`}
-                data-lane={it.y}
                 className={`al-item al-out ${it.mobile ? "" : "al-item--desk"}`}
                 style={
                   {
-                    left: "var(--core-x, 50%)",
-                    top: "var(--core-y, 30%)",
+                    "--lane-start": `${LANE_START[it.lane]}px`,
+                    "--slope": LANE_SLOPE[it.lane],
                     "--a": it.a,
                     "--d": `${it.d}s`,
                     "--dl": `${it.dl}s`,
@@ -323,8 +423,9 @@ const AssemblyLine = ({ coreRef, className = "" }: AssemblyLineProps) => {
       <div className="al-pulse" />
       <div className="al-pulse al-pulse--2" />
 
-      {/* Names the two ends, so the direction of the line is never ambiguous. */}
+      {/* Names the three stages, so the direction of the run is never ambiguous. */}
       <span className="al-caption al-caption--in">{L.capIn}</span>
+      <span className="al-caption al-caption--mid">{L.capMid}</span>
       <span className="al-caption al-caption--out">{L.capOut}</span>
     </div>
   );
