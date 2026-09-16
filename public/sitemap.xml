@@ -24,6 +24,17 @@
     <priority>0.6</priority>
   </url>
 
+  <!-- How we work — the delivery method in full -->
+  <url>
+    <loc>https://xeda.ai/process</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://xeda.ai/process?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://xeda.ai/process?lang=de"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xeda.ai/process"/>
+    <lastmod>2026-09-16</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
   <!-- Landing: Steuerkanzleien (accounting firms) -->
   <url>
     <loc>https://xeda.ai/steuerkanzleien</loc>
