@@ -117,16 +117,15 @@ const CH_W = 78;
 const CH_H = 13;
 // The wheel and its buckets.
 //
-// It turns COUNTER-clockwise: a bucket has to come out of the basin at the
-// bottom, up the right-hand side, and tip at the pour point up-right where the
-// first chute waits. Clockwise carried them up the far side and poured them
-// into nothing.
+// It turns CLOCKWISE: a bucket leaves the basin at the bottom, is carried up
+// the far side, crests the top, and tips at the pour point up-right where the
+// first chute waits — so it is already on its way down when it empties, which
+// is how an overshot wheel actually delivers. That is a 223-degree carry, most
+// of a turn.
 //
 // Each bucket's water is on its own copy of one animation, phase-shifted by a
-// negative delay so that its progress is zero exactly when that bucket is at
-// the bottom of the wheel. Everything else follows: it stays full for the
-// 137-degree arc from the water to the pour point (38% of a turn), empties
-// there, and rides back round empty.
+// negative delay so its progress is zero exactly when that bucket sits at the
+// bottom of the wheel. Everything else follows from that.
 // 16s, not 26: the spokes repeat every 45 degrees, so at 26s the wheel looked
 // identical for 3.3 seconds at a stretch and read as standing still.
 const WHEEL_SECONDS = 16;
@@ -141,7 +140,9 @@ const BOTTOM_DEG = 90;
 // first version negated this and put every bucket half a turn out of phase —
 // full on the way down, empty on the way up.
 const bucketDelay = (deg: number) => {
-  let d = WHEEL_SECONDS * ((deg - BOTTOM_DEG) / 360);
+  // Clockwise, so the angle grows with time: the bucket reaches the bottom
+  // after (90 - start) degrees of travel.
+  let d = WHEEL_SECONDS * ((BOTTOM_DEG - deg) / 360);
   while (d > 0) d -= WHEEL_SECONDS;
   while (d <= -WHEEL_SECONDS) d += WHEEL_SECONDS;
   return d;

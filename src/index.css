@@ -677,8 +677,7 @@ All colors MUST be HSL.
   transform-origin: 236px 236px;
   animation: dcWheel 16s linear infinite;
 }
-/* Counter-clockwise: the buckets have to rise on the side the chute is on. */
-@keyframes dcWheel { to { transform: rotate(-360deg); } }
+@keyframes dcWheel { to { transform: rotate(360deg); } }
 
 /* A bucket carries water from the basin to the pour point and tips it out
    there. Phase set per bucket in DeliveryCascade.tsx via a negative delay, so
@@ -688,11 +687,14 @@ All colors MUST be HSL.
   transform-origin: center bottom;
   animation: dcBucket 16s linear infinite;
 }
+/* Clockwise, so the carry is the long way round: full from the basin at the
+   bottom, up the far side and over the top, emptying at the pour point on the
+   right — 62% of a turn — then back down to the water empty. */
 @keyframes dcBucket {
   0%   { opacity: 0.9; transform: scaleY(1); }
-  36%  { opacity: 0.9; transform: scaleY(1); }
-  41%  { opacity: 0; transform: scaleY(0.1); }
-  94%  { opacity: 0; transform: scaleY(0.1); }
+  60%  { opacity: 0.9; transform: scaleY(1); }
+  65%  { opacity: 0; transform: scaleY(0.1); }
+  96%  { opacity: 0; transform: scaleY(0.1); }
   100% { opacity: 0.9; transform: scaleY(1); }
 }
 
