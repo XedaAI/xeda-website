@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { Search, Users, FileCheck2, DraftingCompass, ListChecks, Code2, Rocket, type LucideIcon } from "lucide-react";
 
 // The seven-step delivery method, as a Persian water wheel.
@@ -340,37 +340,57 @@ const DeliveryCascade = () => {
           {/* What that stage hands over. Positioned from the same geometry the
               chute is drawn from, as a percentage, so it tracks the SVG at any
               width instead of needing its own measurement. */}
-          {/* The readout. A fixed screen in the empty upper right rather than a
-              panel that follows the cursor: it never covers what you are
-              pointing at, it needs no per-stage anchoring, and it gives the
-              drawing somewhere for the eye to land. */}
+          {/* The readout: a framed display mounted in the empty upper right.
+              It holds one position rather than chasing the cursor, so it can
+              never cover what you are pointing at and needs no per-stage
+              anchoring. Keyed on the active stage so React remounts the body
+              on every change and the entry animation replays — including on
+              the way back to idle, which is what gives it an exit without
+              needing exit-animation machinery. */}
           <div className="dc-screen hidden xl:flex">
-            {step && active !== null ? (
-              <>
-                <div className="flex items-center gap-2.5 mb-2">
-                  <span className="dc-screen-n">{active + 1}</span>
-                  <h3 className="font-semibold text-foreground leading-tight">{step.title}</h3>
+            <span className="dc-corner dc-corner--tl" aria-hidden="true" />
+            <span className="dc-corner dc-corner--tr" aria-hidden="true" />
+            <span className="dc-corner dc-corner--bl" aria-hidden="true" />
+            <span className="dc-corner dc-corner--br" aria-hidden="true" />
+            <span key={`sweep-${active ?? "idle"}`} className="dc-sweep" aria-hidden="true" />
+
+            <div key={active ?? "idle"} className="dc-body">
+              {step && active !== null ? (
+                <>
+                  <div className="dc-line flex items-center gap-2.5 mb-2" style={{ "--i": 0 } as CSSProperties}>
+                    <span className="dc-screen-n">{active + 1}</span>
+                    <h3 className="font-semibold text-foreground leading-tight">{step.title}</h3>
+                  </div>
+                  <p
+                    className="dc-line text-xs font-semibold uppercase tracking-wide text-primary mb-1.5"
+                    style={{ "--i": 1 } as CSSProperties}
+                  >
+                    Das bekommen Sie
+                  </p>
+                  <ul className="space-y-1">
+                    {step.deliverables.map((d, k) => (
+                      <li
+                        key={d}
+                        className="dc-line text-sm text-foreground leading-snug flex gap-2"
+                        style={{ "--i": k + 2 } as CSSProperties}
+                      >
+                        <span aria-hidden="true" className="text-primary">·</span>
+                        {d}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <div className="m-auto text-center">
+                  <p className="dc-line text-sm font-medium text-foreground mb-1" style={{ "--i": 0 } as CSSProperties}>
+                    Fahren Sie über eine Stufe
+                  </p>
+                  <p className="dc-line text-sm text-muted-foreground" style={{ "--i": 1 } as CSSProperties}>
+                    Dann steht hier, was Sie am Ende dieser Stufe in der Hand halten.
+                  </p>
                 </div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-primary mb-1.5">
-                  Das bekommen Sie
-                </p>
-                <ul className="space-y-1">
-                  {step.deliverables.map((d) => (
-                    <li key={d} className="text-sm text-foreground leading-snug flex gap-2">
-                      <span aria-hidden="true" className="text-primary">·</span>
-                      {d}
-                    </li>
-                  ))}
-                </ul>
-              </>
-            ) : (
-              <div className="m-auto text-center">
-                <p className="text-sm font-medium text-foreground mb-1">Fahren Sie über eine Stufe</p>
-                <p className="text-sm text-muted-foreground">
-                  Dann steht hier, was Sie am Ende dieser Stufe in der Hand halten.
-                </p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
           </div>
         </div>
