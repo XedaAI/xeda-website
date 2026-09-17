@@ -881,3 +881,266 @@ All colors MUST be HSL.
   --dust-4: hsl(168 46% 62%);
   --dust-5: hsl(var(--foreground));
 }
+/* --- Delivery cascade -------------------------------------------------------
+   Palette for the seven-step water-wheel illustration (DeliveryCascade.tsx).
+   Stone and wood take their tone from the page's own tokens so the drawing sits
+   in whatever theme is active; the water is the one place a hue enters, because
+   the metaphor needs water to look like water. Both sets are defined here, so
+   dropping the --dc-water pair back onto a foreground token makes the whole
+   illustration monochrome again. */
+.dc-flow {
+  --dc-wood: hsl(28 34% 44%);
+  --dc-wood-lit: hsl(30 42% 58%);
+  --dc-stone: hsl(36 22% 60%);
+  --dc-stone-lit: hsl(38 30% 75%);
+  --dc-water: hsl(204 84% 44%);
+  --dc-water-soft: hsl(204 84% 44% / 0.22);
+  --dc-water-deep: hsl(206 72% 30% / 0.2);
+  --dc-on-water: hsl(0 0% 100%);
+  --dc-label: hsl(var(--foreground) / 0.82);
+  --dc-label-soft: hsl(var(--muted-foreground));
+
+  /* One hue per stage, as HSL triples so a single value serves both the solid
+     fill and every washed-back form of it. */
+  --dc-s1: 210 68% 40%;
+  --dc-s2: 152 60% 30%;
+  --dc-s3: 38 76% 38%;
+  --dc-s4: 6 66% 46%;
+  --dc-s5: 282 44% 45%;
+  --dc-s6: 187 74% 29%;
+  --dc-s7: 245 48% 50%;
+}
+/* A hovered or focused stage reads as the live one. The cursor is a pointer so
+   it announces itself as something to hover, though nothing navigates. */
+.dc-stage { cursor: pointer; outline: none; }
+.dc-stage:focus-visible rect:first-of-type { stroke: hsl(var(--primary)); stroke-width: 2; }
+
+/* The readout screen: a framed display mounted in the empty upper right of the
+   drawing, holding one fixed position rather than chasing the cursor.
+
+   The bounds are not guessed. The stage labels were measured in the browser:
+   stage 1's text ends at viewBox x 649 and stage 2's begins at y 213, so the
+   free region is x ~696..1194, y 3..201 — expressed as percentages of the
+   wrapper that IS the drawing, so it tracks the SVG at any width.
+
+   Only from xl up. Measured at lg the panel is 141px tall against the 176px a
+   four-item stage needs, so it clipped on every stage; the cards underneath
+   carry the same content in full, so it simply is not drawn there. */
+.dc-screen {
+  position: absolute;
+  left: 58%;
+  right: 0.5%;
+  top: 0.5%;
+  height: 33%;
+  flex-direction: column;
+  padding: 0.875rem 1rem;
+  border-radius: 0.5rem;
+  /* The frame: an outer edge, an inset mat line a few pixels in, and a wash
+     over the card colour. --card sits within a few percent of the surface it
+     floats over, so without the wash it read as a faint rectangle. */
+  border: 1px solid hsl(var(--foreground) / 0.26);
+  background:
+    linear-gradient(hsl(var(--foreground) / 0.07), hsl(var(--foreground) / 0.07)),
+    hsl(var(--card));
+  box-shadow:
+    inset 0 0 0 1px hsl(var(--card)),
+    inset 0 0 0 2px hsl(var(--foreground) / 0.1),
+    0 22px 48px hsl(220 14% 2% / 0.5);
+  pointer-events: none;
+  overflow: hidden;
+}
+/* Its own type scale: the panel is short, and the shared card sizes would push
+   a four-item list past it. */
+.dc-screen h3 { font-size: 0.9375rem; }
+.dc-screen li { font-size: 0.8125rem; line-height: 1.35; }
+.dc-screen-n {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.5rem;
+  background: hsl(var(--dc-accent, var(--primary)) / 0.16);
+  color: hsl(var(--dc-accent, var(--primary)));
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+/* Corner brackets — the frame's mounting marks. */
+.dc-corner {
+  position: absolute;
+  width: 0.75rem;
+  height: 0.75rem;
+  border: 1.5px solid hsl(var(--dc-accent, var(--primary)) / 0.6);
+}
+.dc-corner--tl { top: 5px; left: 5px; border-right: 0; border-bottom: 0; }
+.dc-corner--tr { top: 5px; right: 5px; border-left: 0; border-bottom: 0; }
+.dc-corner--bl { bottom: 5px; left: 5px; border-right: 0; border-top: 0; }
+.dc-corner--br { bottom: 5px; right: 5px; border-left: 0; border-top: 0; }
+
+.dc-body { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+
+/* A single bright line sweeping the frame each time the content changes, and
+   the lines themselves arriving one after another. Both are transform and
+   opacity only, so they composite rather than repaint — and both run once per
+   change, not on a loop. */
+/* Full height with the bright line painted across its top, so translateY(100%)
+   carries it exactly one panel height — whatever that height turns out to be.
+   An earlier pass moved it by a hard-coded 190px, which was right at 1280 and
+   stopped short of the bottom at every width above it. */
+.dc-sweep {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, hsl(var(--dc-accent, var(--primary)) / 0.9), transparent);
+  background-size: 100% 2px;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  opacity: 0;
+  animation: dcSweep 0.55s cubic-bezier(0.3, 0, 0.2, 1) 1;
+}
+@keyframes dcSweep {
+  0% { transform: translateY(0); opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 0.6; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
+.dc-line {
+  opacity: 0;
+  animation: dcLineIn 0.34s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(var(--i, 0) * 55ms + 90ms);
+}
+@keyframes dcLineIn {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dc-sweep { display: none; }
+  .dc-line { opacity: 1; animation: none; }
+}
+
+.dark .dc-flow {
+  --dc-wood: hsl(28 28% 40%);
+  --dc-wood-lit: hsl(30 36% 54%);
+  --dc-stone: hsl(36 16% 47%);
+  --dc-stone-lit: hsl(38 24% 63%);
+  --dc-water: hsl(200 88% 60%);
+  --dc-water-soft: hsl(200 88% 60% / 0.2);
+  --dc-water-deep: hsl(202 72% 58% / 0.15);
+  --dc-on-water: hsl(206 40% 12%);
+
+  --dc-s1: 207 80% 63%;
+  --dc-s2: 152 52% 53%;
+  --dc-s3: 38 86% 59%;
+  --dc-s4: 6 76% 65%;
+  --dc-s5: 282 58% 70%;
+  --dc-s6: 187 66% 53%;
+  --dc-s7: 245 68% 70%;
+}
+
+/* Anything that should carry the current stage's hue. One variable, set on the
+   readout and on each card, so a colour change is one line in the palette. */
+.dc-accent { color: hsl(var(--dc-accent, var(--primary))); }
+.dc-card { --dc-accent: var(--primary); }
+.dc-card-n {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  background: hsl(var(--dc-accent) / 0.14);
+  color: hsl(var(--dc-accent));
+}
+
+/* --- Cascade motion ---------------------------------------------------------
+   The wheel turns, the basin breathes, and the water runs the staircase. All of
+   it is slow on purpose: this sits under a headline about a delivery method,
+   not on a landing page for a game.
+
+   The streams are dashed strokes with a moving offset — the same technique the
+   hero's bore uses. That is a paint per frame rather than a composite, so the
+   count is kept low: seven short chute strokes, seven falls, two ripples, one
+   rotation, and the whole lot stops when the section leaves the screen. */
+/* transform-box: fill-box put the pivot at the BOUNDING BOX centre, and the
+   bucket ring makes that box asymmetric — the hub wandered three pixels across
+   the screen and the wheel wobbled rather than spun. The group carries no
+   transform of its own, so its coordinate system is the viewBox and the axis
+   can be named outright. */
+.dc-wheel {
+  transform-box: view-box;
+  transform-origin: 236px 236px;
+  animation: dcWheel 16s linear infinite;
+}
+@keyframes dcWheel { to { transform: rotate(360deg); } }
+
+/* A bucket carries water from the basin to the pour point and tips it out
+   there. Phase set per bucket in DeliveryCascade.tsx via a negative delay, so
+   progress 0 is the moment that bucket sits at the bottom of the wheel. */
+.dc-bucket {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: dcBucket 16s linear infinite;
+}
+/* Clockwise, so the carry is the long way round: full from the basin at the
+   bottom, up the far side and over the top, emptying at the pour point on the
+   right — 62% of a turn — then back down to the water empty. */
+@keyframes dcBucket {
+  0%   { opacity: 0.9; transform: scaleY(1); }
+  60%  { opacity: 0.9; transform: scaleY(1); }
+  65%  { opacity: 0; transform: scaleY(0.1); }
+  96%  { opacity: 0; transform: scaleY(0.1); }
+  100% { opacity: 0.9; transform: scaleY(1); }
+}
+
+.dc-bob {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: dcBob 7s ease-in-out infinite;
+}
+@keyframes dcBob {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(2px, -2.5px); }
+}
+
+/* Rings opening where the wheel dips in, then fading as they widen. */
+.dc-ripple {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  animation: dcRipple 5.5s ease-out infinite;
+}
+.dc-ripple--2 { animation-delay: 2.75s; }
+@keyframes dcRipple {
+  0% { transform: scale(0.25); opacity: 0; }
+  20% { opacity: 0.55; }
+  100% { transform: scale(1.02); opacity: 0; }
+}
+
+.dc-stream {
+  stroke-dasharray: 5 13;
+  opacity: 0.9;
+  animation: dcStream 1.5s linear infinite;
+}
+@keyframes dcStream { from { stroke-dashoffset: 36; } to { stroke-dashoffset: 0; } }
+
+.dc-fall {
+  stroke-dasharray: 4 10;
+  opacity: 0.85;
+  animation: dcStream 0.9s linear infinite;
+}
+
+.dc-flow.is-paused .dc-wheel,
+.dc-flow.is-paused .dc-bucket,
+.dc-flow.is-paused .dc-bob,
+.dc-flow.is-paused .dc-ripple,
+.dc-flow.is-paused .dc-stream,
+.dc-flow.is-paused .dc-fall { animation-play-state: paused; }
+
+@media (prefers-reduced-motion: reduce) {
+  .dc-wheel, .dc-bob, .dc-stream, .dc-fall { animation: none; }
+  .dc-bucket { animation: none; opacity: 0.9; }
+  .dc-ripple { display: none; }
+}

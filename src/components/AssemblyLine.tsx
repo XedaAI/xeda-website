@@ -222,7 +222,7 @@ const COPY = {
   },
 } as const;
 
-type Copy = (typeof COPY)["de"];
+type Copy = (typeof COPY)[keyof typeof COPY];
 
 const Check = () => (
   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="hsl(220 8% 96%)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">

@@ -1,17 +1,20 @@
 import type React from "react";
+import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
-import { Receipt, Factory, ShoppingCart, Building2, Stethoscope, HardHat } from "lucide-react";
+import { Receipt, Factory, ShoppingCart, Building2, Stethoscope, HardHat, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import TiltWrapper from "@/components/TiltWrapper";
 
 // Illustrative use cases — examples of what we build, NOT specific client data.
+// Each card is the entry point to that industry's landing page (src/data/verticals.ts),
+// so the six areas are a funnel rather than a static grid.
 const cases = [
-  { icon: Receipt, key: "accounting" },
-  { icon: Factory, key: "manufacturing" },
-  { icon: ShoppingCart, key: "ecommerce" },
-  { icon: Building2, key: "realestate" },
-  { icon: Stethoscope, key: "medical" },
-  { icon: HardHat, key: "construction" },
+  { icon: Receipt, key: "accounting", slug: "steuerkanzleien" },
+  { icon: Factory, key: "manufacturing", slug: "fertigung" },
+  { icon: ShoppingCart, key: "ecommerce", slug: "e-commerce" },
+  { icon: Building2, key: "realestate", slug: "immobilien" },
+  { icon: Stethoscope, key: "medical", slug: "arztpraxis" },
+  { icon: HardHat, key: "construction", slug: "handwerk" },
 ];
 
 const UseCasesSection = () => {
@@ -27,13 +30,17 @@ const UseCasesSection = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mt-12">
-          {cases.map(({ icon: Icon, key }, index) => (
+          {cases.map(({ icon: Icon, key, slug }, index) => (
             <TiltWrapper key={key}>
+            <Link
+              to={`/${slug}`}
+              className="group block h-full rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            >
             <Card
-              className="card-lift enter h-full bg-card border-border/50 hover:shadow-lg"
+              className="card-lift enter h-full bg-card border-border/50 hover:shadow-lg group-hover:border-foreground/28"
               style={{ "--enter-delay": `${index * 0.07}s` } as React.CSSProperties}
             >
-              <CardContent className="p-6">
+              <CardContent className="p-6 flex flex-col h-full">
                 <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
                   <Icon className="w-5 h-5 text-primary" />
                 </div>
@@ -50,8 +57,14 @@ const UseCasesSection = () => {
                 <p className="text-sm font-medium text-foreground border-t border-border pt-3">
                   → {t(`useCases.${key}.outcome`)}
                 </p>
+
+                <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary">
+                  {t("useCases.learnMore")}
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                </span>
               </CardContent>
             </Card>
+            </Link>
             </TiltWrapper>
           ))}
         </div>
