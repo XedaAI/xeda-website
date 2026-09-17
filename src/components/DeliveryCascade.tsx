@@ -105,13 +105,16 @@ const STEPS: Step[] = [
 // least the chute width, or the water would have to fall backwards into the
 // next chute.
 const VB_W = 1200;
-const VB_H = 560;
-const CH_X = 372;
-const CH_Y = 48;
-const CH_DX = 62;
-const CH_DY = 58;
-const CH_W = 58;
-const CH_H = 15;
+const VB_H = 600;
+// The first chute starts inside the wheel's rim rather than floating beside it:
+// at y = CH_Y the wheel reaches x ≈ 300, so a chute beginning at 290 overlaps
+// it by about ten units and the two read as one machine.
+const CH_X = 290;
+const CH_Y = 178;
+const CH_DX = 82;
+const CH_DY = 46;
+const CH_W = 78;
+const CH_H = 13;
 const chuteX = (i: number) => CH_X + i * CH_DX;
 const chuteY = (i: number) => CH_Y + i * CH_DY;
 
@@ -150,39 +153,39 @@ const DeliveryCascade = () => {
           >
             {/* ---- the reservoir: everything, unsorted ---- */}
             <g>
-              <ellipse cx="140" cy="300" rx="108" ry="28" fill="var(--dc-stone)" />
-              <path d="M 32 300 v 40 a 108 28 0 0 0 216 0 v -40 z" fill="var(--dc-stone)" />
-              <ellipse cx="140" cy="300" rx="96" ry="22" fill="var(--dc-water-deep)" />
+              <ellipse cx="200" cy="340" rx="112" ry="28" fill="var(--dc-stone)" />
+              <path d="M 88 340 v 40 a 112 28 0 0 0 224 0 v -40 z" fill="var(--dc-stone)" />
+              <ellipse cx="200" cy="340" rx="99" ry="22" fill="var(--dc-water-deep)" />
               <g fill="var(--dc-water)" opacity="0.92">
-                <rect x="78" y="292" width="14" height="18" rx="2" />
-                <rect x="110" y="300" width="18" height="13" rx="2" />
-                <rect x="144" y="286" width="13" height="13" rx="3" />
-                <rect x="126" y="310" width="16" height="11" rx="2" />
-                <rect x="172" y="294" width="12" height="16" rx="2" />
-                <rect x="192" y="306" width="15" height="10" rx="2" />
-                <circle cx="98" cy="312" r="3.6" />
-                <circle cx="166" cy="314" r="3.2" />
-                <circle cx="206" cy="290" r="3.2" />
+                <rect x="138" y="332" width="14" height="18" rx="2" />
+                <rect x="170" y="340" width="18" height="13" rx="2" />
+                <rect x="204" y="326" width="13" height="13" rx="3" />
+                <rect x="186" y="350" width="16" height="11" rx="2" />
+                <rect x="232" y="334" width="12" height="16" rx="2" />
+                <rect x="252" y="346" width="15" height="10" rx="2" />
+                <circle cx="158" cy="352" r="3.6" />
+                <circle cx="226" cy="354" r="3.2" />
+                <circle cx="266" cy="330" r="3.2" />
               </g>
-              <text x="140" y="404" textAnchor="middle" fontSize="15" fontWeight="700" letterSpacing="2" fill="var(--dc-label)">
+              <text x="200" y="448" textAnchor="middle" fontSize="15" fontWeight="700" letterSpacing="2" fill="var(--dc-label)">
                 UNGEORDNET
               </text>
-              <text x="140" y="426" textAnchor="middle" fontSize="12.5" fill="var(--dc-label-soft)">
+              <text x="200" y="470" textAnchor="middle" fontSize="12.5" fill="var(--dc-label-soft)">
                 Belege · PDFs · E-Mails · Scans · Tabellen
               </text>
             </g>
 
             {/* ---- the wheel that lifts it ---- */}
-            <g transform="translate(272 216)">
-              <circle r="84" fill="none" stroke="var(--dc-stone)" strokeWidth="13" />
-              <circle r="69" fill="none" stroke="var(--dc-stone-lit)" strokeWidth="2.5" />
+            <g transform="translate(236 236)">
+              <circle r="86" fill="none" stroke="var(--dc-stone)" strokeWidth="13" />
+              <circle r="71" fill="none" stroke="var(--dc-stone-lit)" strokeWidth="2.5" />
               {[0, 45, 90, 135].map((deg) => (
                 <line
                   key={deg}
-                  x1={-81 * Math.cos((deg * Math.PI) / 180)}
-                  y1={-81 * Math.sin((deg * Math.PI) / 180)}
-                  x2={81 * Math.cos((deg * Math.PI) / 180)}
-                  y2={81 * Math.sin((deg * Math.PI) / 180)}
+                  x1={-83 * Math.cos((deg * Math.PI) / 180)}
+                  y1={-83 * Math.sin((deg * Math.PI) / 180)}
+                  x2={83 * Math.cos((deg * Math.PI) / 180)}
+                  y2={83 * Math.sin((deg * Math.PI) / 180)}
                   stroke="var(--dc-stone)"
                   strokeWidth="6"
                   strokeLinecap="round"
@@ -193,12 +196,29 @@ const DeliveryCascade = () => {
               {[-150, -120, -90, -60, -30, 0, 30, 60].map((deg, k) => {
                 const a = (deg * Math.PI) / 180;
                 return (
-                  <g key={deg} transform={`translate(${91 * Math.cos(a)} ${91 * Math.sin(a)}) rotate(${deg + 90})`}>
+                  <g key={deg} transform={`translate(${93 * Math.cos(a)} ${93 * Math.sin(a)}) rotate(${deg + 90})`}>
                     <rect x="-9" y="-7" width="18" height="14" rx="2" fill="var(--dc-stone)" />
                     {k < 5 && <rect x="-6.5" y="-4.5" width="13" height="9" rx="1.5" fill="var(--dc-water)" opacity="0.9" />}
                   </g>
                 );
               })}
+            </g>
+
+            {/* The bucket tipping at the top pours into the first chute. Without
+                this the wheel sits beside the cascade instead of feeding it. */}
+            <g>
+              <path
+                d={`M 246 168 L 262 162 L ${CH_X + 6} ${CH_Y + 2} L ${CH_X + 6} ${CH_Y + 11} L 250 178 z`}
+                fill="var(--dc-water-soft)"
+              />
+              <path
+                d={`M 250 172 Q ${(250 + CH_X) / 2} 162 ${CH_X + 8} ${CH_Y + 6}`}
+                fill="none"
+                stroke="var(--dc-water)"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                opacity="0.85"
+              />
             </g>
 
             {/* ---- the seven named stages ---- */}
@@ -266,14 +286,14 @@ const DeliveryCascade = () => {
                   </text>
                   <text
                     x={x + CH_W + 14}
-                    y={y + 6}
+                    y={y + 3}
                     fontSize="15"
                     fontWeight="700"
                     fill={on ? "var(--dc-water)" : "var(--dc-label)"}
                   >
                     {s.title}
                   </text>
-                  <text x={x + CH_W + 14} y={y + 23} fontSize="12.5" fill="var(--dc-label-soft)">
+                  <text x={x + CH_W + 14} y={y + 19} fontSize="12.5" fill="var(--dc-label-soft)">
                     {s.desc}
                   </text>
                 </g>
@@ -281,7 +301,7 @@ const DeliveryCascade = () => {
             })}
 
             {/* ---- what it irrigates ---- */}
-            <g transform={`translate(${chuteX(6)} 476)`}>
+            <g transform={`translate(${chuteX(6)} 502)`}>
               <g stroke="var(--dc-water)" strokeWidth="2.4" strokeLinecap="round" opacity="0.5">
                 {[0, 1, 2, 3, 4].map((k) => (
                   <line key={k} x1="0" y1={k * 12} x2="150" y2={k * 12} />
@@ -308,14 +328,18 @@ const DeliveryCascade = () => {
                 // Anchored past the stage's own name, never over it, and
                 // flipped on both axes for the lower stages so it opens into
                 // the panel instead of off its edge.
-                active <= 3
+                // Only the first stage has room to open rightward: the
+                // one-line description is far wider than the name, and from the
+                // second on, clearing it would push the panel off the drawing.
+                // Everything below opens from the corner instead.
+                active === 0
                   ? {
-                      left: `${((chuteX(active) + CH_W + 184) / VB_W) * 100}%`,
+                      left: `${((chuteX(active) + CH_W + 300) / VB_W) * 100}%`,
                       top: `${((chuteY(active) - 8) / VB_H) * 100}%`,
                     }
                   : {
                       right: "3%",
-                      bottom: `${((VB_H - chuteY(active) + 10) / VB_H) * 100}%`,
+                      bottom: `${((VB_H - chuteY(active) + 28) / VB_H) * 100}%`,
                     }
               }
             >

@@ -515,9 +515,15 @@ All colors MUST be HSL.
   width: 19rem;
   padding: 0.875rem 1rem;
   border-radius: 0.75rem;
-  border: 1px solid hsl(var(--border));
-  background: hsl(var(--card));
-  box-shadow: 0 18px 40px hsl(220 14% 2% / 0.28);
+  /* --card sits within a few percent of the panel it floats over, so the
+     panel read as a faint rectangle rather than as something in front. A
+     foreground wash over it lifts it in whichever theme is active, and the
+     border and shadow carry the rest of the separation. */
+  border: 1px solid hsl(var(--foreground) / 0.22);
+  background:
+    linear-gradient(hsl(var(--foreground) / 0.08), hsl(var(--foreground) / 0.08)),
+    hsl(var(--card));
+  box-shadow: 0 20px 46px hsl(220 14% 2% / 0.5);
   pointer-events: none;
   z-index: 2;
 }
