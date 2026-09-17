@@ -271,23 +271,6 @@ const DeliveryCascade = () => {
               </g>
             </g>
 
-            {/* The bucket tipping at the top pours into the first chute. Without
-                this the wheel sits beside the cascade instead of feeding it. */}
-            <g>
-              <path
-                d={`M 246 168 L 262 162 L ${CH_X + 6} ${CH_Y + 2} L ${CH_X + 6} ${CH_Y + 11} L 250 178 z`}
-                fill="var(--dc-water-soft)"
-              />
-              <path
-                className="dc-fall"
-                d={`M 250 172 Q ${(250 + CH_X) / 2} 162 ${CH_X + 8} ${CH_Y + 6}`}
-                fill="none"
-                stroke="var(--dc-water)"
-                strokeWidth="2.4"
-                strokeLinecap="round"
-              />
-            </g>
-
             {/* ---- the seven named stages ---- */}
             {STEPS.map((s, i) => {
               const x = chuteX(i);
