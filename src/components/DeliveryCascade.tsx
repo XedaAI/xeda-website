@@ -127,8 +127,13 @@ const CH_H = 13;
 // the bottom of the wheel. Everything else follows: it stays full for the
 // 137-degree arc from the water to the pour point (38% of a turn), empties
 // there, and rides back round empty.
-const WHEEL_SECONDS = 26;
-const BUCKET_DEG = [-150, -120, -90, -60, -30, 0, 30, 60];
+// 16s, not 26: the spokes repeat every 45 degrees, so at 26s the wheel looked
+// identical for 3.3 seconds at a stretch and read as standing still.
+const WHEEL_SECONDS = 16;
+// Buckets all the way round rather than over a 210-degree arc. With water only
+// on the ascending side, what you see travelling is a band of blue — which is
+// what makes the rotation legible at all, the rim being dark on dark.
+const BUCKET_DEG = [-180, -150, -120, -90, -60, -30, 0, 30, 60, 90, 120, 150];
 /** Angle at the bottom of the wheel, where a bucket fills. SVG y runs down. */
 const BOTTOM_DEG = 90;
 // A NEGATIVE animation-delay means the animation has already been running that
@@ -223,8 +228,11 @@ const DeliveryCascade = () => {
             </g>
 
             {/* ---- the wheel that lifts it ---- */}
-            <g transform="translate(236 236)">
-              <g className="dc-wheel">
+            {/* The rotation sits on the OUTER group, which carries no
+                transform of its own, so its coordinate system is the viewBox
+                and transform-origin can name the axis exactly. */}
+            <g className="dc-wheel">
+              <g transform="translate(236 236)">
               <circle r="86" fill="none" stroke="var(--dc-wood)" strokeWidth="13" />
               <circle r="71" fill="none" stroke="var(--dc-wood-lit)" strokeWidth="2.5" />
               {[0, 45, 90, 135].map((deg) => (
@@ -245,7 +253,7 @@ const DeliveryCascade = () => {
                 const a = (deg * Math.PI) / 180;
                 return (
                   <g key={deg} transform={`translate(${93 * Math.cos(a)} ${93 * Math.sin(a)}) rotate(${deg + 90})`}>
-                    <rect x="-9" y="-7" width="18" height="14" rx="2" fill="var(--dc-wood)" />
+                    <rect x="-9" y="-7" width="18" height="14" rx="2" fill="var(--dc-wood-lit)" />
                     <rect
                       className="dc-bucket"
                       x="-6.5"

@@ -667,10 +667,15 @@ All colors MUST be HSL.
    hero's bore uses. That is a paint per frame rather than a composite, so the
    count is kept low: seven short chute strokes, seven falls, two ripples, one
    rotation, and the whole lot stops when the section leaves the screen. */
+/* transform-box: fill-box put the pivot at the BOUNDING BOX centre, and the
+   bucket ring makes that box asymmetric — the hub wandered three pixels across
+   the screen and the wheel wobbled rather than spun. The group carries no
+   transform of its own, so its coordinate system is the viewBox and the axis
+   can be named outright. */
 .dc-wheel {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: dcWheel 26s linear infinite;
+  transform-box: view-box;
+  transform-origin: 236px 236px;
+  animation: dcWheel 16s linear infinite;
 }
 /* Counter-clockwise: the buckets have to rise on the side the chute is on. */
 @keyframes dcWheel { to { transform: rotate(-360deg); } }
@@ -681,7 +686,7 @@ All colors MUST be HSL.
 .dc-bucket {
   transform-box: fill-box;
   transform-origin: center bottom;
-  animation: dcBucket 26s linear infinite;
+  animation: dcBucket 16s linear infinite;
 }
 @keyframes dcBucket {
   0%   { opacity: 0.9; transform: scaleY(1); }
