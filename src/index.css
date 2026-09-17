@@ -484,3 +484,28 @@ All colors MUST be HSL.
     animation: none;
   }
 }
+/* --- Delivery cascade -------------------------------------------------------
+   Palette for the seven-step water-wheel illustration (DeliveryCascade.tsx).
+   Stone and wood take their tone from the page's own tokens so the drawing sits
+   in whatever theme is active; the water is the one place a hue enters, because
+   the metaphor needs water to look like water. Both sets are defined here, so
+   dropping the --dc-water pair back onto a foreground token makes the whole
+   illustration monochrome again. */
+.dc-flow {
+  --dc-stone: hsl(var(--muted-foreground) / 0.32);
+  --dc-stone-lit: hsl(var(--muted-foreground) / 0.5);
+  --dc-water: hsl(203 74% 44%);
+  --dc-water-soft: hsl(203 74% 44% / 0.2);
+  --dc-water-deep: hsl(203 60% 26% / 0.22);
+  --dc-on-water: hsl(0 0% 100%);
+  --dc-label: hsl(var(--foreground) / 0.8);
+  --dc-label-soft: hsl(var(--muted-foreground));
+}
+.dark .dc-flow {
+  --dc-stone: hsl(var(--muted-foreground) / 0.34);
+  --dc-stone-lit: hsl(var(--muted-foreground) / 0.52);
+  --dc-water: hsl(199 82% 62%);
+  --dc-water-soft: hsl(199 82% 62% / 0.2);
+  --dc-water-deep: hsl(203 70% 60% / 0.16);
+  --dc-on-water: hsl(220 20% 10%);
+}

@@ -13,6 +13,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import SEOHead from "@/components/SEOHead";
+import DeliveryCascade from "@/components/DeliveryCascade";
 import { auditBookingUrl } from "@/lib/booking";
 import type { Vertical } from "@/data/verticals";
 
@@ -169,6 +170,10 @@ const VerticalLanding = ({ vertical }: { vertical: Vertical }) => {
           </div>
         </div>
       </section>
+
+      {/* The delivery method in full — the three steps above are the shape of
+          it; this is what actually happens, stage by stage. */}
+      <DeliveryCascade />
 
       {/* Final CTA */}
       <section className="py-20 bg-muted/30">
