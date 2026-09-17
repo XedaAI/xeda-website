@@ -501,6 +501,27 @@ All colors MUST be HSL.
   --dc-label: hsl(var(--foreground) / 0.8);
   --dc-label-soft: hsl(var(--muted-foreground));
 }
+/* A hovered or focused stage reads as the live one. The cursor is a pointer so
+   it announces itself as something to hover, though nothing navigates. */
+.dc-stage { cursor: pointer; outline: none; }
+.dc-stage:focus-visible rect:first-of-type { stroke: hsl(var(--primary)); stroke-width: 2; }
+
+/* The deliverables panel. Anchored from the chute's own geometry in
+   DeliveryCascade.tsx, so it follows the drawing at any width. Fixed width
+   rather than max-width: the anchor points are computed against it, and a panel
+   that resized with its content would sometimes overrun the panel's edge. */
+.dc-pop {
+  position: absolute;
+  width: 19rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  box-shadow: 0 18px 40px hsl(220 14% 2% / 0.28);
+  pointer-events: none;
+  z-index: 2;
+}
+
 .dark .dc-flow {
   --dc-stone: hsl(var(--muted-foreground) / 0.34);
   --dc-stone-lit: hsl(var(--muted-foreground) / 0.52);

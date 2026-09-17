@@ -1,237 +1,370 @@
+import { useState } from "react";
 import { Search, Users, FileCheck2, DraftingCompass, ListChecks, Code2, Rocket, type LucideIcon } from "lucide-react";
 
 // The seven-step delivery method, as a Persian water wheel.
 //
-// The metaphor does the explaining: a reservoir of unstructured material is
-// lifted by a wheel and sent down seven descending channels, and by the last
-// one it arrives as ordered, irrigated fields. It is the same argument the
-// homepage hero makes with its pipe, told with the imagery the method is named
-// after — so a reader who has seen one recognises the other.
+// A reservoir of unstructured material is lifted by the wheel and sent down
+// seven descending channels, and by the last one it arrives as ordered,
+// irrigated rows. The water is drawn getting more ordered as it descends —
+// scattered specks in the first channels, ruled parallel lines in the last. It
+// is the same argument the homepage hero makes with its pipe, told with the
+// imagery the method is named after, so a reader who has seen one recognises
+// the other.
 //
-// The water is drawn getting more ordered as it descends: scattered specks in
-// the first channels, parallel lines in the last. That is the whole promise in
-// one picture, and it costs nothing to say it that way rather than claiming it
-// in prose underneath.
-//
-// Deliberately an illustration rather than a photograph: it carries the page's
-// own type and colour, it stays sharp at any size, it costs no bytes worth
-// counting, and it does not need a separate asset per language.
+// Every channel carries its own name, and hovering one shows what that stage
+// actually hands over. The deliverables are also printed in the cards below,
+// always visible: they are the most convincing thing on the page, and content
+// that only exists on hover is invisible to a phone, a keyboard and a crawler.
+// The duplication is in the rendering only — one list, in STEPS, read twice.
 
 interface Step {
-  n: number;
   icon: LucideIcon;
   title: string;
   desc: string;
+  /** What you are actually handed at the end of this stage. */
+  deliverables: string[];
 }
 
 const STEPS: Step[] = [
-  { n: 1, icon: Search, title: "Entdecken & Prüfen", desc: "Wir verstehen, wo die Arbeit wirklich hängt — und rechnen es durch." },
-  { n: 2, icon: Users, title: "Interne Abstimmung", desc: "Wir legen mit Ihnen fest, woran der Erfolg gemessen wird." },
-  { n: 3, icon: FileCheck2, title: "Umfang & Freigabe", desc: "Fester Umfang, fester Preis, schriftlich — bevor gebaut wird." },
-  { n: 4, icon: DraftingCompass, title: "Lösungsdesign", desc: "Wir entwerfen das System und nehmen die Risiken vorweg." },
-  { n: 5, icon: ListChecks, title: "Meilensteinplanung", desc: "Sie sehen vorab, was wann fertig ist." },
-  { n: 6, icon: Code2, title: "Bauen & Liefern", desc: "In Sprints bis zur Produktion, integriert in Ihre Tools." },
-  { n: 7, icon: Rocket, title: "Übergabe & Betrieb", desc: "Wir nehmen es in Betrieb, betreuen es und bauen es aus." },
+  {
+    icon: Search,
+    title: "Entdecken & Prüfen",
+    desc: "Wir verstehen, wo die Arbeit wirklich hängt.",
+    deliverables: [
+      "Prozesslandkarte der betroffenen Abläufe",
+      "Aufwand in Stunden und Euro, gerechnet",
+      "Priorisierte Liste der Automatisierungs-Kandidaten",
+    ],
+  },
+  {
+    icon: Users,
+    title: "Interne Abstimmung",
+    desc: "Wir legen fest, woran der Erfolg gemessen wird.",
+    deliverables: [
+      "Definierte Erfolgskennzahlen mit Ausgangswert",
+      "Benannte Ansprechpartner je Bereich",
+      "Abgestimmter Zielzustand, schriftlich",
+    ],
+  },
+  {
+    icon: FileCheck2,
+    title: "Umfang & Freigabe",
+    desc: "Fester Umfang, fester Preis — bevor gebaut wird.",
+    deliverables: [
+      "Leistungsbeschreibung mit klarer Abgrenzung",
+      "Festpreis und verbindlicher Termin",
+      "Unterschriebene Freigabe",
+    ],
+  },
+  {
+    icon: DraftingCompass,
+    title: "Lösungsdesign",
+    desc: "Wir entwerfen das System und nehmen Risiken vorweg.",
+    deliverables: [
+      "Architektur und Datenflüsse",
+      "Schnittstellenliste — DATEV, DMS, Postfach",
+      "Risiken mit Gegenmaßnahmen",
+      "AVV-Entwurf und Löschkonzept",
+    ],
+  },
+  {
+    icon: ListChecks,
+    title: "Meilensteinplanung",
+    desc: "Sie sehen vorab, was wann fertig ist.",
+    deliverables: [
+      "Sprintplan mit Terminen",
+      "Abnahmekriterien je Meilenstein",
+      "Testplan mit Ihren echten Belegen",
+    ],
+  },
+  {
+    icon: Code2,
+    title: "Bauen & Liefern",
+    desc: "In Sprints bis zur Produktion, in Ihren Tools.",
+    deliverables: [
+      "Lauffähiges System in Ihrer Umgebung",
+      "Demo alle zwei Wochen, kein Blindflug",
+      "Dokumentation und Testprotokoll",
+    ],
+  },
+  {
+    icon: Rocket,
+    title: "Übergabe & Betrieb",
+    desc: "Wir nehmen es in Betrieb und betreuen es.",
+    deliverables: [
+      "Schulung für Ihr Team",
+      "Betriebshandbuch und Monitoring",
+      "Fester Ansprechpartner und Reaktionszeiten",
+      "Roadmap für den Ausbau",
+    ],
+  },
 ];
 
-/** One descending channel. `i` is 0-based; the geometry is derived, not hand-placed. */
-const Flume = ({ i }: { i: number }) => {
-  const x = 452 + i * 78;
-  const y = 84 + i * 40;
-  const w = 96;
-  const h = 17;
+// Geometry, in viewBox units. Derived rather than hand-placed, so the cascade
+// and the popup that follows it can never drift apart. The x step must be at
+// least the chute width, or the water would have to fall backwards into the
+// next chute.
+const VB_W = 1200;
+const VB_H = 560;
+const CH_X = 372;
+const CH_Y = 48;
+const CH_DX = 62;
+const CH_DY = 58;
+const CH_W = 58;
+const CH_H = 15;
+const chuteX = (i: number) => CH_X + i * CH_DX;
+const chuteY = (i: number) => CH_Y + i * CH_DY;
+
+const DeliveryCascade = () => {
+  const [active, setActive] = useState<number | null>(null);
+  const step = active === null ? null : STEPS[active];
+
   return (
-    <g>
-      {/* The chute: a lip, a floor, and a shadowed inner wall. */}
-      <path d={`M ${x} ${y} h ${w} v ${h} h ${-w} z`} fill="var(--dc-stone)" />
-      <path d={`M ${x} ${y} h ${w} v 4 h ${-w} z`} fill="var(--dc-stone-lit)" />
-      {/* Water in the channel. */}
-      <rect x={x + 3} y={y + 4} width={w - 6} height={h - 6} rx="2" fill="var(--dc-water-soft)" />
-      {/* It arrives as specks and leaves as parallel lines: the first channels
-          carry scattered dots, the last carry ruled streaks. */}
-      {i < 3 ? (
-        <g fill="var(--dc-water)" opacity={0.85}>
-          {[0.14, 0.3, 0.44, 0.58, 0.72, 0.88].map((f, k) => (
-            <rect key={k} x={x + 6 + (w - 12) * f} y={y + 6 + ((k * 3) % 5)} width="2.6" height="2.6" rx="1" />
-          ))}
-        </g>
-      ) : (
-        <g stroke="var(--dc-water)" strokeWidth="1.6" strokeLinecap="round" opacity={0.9}>
-          {[0, 1, 2].map((k) => (
-            <line
-              key={k}
-              x1={x + 8}
-              y1={y + 7 + k * 3.4}
-              x2={x + w - 8 - (6 - i) * 4}
-              y2={y + 7 + k * 3.4}
-            />
-          ))}
-        </g>
-      )}
-      {/* The fall into the next channel. */}
-      {i < 6 && (
-        <g>
-          <path
-            d={`M ${x + w - 14} ${y + h} L ${x + w + 4} ${y + h} L ${x + w + 4} ${y + 40} L ${x + w - 10} ${y + 40} z`}
-            fill="var(--dc-water-soft)"
-          />
-          <line
-            x1={x + w - 6}
-            y1={y + h}
-            x2={x + w - 3}
-            y2={y + 40}
-            stroke="var(--dc-water)"
-            strokeWidth="1.4"
-            strokeLinecap="round"
-            opacity="0.8"
-          />
-        </g>
-      )}
-      {/* Its number, so the picture and the list below are the same thing. */}
-      <circle cx={x - 13} cy={y + h / 2} r="10" fill="var(--dc-water)" />
-      <text
-        x={x - 13}
-        y={y + h / 2 + 3.6}
-        textAnchor="middle"
-        fontSize="11"
-        fontWeight="700"
-        fill="var(--dc-on-water)"
-      >
-        {i + 1}
-      </text>
-    </g>
-  );
-};
+    <section className="dc-flow py-20 md:py-28">
+      <div className="container mx-auto px-6">
+        <div className="max-w-3xl mb-12">
+          <span className="text-sm font-semibold tracking-wide text-primary mb-3 block">
+            Unsere Liefermethode
+          </span>
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-5 leading-tight">
+            Sieben Stufen vom Belegchaos zur belastbaren Zahl
+          </h2>
+          <p className="text-lg text-muted-foreground leading-relaxed">
+            Wie ein persisches Wasserrad: Wir heben, was ungeordnet liegt, und führen es über
+            sieben kontrollierte Stufen — bis am Ende etwas ankommt, mit dem Ihre Kanzlei
+            arbeiten kann. Jede Stufe hat ein Ergebnis, das Sie in der Hand halten.
+          </p>
+        </div>
 
-const DeliveryCascade = () => (
-  <section className="dc-flow py-20 md:py-28">
-    <div className="container mx-auto px-6">
-      <div className="max-w-3xl mb-12">
-        <span className="text-sm font-semibold tracking-wide text-primary mb-3 block">
-          Unsere Liefermethode
-        </span>
-        <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-5 leading-tight">
-          Sieben Stufen vom Belegchaos zur belastbaren Zahl
-        </h2>
-        <p className="text-lg text-muted-foreground leading-relaxed">
-          Wie ein persisches Wasserrad: Wir heben, was ungeordnet liegt, und führen es über
-          sieben kontrollierte Stufen — bis am Ende etwas ankommt, mit dem Ihre Kanzlei
-          arbeiten kann. Jede Stufe hat ein Ergebnis, das Sie sehen und freigeben.
-        </p>
-      </div>
-
-      {/* The wheel, the seven channels, and what they irrigate. */}
-      <div className="rounded-2xl border border-border bg-muted/30 p-4 md:p-8 mb-12 overflow-hidden">
-        <svg
-          viewBox="0 0 1200 440"
-          className="w-full h-auto text-foreground"
-          role="img"
-          aria-label="Ein Wasserrad hebt ungeordnete Daten aus einem Becken und führt sie über sieben absteigende Kanäle in geordnete Felder."
-        >
-          {/* ---- the reservoir: everything, unsorted ---- */}
-          <g>
-            <ellipse cx="170" cy="258" rx="132" ry="32" fill="var(--dc-stone)" />
-            <path d="M 38 258 v 46 a 132 32 0 0 0 264 0 v -46 z" fill="var(--dc-stone)" />
-            <ellipse cx="170" cy="258" rx="118" ry="25" fill="var(--dc-water-deep)" />
-            {/* Unstructured material, floating and unaligned. */}
-            <g fill="var(--dc-water)" opacity="0.92">
-              <rect x="98" y="248" width="15" height="19" rx="2" />
-              <rect x="134" y="258" width="19" height="14" rx="2" />
-              <rect x="172" y="242" width="14" height="14" rx="3" />
-              <rect x="152" y="270" width="17" height="12" rx="2" />
-              <rect x="206" y="252" width="13" height="17" rx="2" />
-              <rect x="228" y="266" width="16" height="11" rx="2" />
-              <circle cx="122" cy="272" r="4" />
-              <circle cx="198" cy="274" r="3.4" />
-              <circle cx="246" cy="248" r="3.4" />
+        <div className="rounded-2xl border border-border bg-muted/30 p-4 md:p-8 mb-12">
+          {/* The positioning context is this wrapper, not the padded card:
+              the popup's coordinates come from the viewBox, so they are only
+              correct against a box that IS the drawing. Anchoring to the card
+              shifted every one of them by its padding. */}
+          <div className="relative">
+          <svg
+            viewBox={`0 0 ${VB_W} ${VB_H}`}
+            className="w-full h-auto font-sans"
+            role="img"
+            aria-label="Ein Wasserrad hebt ungeordnete Belege aus einem Becken und führt sie über sieben benannte Stufen in geordnete, auswertbare Daten."
+          >
+            {/* ---- the reservoir: everything, unsorted ---- */}
+            <g>
+              <ellipse cx="140" cy="300" rx="108" ry="28" fill="var(--dc-stone)" />
+              <path d="M 32 300 v 40 a 108 28 0 0 0 216 0 v -40 z" fill="var(--dc-stone)" />
+              <ellipse cx="140" cy="300" rx="96" ry="22" fill="var(--dc-water-deep)" />
+              <g fill="var(--dc-water)" opacity="0.92">
+                <rect x="78" y="292" width="14" height="18" rx="2" />
+                <rect x="110" y="300" width="18" height="13" rx="2" />
+                <rect x="144" y="286" width="13" height="13" rx="3" />
+                <rect x="126" y="310" width="16" height="11" rx="2" />
+                <rect x="172" y="294" width="12" height="16" rx="2" />
+                <rect x="192" y="306" width="15" height="10" rx="2" />
+                <circle cx="98" cy="312" r="3.6" />
+                <circle cx="166" cy="314" r="3.2" />
+                <circle cx="206" cy="290" r="3.2" />
+              </g>
+              <text x="140" y="404" textAnchor="middle" fontSize="15" fontWeight="700" letterSpacing="2" fill="var(--dc-label)">
+                UNGEORDNET
+              </text>
+              <text x="140" y="426" textAnchor="middle" fontSize="12.5" fill="var(--dc-label-soft)">
+                Belege · PDFs · E-Mails · Scans · Tabellen
+              </text>
             </g>
-            <text
-              x="170"
-              y="368"
-              textAnchor="middle"
-              fontSize="15"
-              fontWeight="700"
-              letterSpacing="2"
-              fill="var(--dc-label)"
-            >
-              UNGEORDNET
-            </text>
-            <text x="170" y="390" textAnchor="middle" fontSize="12.5" fill="var(--dc-label-soft)">
-              Belege · PDFs · E-Mails · Scans · Tabellen
-            </text>
-          </g>
 
-          {/* ---- the wheel that lifts it ---- */}
-          <g transform="translate(340 176)">
-            <circle r="104" fill="none" stroke="var(--dc-stone)" strokeWidth="15" />
-            <circle r="86" fill="none" stroke="var(--dc-stone-lit)" strokeWidth="3" />
-            {[0, 45, 90, 135].map((deg) => (
-              <line
-                key={deg}
-                x1={-100 * Math.cos((deg * Math.PI) / 180)}
-                y1={-100 * Math.sin((deg * Math.PI) / 180)}
-                x2={100 * Math.cos((deg * Math.PI) / 180)}
-                y2={100 * Math.sin((deg * Math.PI) / 180)}
-                stroke="var(--dc-stone)"
-                strokeWidth="7"
-                strokeLinecap="round"
-              />
-            ))}
-            <circle r="17" fill="var(--dc-stone)" />
-            <circle r="7" fill="var(--dc-stone-lit)" />
-            {/* Buckets on the rim, the upper ones carrying water. */}
-            {[-150, -120, -90, -60, -30, 0, 30, 60].map((deg, k) => {
-              const a = (deg * Math.PI) / 180;
+            {/* ---- the wheel that lifts it ---- */}
+            <g transform="translate(272 216)">
+              <circle r="84" fill="none" stroke="var(--dc-stone)" strokeWidth="13" />
+              <circle r="69" fill="none" stroke="var(--dc-stone-lit)" strokeWidth="2.5" />
+              {[0, 45, 90, 135].map((deg) => (
+                <line
+                  key={deg}
+                  x1={-81 * Math.cos((deg * Math.PI) / 180)}
+                  y1={-81 * Math.sin((deg * Math.PI) / 180)}
+                  x2={81 * Math.cos((deg * Math.PI) / 180)}
+                  y2={81 * Math.sin((deg * Math.PI) / 180)}
+                  stroke="var(--dc-stone)"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                />
+              ))}
+              <circle r="14" fill="var(--dc-stone)" />
+              <circle r="6" fill="var(--dc-stone-lit)" />
+              {[-150, -120, -90, -60, -30, 0, 30, 60].map((deg, k) => {
+                const a = (deg * Math.PI) / 180;
+                return (
+                  <g key={deg} transform={`translate(${91 * Math.cos(a)} ${91 * Math.sin(a)}) rotate(${deg + 90})`}>
+                    <rect x="-9" y="-7" width="18" height="14" rx="2" fill="var(--dc-stone)" />
+                    {k < 5 && <rect x="-6.5" y="-4.5" width="13" height="9" rx="1.5" fill="var(--dc-water)" opacity="0.9" />}
+                  </g>
+                );
+              })}
+            </g>
+
+            {/* ---- the seven named stages ---- */}
+            {STEPS.map((s, i) => {
+              const x = chuteX(i);
+              const y = chuteY(i);
+              const on = active === i;
               return (
-                <g key={deg} transform={`translate(${112 * Math.cos(a)} ${112 * Math.sin(a)}) rotate(${deg + 90})`}>
-                  <rect x="-11" y="-8" width="22" height="16" rx="2" fill="var(--dc-stone)" />
-                  {k < 5 && <rect x="-8" y="-5" width="16" height="10" rx="1.5" fill="var(--dc-water)" opacity="0.9" />}
+                <g
+                  key={s.title}
+                  tabIndex={0}
+                  className="dc-stage"
+                  onMouseEnter={() => setActive(i)}
+                  onMouseLeave={() => setActive(null)}
+                  onFocus={() => setActive(i)}
+                  onBlur={() => setActive(null)}
+                >
+                  {/* Hit area: the whole row, so the name is as clickable as the chute. */}
+                  <rect x={x - 30} y={y - 12} width={VB_W - x + 20} height={CH_DY - 6} fill="transparent" />
+
+                  {/* The chute. */}
+                  <path d={`M ${x} ${y} h ${CH_W} v ${CH_H} h ${-CH_W} z`} fill="var(--dc-stone)" />
+                  <path d={`M ${x} ${y} h ${CH_W} v 3.5 h ${-CH_W} z`} fill="var(--dc-stone-lit)" />
+                  <rect x={x + 2.5} y={y + 3.5} width={CH_W - 5} height={CH_H - 5} rx="2" fill="var(--dc-water-soft)" />
+
+                  {/* Specks early, ruled lines late: the ordering, shown. */}
+                  {i < 3 ? (
+                    <g fill="var(--dc-water)" opacity="0.85">
+                      {[0.12, 0.32, 0.5, 0.68, 0.86].map((f, k) => (
+                        <rect key={k} x={x + 5 + (CH_W - 10) * f} y={y + 5 + ((k * 3) % 5)} width="2.4" height="2.4" rx="1" />
+                      ))}
+                    </g>
+                  ) : (
+                    <g stroke="var(--dc-water)" strokeWidth="1.5" strokeLinecap="round" opacity="0.9">
+                      {[0, 1, 2].map((k) => (
+                        <line key={k} x1={x + 6} y1={y + 6 + k * 3.2} x2={x + CH_W - 6 - (6 - i) * 2.5} y2={y + 6 + k * 3.2} />
+                      ))}
+                    </g>
+                  )}
+
+                  {/* The fall into the next chute. */}
+                  {i < STEPS.length - 1 && (
+                    <>
+                      <path
+                        d={`M ${x + CH_W - 10} ${y + CH_H} L ${x + CH_W} ${y + CH_H} L ${x + CH_DX} ${y + CH_DY} L ${x + CH_DX - 12} ${y + CH_DY} z`}
+                        fill="var(--dc-water-soft)"
+                      />
+                      <line
+                        x1={x + CH_W - 4}
+                        y1={y + CH_H}
+                        x2={x + CH_DX - 5}
+                        y2={y + CH_DY}
+                        stroke="var(--dc-water)"
+                        strokeWidth="1.4"
+                        strokeLinecap="round"
+                        opacity="0.8"
+                      />
+                    </>
+                  )}
+
+                  {/* Its number and its name, on the stage itself. */}
+                  <circle cx={x - 14} cy={y + CH_H / 2} r="10.5" fill="var(--dc-water)" />
+                  <text x={x - 14} y={y + CH_H / 2 + 3.6} textAnchor="middle" fontSize="11" fontWeight="700" fill="var(--dc-on-water)">
+                    {i + 1}
+                  </text>
+                  <text
+                    x={x + CH_W + 14}
+                    y={y + 6}
+                    fontSize="15"
+                    fontWeight="700"
+                    fill={on ? "var(--dc-water)" : "var(--dc-label)"}
+                  >
+                    {s.title}
+                  </text>
+                  <text x={x + CH_W + 14} y={y + 23} fontSize="12.5" fill="var(--dc-label-soft)">
+                    {s.desc}
+                  </text>
                 </g>
               );
             })}
-          </g>
 
-          {/* ---- the seven channels ---- */}
-          {[0, 1, 2, 3, 4, 5, 6].map((i) => (
-            <Flume key={i} i={i} />
-          ))}
-
-          {/* ---- what it irrigates: ordered rows and a reading off them ---- */}
-          <g transform="translate(1028 348)">
-            <g stroke="var(--dc-water)" strokeWidth="2.4" strokeLinecap="round" opacity="0.5">
-              {[0, 1, 2, 3, 4].map((k) => (
-                <line key={k} x1="0" y1={k * 13} x2="152" y2={k * 13} />
-              ))}
+            {/* ---- what it irrigates ---- */}
+            <g transform={`translate(${chuteX(6)} 476)`}>
+              <g stroke="var(--dc-water)" strokeWidth="2.4" strokeLinecap="round" opacity="0.5">
+                {[0, 1, 2, 3, 4].map((k) => (
+                  <line key={k} x1="0" y1={k * 12} x2="150" y2={k * 12} />
+                ))}
+              </g>
+              <g fill="var(--dc-water)" opacity="0.92">
+                {[14, 32, 22, 42, 28, 36].map((h, k) => (
+                  <rect key={k} x={k * 17} y={-14 - h} width="11" height={h} rx="1.5" />
+                ))}
+              </g>
+              <text x="75" y="80" textAnchor="middle" fontSize="12.5" fill="var(--dc-label-soft)">
+                Geprüft · gebucht · auswertbar
+              </text>
             </g>
-            <g fill="var(--dc-water)" opacity="0.92">
-              {[14, 34, 23, 44, 29, 38].map((h, k) => (
-                <rect key={k} x={k * 17} y={-16 - h} width="11" height={h} rx="1.5" />
-              ))}
-            </g>
-          </g>
-          <text x="1104" y="428" textAnchor="middle" fontSize="12.5" fill="var(--dc-label-soft)">
-            Geprüft · gebucht · auswertbar
-          </text>
-        </svg>
-      </div>
+          </svg>
 
-      {/* The same seven, in words. */}
-      <ol className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        {STEPS.map((s) => (
-          <li key={s.n} className="rounded-xl border border-border bg-card p-5">
-            <div className="flex items-center gap-3 mb-3">
-              <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 text-sm font-bold">
-                {s.n}
-              </span>
-              <s.icon className="w-5 h-5 text-primary flex-shrink-0" aria-hidden="true" />
+          {/* What that stage hands over. Positioned from the same geometry the
+              chute is drawn from, as a percentage, so it tracks the SVG at any
+              width instead of needing its own measurement. */}
+          {step && active !== null && (
+            <div
+              className="dc-pop hidden md:block"
+              style={
+                // Anchored past the stage's own name, never over it, and
+                // flipped on both axes for the lower stages so it opens into
+                // the panel instead of off its edge.
+                active <= 3
+                  ? {
+                      left: `${((chuteX(active) + CH_W + 184) / VB_W) * 100}%`,
+                      top: `${((chuteY(active) - 8) / VB_H) * 100}%`,
+                    }
+                  : {
+                      right: "3%",
+                      bottom: `${((VB_H - chuteY(active) + 10) / VB_H) * 100}%`,
+                    }
+              }
+            >
+              <p className="text-xs font-semibold uppercase tracking-wide text-primary mb-2">
+                Das bekommen Sie
+              </p>
+              <ul className="space-y-1.5">
+                {step.deliverables.map((d) => (
+                  <li key={d} className="text-sm text-foreground leading-snug flex gap-2">
+                    <span aria-hidden="true" className="text-primary">·</span>
+                    {d}
+                  </li>
+                ))}
+              </ul>
             </div>
-            <h3 className="font-semibold text-foreground mb-1.5">{s.title}</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">{s.desc}</p>
-          </li>
-        ))}
-      </ol>
-    </div>
-  </section>
-);
+          )}
+          </div>
+        </div>
+
+        {/* The same seven in full, always readable — on a phone, by keyboard,
+            and by a crawler. */}
+        <ol className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {STEPS.map((s, i) => (
+            <li key={s.title} className="rounded-xl border border-border bg-card p-5">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 text-sm font-bold">
+                  {i + 1}
+                </span>
+                <s.icon className="w-5 h-5 text-primary flex-shrink-0" aria-hidden="true" />
+              </div>
+              <h3 className="font-semibold text-foreground mb-1.5">{s.title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed mb-4">{s.desc}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-primary mb-2">
+                Das bekommen Sie
+              </p>
+              <ul className="space-y-1.5">
+                {s.deliverables.map((d) => (
+                  <li key={d} className="text-sm text-foreground leading-snug flex gap-2">
+                    <span aria-hidden="true" className="text-primary">·</span>
+                    {d}
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+};
 
 export default DeliveryCascade;
