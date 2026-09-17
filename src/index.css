@@ -506,26 +506,53 @@ All colors MUST be HSL.
 .dc-stage { cursor: pointer; outline: none; }
 .dc-stage:focus-visible rect:first-of-type { stroke: hsl(var(--primary)); stroke-width: 2; }
 
-/* The deliverables panel. Anchored from the chute's own geometry in
-   DeliveryCascade.tsx, so it follows the drawing at any width. Fixed width
-   rather than max-width: the anchor points are computed against it, and a panel
-   that resized with its content would sometimes overrun the panel's edge. */
-.dc-pop {
+/* The readout screen. It sits in the empty upper right of the drawing so it can
+   hold one fixed position instead of chasing the cursor. The bounds are not
+   guessed: the stage labels were measured in the browser, and the free region
+   is right of stage 1's text (which ends at viewBox x 649) and above stage 2's
+   (which begins at y 213). Hence x 660..1190, y 6..198, expressed as
+   percentages of the wrapper that IS the drawing so it tracks the SVG at any
+   width.
+
+   Only from xl up. Measured at lg the panel is 141px tall against the 176px a
+   four-item stage needs, so it clipped on every stage — the cards underneath
+   carry the same content in full, so the screen is simply not shown there. */
+.dc-screen {
   position: absolute;
-  width: 19rem;
+  left: 55%;
+  right: 1%;
+  top: 0.5%;
+  height: 34%;
+  flex-direction: column;
   padding: 0.875rem 1rem;
-  border-radius: 0.75rem;
-  /* --card sits within a few percent of the panel it floats over, so the
-     panel read as a faint rectangle rather than as something in front. A
-     foreground wash over it lifts it in whichever theme is active, and the
-     border and shadow carry the rest of the separation. */
-  border: 1px solid hsl(var(--foreground) / 0.22);
+  border-radius: 0.875rem;
+  /* --card sits within a few percent of the panel it floats over, so a plain
+     card colour read as a faint rectangle. A foreground wash lifts it in
+     whichever theme is active. */
+  border: 1px solid hsl(var(--foreground) / 0.2);
   background:
-    linear-gradient(hsl(var(--foreground) / 0.08), hsl(var(--foreground) / 0.08)),
+    linear-gradient(hsl(var(--foreground) / 0.07), hsl(var(--foreground) / 0.07)),
     hsl(var(--card));
-  box-shadow: 0 20px 46px hsl(220 14% 2% / 0.5);
+  box-shadow: 0 20px 46px hsl(220 14% 2% / 0.45);
   pointer-events: none;
-  z-index: 2;
+  overflow: hidden;
+}
+/* Its own type scale: the panel is short, and the shared card sizes would push
+   a four-item list past it. */
+.dc-screen h3 { font-size: 0.9375rem; }
+.dc-screen li { font-size: 0.8125rem; line-height: 1.35; }
+.dc-screen-n {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 0.5rem;
+  background: hsl(var(--primary) / 0.14);
+  color: hsl(var(--primary));
+  font-size: 0.8125rem;
+  font-weight: 700;
 }
 
 .dark .dc-flow {

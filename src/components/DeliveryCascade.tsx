@@ -300,19 +300,38 @@ const DeliveryCascade = () => {
               );
             })}
 
-            {/* ---- what it irrigates ---- */}
-            <g transform={`translate(${chuteX(6)} 502)`}>
+            {/* ---- what it irrigates ----
+                The bars used to sit ABOVE the rows, which put them straight
+                through the last stage's own label, and the caption sat on top
+                of the rows. Rows and bars now stand side by side in a band
+                below everything, and the group starts at the last chute's
+                right edge so the water falls into it rather than past it. */}
+            <path
+              d={`M ${chuteX(6) + CH_W - 12} ${chuteY(6) + CH_H} L ${chuteX(6) + CH_W} ${chuteY(6) + CH_H} L ${chuteX(6) + CH_W + 4} 498 L ${chuteX(6) + CH_W - 8} 498 z`}
+              fill="var(--dc-water-soft)"
+            />
+            <line
+              x1={chuteX(6) + CH_W - 5}
+              y1={chuteY(6) + CH_H}
+              x2={chuteX(6) + CH_W - 1}
+              y2={498}
+              stroke="var(--dc-water)"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              opacity="0.8"
+            />
+            <g transform={`translate(${chuteX(6) + CH_W} 500)`}>
               <g stroke="var(--dc-water)" strokeWidth="2.4" strokeLinecap="round" opacity="0.5">
                 {[0, 1, 2, 3, 4].map((k) => (
-                  <line key={k} x1="0" y1={k * 12} x2="150" y2={k * 12} />
+                  <line key={k} x1="0" y1={k * 12} x2="140" y2={k * 12} />
                 ))}
               </g>
               <g fill="var(--dc-water)" opacity="0.92">
-                {[14, 32, 22, 42, 28, 36].map((h, k) => (
-                  <rect key={k} x={k * 17} y={-14 - h} width="11" height={h} rx="1.5" />
+                {[12, 28, 19, 36, 24, 31].map((h, k) => (
+                  <rect key={k} x={166 + k * 17} y={48 - h} width="11" height={h} rx="1.5" />
                 ))}
               </g>
-              <text x="75" y="80" textAnchor="middle" fontSize="12.5" fill="var(--dc-label-soft)">
+              <text x="140" y="80" textAnchor="middle" fontSize="12.5" fill="var(--dc-label-soft)">
                 Geprüft · gebucht · auswertbar
               </text>
             </g>
@@ -321,41 +340,38 @@ const DeliveryCascade = () => {
           {/* What that stage hands over. Positioned from the same geometry the
               chute is drawn from, as a percentage, so it tracks the SVG at any
               width instead of needing its own measurement. */}
-          {step && active !== null && (
-            <div
-              className="dc-pop hidden md:block"
-              style={
-                // Anchored past the stage's own name, never over it, and
-                // flipped on both axes for the lower stages so it opens into
-                // the panel instead of off its edge.
-                // Only the first stage has room to open rightward: the
-                // one-line description is far wider than the name, and from the
-                // second on, clearing it would push the panel off the drawing.
-                // Everything below opens from the corner instead.
-                active === 0
-                  ? {
-                      left: `${((chuteX(active) + CH_W + 300) / VB_W) * 100}%`,
-                      top: `${((chuteY(active) - 8) / VB_H) * 100}%`,
-                    }
-                  : {
-                      right: "3%",
-                      bottom: `${((VB_H - chuteY(active) + 28) / VB_H) * 100}%`,
-                    }
-              }
-            >
-              <p className="text-xs font-semibold uppercase tracking-wide text-primary mb-2">
-                Das bekommen Sie
-              </p>
-              <ul className="space-y-1.5">
-                {step.deliverables.map((d) => (
-                  <li key={d} className="text-sm text-foreground leading-snug flex gap-2">
-                    <span aria-hidden="true" className="text-primary">·</span>
-                    {d}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {/* The readout. A fixed screen in the empty upper right rather than a
+              panel that follows the cursor: it never covers what you are
+              pointing at, it needs no per-stage anchoring, and it gives the
+              drawing somewhere for the eye to land. */}
+          <div className="dc-screen hidden xl:flex">
+            {step && active !== null ? (
+              <>
+                <div className="flex items-center gap-2.5 mb-2">
+                  <span className="dc-screen-n">{active + 1}</span>
+                  <h3 className="font-semibold text-foreground leading-tight">{step.title}</h3>
+                </div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-primary mb-1.5">
+                  Das bekommen Sie
+                </p>
+                <ul className="space-y-1">
+                  {step.deliverables.map((d) => (
+                    <li key={d} className="text-sm text-foreground leading-snug flex gap-2">
+                      <span aria-hidden="true" className="text-primary">·</span>
+                      {d}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : (
+              <div className="m-auto text-center">
+                <p className="text-sm font-medium text-foreground mb-1">Fahren Sie über eine Stufe</p>
+                <p className="text-sm text-muted-foreground">
+                  Dann steht hier, was Sie am Ende dieser Stufe in der Hand halten.
+                </p>
+              </div>
+            )}
+          </div>
           </div>
         </div>
 
