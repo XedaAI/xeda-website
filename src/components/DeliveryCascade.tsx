@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { Search, Users, FileCheck2, DraftingCompass, ListChecks, Code2, Rocket, type LucideIcon } from "lucide-react";
 
 // The seven-step delivery method, as a Persian water wheel.
@@ -115,15 +115,32 @@ const CH_DX = 82;
 const CH_DY = 46;
 const CH_W = 78;
 const CH_H = 13;
+/** The stage's own hue. Defined in index.css as an HSL triple, so one value
+ *  serves both the solid fill and every washed-back form of it. */
+const tint = (i: number) => `var(--dc-s${i + 1})`;
 const chuteX = (i: number) => CH_X + i * CH_DX;
 const chuteY = (i: number) => CH_Y + i * CH_DY;
 
 const DeliveryCascade = () => {
   const [active, setActive] = useState<number | null>(null);
   const step = active === null ? null : STEPS[active];
+  const rootRef = useRef<HTMLElement>(null);
+
+  // Hold every animation while the section is off screen rather than burning
+  // frames on a drawing nobody is looking at.
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([e]) => el.classList.toggle("is-paused", !e.isIntersecting),
+      { threshold: 0 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   return (
-    <section className="dc-flow py-20 md:py-28">
+    <section ref={rootRef} className="dc-flow py-20 md:py-28">
       <div className="container mx-auto px-6">
         <div className="max-w-3xl mb-12">
           <span className="text-sm font-semibold tracking-wide text-primary mb-3 block">
@@ -156,7 +173,10 @@ const DeliveryCascade = () => {
               <ellipse cx="200" cy="340" rx="112" ry="28" fill="var(--dc-stone)" />
               <path d="M 88 340 v 40 a 112 28 0 0 0 224 0 v -40 z" fill="var(--dc-stone)" />
               <ellipse cx="200" cy="340" rx="99" ry="22" fill="var(--dc-water-deep)" />
-              <g fill="var(--dc-water)" opacity="0.92">
+              {/* Rings opening on the surface where the wheel dips in. */}
+              <ellipse className="dc-ripple" cx="200" cy="340" rx="99" ry="22" fill="none" stroke="var(--dc-water)" strokeWidth="1.5" />
+              <ellipse className="dc-ripple dc-ripple--2" cx="200" cy="340" rx="99" ry="22" fill="none" stroke="var(--dc-water)" strokeWidth="1.5" />
+              <g className="dc-bob" fill="var(--dc-water)" opacity="0.92">
                 <rect x="138" y="332" width="14" height="18" rx="2" />
                 <rect x="170" y="340" width="18" height="13" rx="2" />
                 <rect x="204" y="326" width="13" height="13" rx="3" />
@@ -177,8 +197,9 @@ const DeliveryCascade = () => {
 
             {/* ---- the wheel that lifts it ---- */}
             <g transform="translate(236 236)">
-              <circle r="86" fill="none" stroke="var(--dc-stone)" strokeWidth="13" />
-              <circle r="71" fill="none" stroke="var(--dc-stone-lit)" strokeWidth="2.5" />
+              <g className="dc-wheel">
+              <circle r="86" fill="none" stroke="var(--dc-wood)" strokeWidth="13" />
+              <circle r="71" fill="none" stroke="var(--dc-wood-lit)" strokeWidth="2.5" />
               {[0, 45, 90, 135].map((deg) => (
                 <line
                   key={deg}
@@ -186,22 +207,23 @@ const DeliveryCascade = () => {
                   y1={-83 * Math.sin((deg * Math.PI) / 180)}
                   x2={83 * Math.cos((deg * Math.PI) / 180)}
                   y2={83 * Math.sin((deg * Math.PI) / 180)}
-                  stroke="var(--dc-stone)"
+                  stroke="var(--dc-wood)"
                   strokeWidth="6"
                   strokeLinecap="round"
                 />
               ))}
-              <circle r="14" fill="var(--dc-stone)" />
-              <circle r="6" fill="var(--dc-stone-lit)" />
+              <circle r="14" fill="var(--dc-wood)" />
+              <circle r="6" fill="var(--dc-wood-lit)" />
               {[-150, -120, -90, -60, -30, 0, 30, 60].map((deg, k) => {
                 const a = (deg * Math.PI) / 180;
                 return (
                   <g key={deg} transform={`translate(${93 * Math.cos(a)} ${93 * Math.sin(a)}) rotate(${deg + 90})`}>
-                    <rect x="-9" y="-7" width="18" height="14" rx="2" fill="var(--dc-stone)" />
+                    <rect x="-9" y="-7" width="18" height="14" rx="2" fill="var(--dc-wood)" />
                     {k < 5 && <rect x="-6.5" y="-4.5" width="13" height="9" rx="1.5" fill="var(--dc-water)" opacity="0.9" />}
                   </g>
                 );
               })}
+              </g>
             </g>
 
             {/* The bucket tipping at the top pours into the first chute. Without
@@ -212,12 +234,12 @@ const DeliveryCascade = () => {
                 fill="var(--dc-water-soft)"
               />
               <path
+                className="dc-fall"
                 d={`M 250 172 Q ${(250 + CH_X) / 2} 162 ${CH_X + 8} ${CH_Y + 6}`}
                 fill="none"
                 stroke="var(--dc-water)"
-                strokeWidth="2.2"
+                strokeWidth="2.4"
                 strokeLinecap="round"
-                opacity="0.85"
               />
             </g>
 
@@ -243,6 +265,19 @@ const DeliveryCascade = () => {
                   <path d={`M ${x} ${y} h ${CH_W} v ${CH_H} h ${-CH_W} z`} fill="var(--dc-stone)" />
                   <path d={`M ${x} ${y} h ${CH_W} v 3.5 h ${-CH_W} z`} fill="var(--dc-stone-lit)" />
                   <rect x={x + 2.5} y={y + 3.5} width={CH_W - 5} height={CH_H - 5} rx="2" fill="var(--dc-water-soft)" />
+                  {/* The current itself. Delayed per stage so the flow arrives
+                      down the staircase rather than everywhere at once. */}
+                  <line
+                    className="dc-stream"
+                    x1={x + 4}
+                    y1={y + CH_H / 2}
+                    x2={x + CH_W - 4}
+                    y2={y + CH_H / 2}
+                    stroke="var(--dc-water)"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    style={{ animationDelay: `${i * 0.13}s` }}
+                  />
 
                   {/* Specks early, ruled lines late: the ordering, shown. */}
                   {i < 3 ? (
@@ -267,20 +302,21 @@ const DeliveryCascade = () => {
                         fill="var(--dc-water-soft)"
                       />
                       <line
+                        className="dc-fall"
                         x1={x + CH_W - 4}
                         y1={y + CH_H}
                         x2={x + CH_DX - 5}
                         y2={y + CH_DY}
                         stroke="var(--dc-water)"
-                        strokeWidth="1.4"
+                        strokeWidth="1.8"
                         strokeLinecap="round"
-                        opacity="0.8"
+                        style={{ animationDelay: `${i * 0.13 + 0.06}s` }}
                       />
                     </>
                   )}
 
                   {/* Its number and its name, on the stage itself. */}
-                  <circle cx={x - 14} cy={y + CH_H / 2} r="10.5" fill="var(--dc-water)" />
+                  <circle cx={x - 14} cy={y + CH_H / 2} r="10.5" fill={`hsl(${tint(i)})`} />
                   <text x={x - 14} y={y + CH_H / 2 + 3.6} textAnchor="middle" fontSize="11" fontWeight="700" fill="var(--dc-on-water)">
                     {i + 1}
                   </text>
@@ -289,7 +325,7 @@ const DeliveryCascade = () => {
                     y={y + 3}
                     fontSize="15"
                     fontWeight="700"
-                    fill={on ? "var(--dc-water)" : "var(--dc-label)"}
+                    fill={on ? `hsl(${tint(i)})` : "var(--dc-label)"}
                   >
                     {s.title}
                   </text>
@@ -311,14 +347,15 @@ const DeliveryCascade = () => {
               fill="var(--dc-water-soft)"
             />
             <line
+              className="dc-fall"
               x1={chuteX(6) + CH_W - 5}
               y1={chuteY(6) + CH_H}
               x2={chuteX(6) + CH_W - 1}
               y2={498}
               stroke="var(--dc-water)"
-              strokeWidth="1.6"
+              strokeWidth="1.8"
               strokeLinecap="round"
-              opacity="0.8"
+              style={{ animationDelay: "0.85s" }}
             />
             <g transform={`translate(${chuteX(6) + CH_W} 500)`}>
               <g stroke="var(--dc-water)" strokeWidth="2.4" strokeLinecap="round" opacity="0.5">
@@ -347,7 +384,10 @@ const DeliveryCascade = () => {
               on every change and the entry animation replays — including on
               the way back to idle, which is what gives it an exit without
               needing exit-animation machinery. */}
-          <div className="dc-screen hidden xl:flex">
+          <div
+            className="dc-screen hidden xl:flex"
+            style={{ "--dc-accent": active === null ? "var(--primary)" : tint(active) } as CSSProperties}
+          >
             <span className="dc-corner dc-corner--tl" aria-hidden="true" />
             <span className="dc-corner dc-corner--tr" aria-hidden="true" />
             <span className="dc-corner dc-corner--bl" aria-hidden="true" />
@@ -362,7 +402,7 @@ const DeliveryCascade = () => {
                     <h3 className="font-semibold text-foreground leading-tight">{step.title}</h3>
                   </div>
                   <p
-                    className="dc-line text-xs font-semibold uppercase tracking-wide text-primary mb-1.5"
+                    className="dc-line dc-accent text-xs font-semibold uppercase tracking-wide mb-1.5"
                     style={{ "--i": 1 } as CSSProperties}
                   >
                     Das bekommen Sie
@@ -374,7 +414,7 @@ const DeliveryCascade = () => {
                         className="dc-line text-sm text-foreground leading-snug flex gap-2"
                         style={{ "--i": k + 2 } as CSSProperties}
                       >
-                        <span aria-hidden="true" className="text-primary">·</span>
+                        <span aria-hidden="true" className="dc-accent">·</span>
                         {d}
                       </li>
                     ))}
@@ -399,22 +439,26 @@ const DeliveryCascade = () => {
             and by a crawler. */}
         <ol className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {STEPS.map((s, i) => (
-            <li key={s.title} className="rounded-xl border border-border bg-card p-5">
+            <li
+              key={s.title}
+              className="dc-card rounded-xl border border-border bg-card p-5"
+              style={{ "--dc-accent": tint(i) } as CSSProperties}
+            >
               <div className="flex items-center gap-3 mb-3">
-                <span className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 text-sm font-bold">
+                <span className="dc-card-n flex items-center justify-center flex-shrink-0 text-sm font-bold">
                   {i + 1}
                 </span>
-                <s.icon className="w-5 h-5 text-primary flex-shrink-0" aria-hidden="true" />
+                <s.icon className="dc-accent w-5 h-5 flex-shrink-0" aria-hidden="true" />
               </div>
               <h3 className="font-semibold text-foreground mb-1.5">{s.title}</h3>
               <p className="text-sm text-muted-foreground leading-relaxed mb-4">{s.desc}</p>
-              <p className="text-xs font-semibold uppercase tracking-wide text-primary mb-2">
+              <p className="dc-accent text-xs font-semibold uppercase tracking-wide mb-2">
                 Das bekommen Sie
               </p>
               <ul className="space-y-1.5">
                 {s.deliverables.map((d) => (
                   <li key={d} className="text-sm text-foreground leading-snug flex gap-2">
-                    <span aria-hidden="true" className="text-primary">·</span>
+                    <span aria-hidden="true" className="dc-accent">·</span>
                     {d}
                   </li>
                 ))}
