@@ -115,6 +115,33 @@ const CH_DX = 82;
 const CH_DY = 46;
 const CH_W = 78;
 const CH_H = 13;
+// The wheel and its buckets.
+//
+// It turns COUNTER-clockwise: a bucket has to come out of the basin at the
+// bottom, up the right-hand side, and tip at the pour point up-right where the
+// first chute waits. Clockwise carried them up the far side and poured them
+// into nothing.
+//
+// Each bucket's water is on its own copy of one animation, phase-shifted by a
+// negative delay so that its progress is zero exactly when that bucket is at
+// the bottom of the wheel. Everything else follows: it stays full for the
+// 137-degree arc from the water to the pour point (38% of a turn), empties
+// there, and rides back round empty.
+const WHEEL_SECONDS = 26;
+const BUCKET_DEG = [-150, -120, -90, -60, -30, 0, 30, 60];
+/** Angle at the bottom of the wheel, where a bucket fills. SVG y runs down. */
+const BOTTOM_DEG = 90;
+// A NEGATIVE animation-delay means the animation has already been running that
+// long, so the offset adds to elapsed time rather than subtracting from it. The
+// first version negated this and put every bucket half a turn out of phase —
+// full on the way down, empty on the way up.
+const bucketDelay = (deg: number) => {
+  let d = WHEEL_SECONDS * ((deg - BOTTOM_DEG) / 360);
+  while (d > 0) d -= WHEEL_SECONDS;
+  while (d <= -WHEEL_SECONDS) d += WHEEL_SECONDS;
+  return d;
+};
+
 /** The stage's own hue. Defined in index.css as an HSL triple, so one value
  *  serves both the solid fill and every washed-back form of it. */
 const tint = (i: number) => `var(--dc-s${i + 1})`;
@@ -214,12 +241,21 @@ const DeliveryCascade = () => {
               ))}
               <circle r="14" fill="var(--dc-wood)" />
               <circle r="6" fill="var(--dc-wood-lit)" />
-              {[-150, -120, -90, -60, -30, 0, 30, 60].map((deg, k) => {
+              {BUCKET_DEG.map((deg) => {
                 const a = (deg * Math.PI) / 180;
                 return (
                   <g key={deg} transform={`translate(${93 * Math.cos(a)} ${93 * Math.sin(a)}) rotate(${deg + 90})`}>
                     <rect x="-9" y="-7" width="18" height="14" rx="2" fill="var(--dc-wood)" />
-                    {k < 5 && <rect x="-6.5" y="-4.5" width="13" height="9" rx="1.5" fill="var(--dc-water)" opacity="0.9" />}
+                    <rect
+                      className="dc-bucket"
+                      x="-6.5"
+                      y="-4.5"
+                      width="13"
+                      height="9"
+                      rx="1.5"
+                      fill="var(--dc-water)"
+                      style={{ animationDelay: `${bucketDelay(deg).toFixed(2)}s` }}
+                    />
                   </g>
                 );
               })}

@@ -672,7 +672,24 @@ All colors MUST be HSL.
   transform-origin: center;
   animation: dcWheel 26s linear infinite;
 }
-@keyframes dcWheel { to { transform: rotate(360deg); } }
+/* Counter-clockwise: the buckets have to rise on the side the chute is on. */
+@keyframes dcWheel { to { transform: rotate(-360deg); } }
+
+/* A bucket carries water from the basin to the pour point and tips it out
+   there. Phase set per bucket in DeliveryCascade.tsx via a negative delay, so
+   progress 0 is the moment that bucket sits at the bottom of the wheel. */
+.dc-bucket {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: dcBucket 26s linear infinite;
+}
+@keyframes dcBucket {
+  0%   { opacity: 0.9; transform: scaleY(1); }
+  36%  { opacity: 0.9; transform: scaleY(1); }
+  41%  { opacity: 0; transform: scaleY(0.1); }
+  94%  { opacity: 0; transform: scaleY(0.1); }
+  100% { opacity: 0.9; transform: scaleY(1); }
+}
 
 .dc-bob {
   transform-box: fill-box;
@@ -712,6 +729,7 @@ All colors MUST be HSL.
 }
 
 .dc-flow.is-paused .dc-wheel,
+.dc-flow.is-paused .dc-bucket,
 .dc-flow.is-paused .dc-bob,
 .dc-flow.is-paused .dc-ripple,
 .dc-flow.is-paused .dc-stream,
@@ -719,5 +737,6 @@ All colors MUST be HSL.
 
 @media (prefers-reduced-motion: reduce) {
   .dc-wheel, .dc-bob, .dc-stream, .dc-fall { animation: none; }
+  .dc-bucket { animation: none; opacity: 0.9; }
   .dc-ripple { display: none; }
 }
