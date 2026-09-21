@@ -7,6 +7,7 @@ import { ThemeProvider } from "next-themes";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { Suspense, lazy } from "react";
 import { SectionSkeleton } from "@/components/SectionSkeleton";
+import { verticals } from "@/data/verticals";
 import Index from "./pages/Index";
 
 // Route-level code splitting: only the landing page ships in the main bundle;
@@ -14,7 +15,7 @@ import Index from "./pages/Index";
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const Careers = lazy(() => import("./pages/Careers"));
-const Steuerkanzleien = lazy(() => import("./pages/Steuerkanzleien"));
+const VerticalLanding = lazy(() => import("./pages/VerticalLanding"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Impressum = lazy(() => import("./pages/Impressum"));
@@ -41,7 +42,15 @@ const App = () => (
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:id" element={<BlogPost />} />
                 <Route path="/careers" element={<Careers />} />
-              <Route path="/steuerkanzleien" element={<Steuerkanzleien />} />
+                {/* Standalone outbound-campaign landing pages, one per vertical
+                    (src/data/verticals.ts) rendered by a single template. */}
+                {verticals.map((v) => (
+                  <Route
+                    key={v.slug}
+                    path={`/${v.slug}`}
+                    element={<VerticalLanding vertical={v} />}
+                  />
+                ))}
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/impressum" element={<Impressum />} />
