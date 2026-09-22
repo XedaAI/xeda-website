@@ -114,6 +114,15 @@ const translations: Record<SiteLanguage, Record<string, string>> = {
     "useCases.construction.problem": "Site updates arrive as WhatsApp messages, PDFs, and photos.",
     "useCases.construction.build": "AI organises project docs, generates daily reports, extracts invoices, and answers questions about any project.",
     "useCases.construction.outcome": "Administrative work cut dramatically.",
+
+    // Proof section — our own products, as evidence that we ship.
+    "caseStudies.label": "What we've built",
+    "caseStudies.title": "We don't just advise on AI — we ship it",
+    "caseStudies.subtitle": "These are our own products: real software we designed, built and operate. The same team builds for you.",
+    "caseStudies.fahrplan.tagline": "Scheduling platform for driving schools",
+    "caseStudies.rezeption.tagline": "AI phone receptionist for tradespeople",
+    "caseStudies.omnibook.tagline": "Appointment booking for service businesses",
+    "caseStudies.cta": "Want something like this built for your business? Book a free audit",
     "audit.label": "Start here",
     "audit.title": "Start with a free AI audit",
     "audit.subtitle": "In one focused session we map where AI can save you time and money — then hand you a plan with real ROI. No commitment, no jargon.",
@@ -401,6 +410,15 @@ const translations: Record<SiteLanguage, Record<string, string>> = {
     "useCases.construction.problem": "Baustellen-Updates kommen als WhatsApp-Nachrichten, PDFs und Fotos.",
     "useCases.construction.build": "KI organisiert Projektunterlagen, erstellt Tagesberichte, extrahiert Rechnungen und beantwortet Fragen zu jedem Projekt.",
     "useCases.construction.outcome": "Verwaltungsaufwand drastisch reduziert.",
+
+    // Proof section — our own products, as evidence that we ship.
+    "caseStudies.label": "Was wir gebaut haben",
+    "caseStudies.title": "Wir beraten nicht nur zu KI — wir liefern sie",
+    "caseStudies.subtitle": "Das sind unsere eigenen Produkte: echte Software, die wir entworfen, gebaut und im Betrieb haben. Dasselbe Team baut für Sie.",
+    "caseStudies.fahrplan.tagline": "Buchungsplattform für Fahrschulen",
+    "caseStudies.rezeption.tagline": "KI-Telefonassistent für Handwerksbetriebe",
+    "caseStudies.omnibook.tagline": "Terminbuchung für Dienstleister",
+    "caseStudies.cta": "So etwas für Ihr Unternehmen? Kostenloses Audit buchen",
     "audit.label": "Hier starten",
     "audit.title": "Starten Sie mit einem kostenlosen KI-Audit",
     "audit.subtitle": "In einer fokussierten Sitzung zeigen wir, wo KI Ihnen Zeit und Geld spart — und geben Ihnen einen Plan mit echtem ROI. Keine Verpflichtung, kein Fachjargon.",
