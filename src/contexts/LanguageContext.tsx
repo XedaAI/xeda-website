@@ -123,6 +123,23 @@ const translations: Record<SiteLanguage, Record<string, string>> = {
     "caseStudies.rezeption.tagline": "AI phone receptionist for tradespeople",
     "caseStudies.omnibook.tagline": "Appointment booking for service businesses",
     "caseStudies.cta": "Want something like this built for your business? Book a free audit",
+
+    // Our point of view. Each claim is a position we already work by — the first
+    // and the last two are the gates from /process — not copy written for the page.
+    "claims.label": "Our point of view",
+    "claims.title": "What we claim",
+    "claims.subtitle": "Five statements you can hold us to. If you disagree with them, we are probably the wrong people for the job.",
+    "claims.1.claim": "Most AI projects fail on the data — not on the model.",
+    "claims.1.support": "So the first thing we check is whether your data can carry the goal at all. Before anyone talks about technology.",
+    "claims.2.claim": "AI belongs inside the tools you already use — not in another portal.",
+    "claims.2.support": "If your team has to switch software for the AI to help, it isn't helping. We build into your CRM, your ERP, your inbox, your DATEV.",
+    "claims.3.claim": "The repetitive work is the machine's. The judgement stays yours.",
+    "claims.3.support": "We automate the typing, the sorting and the chasing — never the decision. Your specialists are relieved of the busywork, not replaced by it.",
+    "claims.4.claim": "No build before the scope is signed.",
+    "claims.4.support": "Fixed scope and a fixed price before the first line of code. No blank cheques, and no invoice you didn't see coming.",
+    "claims.5.claim": "We never go dark.",
+    "claims.5.support": "A demo every sprint. You see working software on a fixed rhythm, not a status report that says everything is on track.",
+
     "audit.label": "Start here",
     "audit.title": "Start with a free AI audit",
     "audit.subtitle": "In one focused session we map where AI can save you time and money — then hand you a plan with real ROI. No commitment, no jargon.",
@@ -419,6 +436,23 @@ const translations: Record<SiteLanguage, Record<string, string>> = {
     "caseStudies.rezeption.tagline": "KI-Telefonassistent für Handwerksbetriebe",
     "caseStudies.omnibook.tagline": "Terminbuchung für Dienstleister",
     "caseStudies.cta": "So etwas für Ihr Unternehmen? Kostenloses Audit buchen",
+
+    // Unser Standpunkt. Jede Aussage ist eine Haltung, nach der wir ohnehin
+    // arbeiten — die erste und die letzten beiden sind die Freigaben aus /process.
+    "claims.label": "Unser Standpunkt",
+    "claims.title": "Was wir behaupten",
+    "claims.subtitle": "Fünf Aussagen, an denen Sie uns messen können. Wer sie nicht teilt, ist bei uns vermutlich falsch.",
+    "claims.1.claim": "Die meisten KI-Projekte scheitern an den Daten — nicht am Modell.",
+    "claims.1.support": "Deshalb prüfen wir zuerst, ob Ihre Daten das Ziel überhaupt tragen. Bevor irgendjemand über Technologie spricht.",
+    "claims.2.claim": "KI gehört in die Tools, die Sie schon nutzen — nicht in ein weiteres Portal.",
+    "claims.2.support": "Wenn Ihr Team die Software wechseln muss, damit die KI hilft, hilft sie nicht. Wir bauen in Ihr CRM, Ihr ERP, Ihr Postfach, Ihr DATEV.",
+    "claims.3.claim": "Die wiederkehrende Arbeit gehört der Maschine. Das Urteil bleibt bei Ihnen.",
+    "claims.3.support": "Wir automatisieren das Abtippen, Zuordnen und Nachfassen — nie die Entscheidung. Ihre Fachleute werden entlastet, nicht ersetzt.",
+    "claims.4.claim": "Kein Bau, bevor der Umfang unterschrieben ist.",
+    "claims.4.support": "Fester Umfang und fester Preis vor der ersten Zeile Code. Keine Blankoschecks und keine Rechnung, mit der Sie nicht gerechnet haben.",
+    "claims.5.claim": "Wir tauchen nie ab.",
+    "claims.5.support": "Demo in jedem Sprint. Sie sehen lauffähige Software in festem Rhythmus — keinen Statusbericht, in dem alles im Plan liegt.",
+
     "audit.label": "Hier starten",
     "audit.title": "Starten Sie mit einem kostenlosen KI-Audit",
     "audit.subtitle": "In einer fokussierten Sitzung zeigen wir, wo KI Ihnen Zeit und Geld spart — und geben Ihnen einen Plan mit echtem ROI. Keine Verpflichtung, kein Fachjargon.",

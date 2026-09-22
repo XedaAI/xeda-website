@@ -3,6 +3,7 @@ import HeroSection from "@/components/HeroSection";
 import TrustStrip from "@/components/TrustStrip";
 import WhatWeDoSection from "@/components/WhatWeDoSection";
 import UseCasesSection from "@/components/UseCasesSection";
+import ClaimsSection from "@/components/ClaimsSection";
 import HowWeWorkSection from "@/components/HowWeWorkSection";
 import ForBusinessesSection from "@/components/ForBusinessesSection";
 // ForDevelopersSection (recruiting) moved off the buyer flow to the /careers page.
@@ -48,6 +49,10 @@ const Index = () => {
         </AnimatedSection>
         <AnimatedSection>
           <UseCasesSection />
+        </AnimatedSection>
+        {/* Who we serve is settled above; this is what we claim, before how we work. */}
+        <AnimatedSection>
+          <ClaimsSection />
         </AnimatedSection>
         <AnimatedSection>
           <HowWeWorkSection />
