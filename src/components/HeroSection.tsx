@@ -30,7 +30,7 @@ const HeroSection = () => {
       {/* The hero is always a dark panel (photo + scrim), so its colours are
           fixed rather than taken from theme tokens — those invert between
           themes, which previously flipped this scrim light in dark mode. */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[hsl(220_12%_5%/0.90)] via-[hsl(220_12%_6%/0.84)] to-[hsl(220_14%_3%/0.96)]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[hsl(222_47%_9%/0.90)] via-[hsl(222_47%_10%/0.84)] to-[hsl(224_55%_6%/0.96)]" />
 
       {/* Chaos into the intake, order out of the outlet, the mark as the collar
           it all runs through — what we do, watchable. Behind the content,
@@ -46,7 +46,7 @@ const HeroSection = () => {
         className="absolute inset-0 z-[2] pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 54% 42% at 50% 65%, hsl(220 12% 5% / 0.92) 0%, hsl(220 12% 5% / 0.58) 44%, transparent 74%)",
+            "radial-gradient(ellipse 54% 42% at 50% 65%, hsl(222 47% 9% / 0.92) 0%, hsl(222 47% 9% / 0.58) 44%, transparent 74%)",
         }}
       />
 
@@ -57,29 +57,30 @@ const HeroSection = () => {
           className="h-[160px] w-[160px] md:h-[236px] md:w-[236px] mx-auto mb-8 md:mb-10"
         />
 
-        <div className="enter [--enter-delay:1.25s] inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[hsl(220_8%_96%/0.07)] border border-[hsl(220_8%_96%/0.20)] mb-8">
-          <span className="w-2 h-2 rounded-full bg-[hsl(220_8%_88%)] animate-pulse" />
-          <span className="text-sm text-[hsl(220_8%_96%/0.86)]">{t("hero.badge")}</span>
+        <div className="enter [--enter-delay:1.25s] inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[hsl(194_100%_50%/0.10)] border border-[hsl(194_100%_50%/0.30)] mb-8">
+          <span className="w-2 h-2 rounded-full bg-[hsl(194_100%_50%)] animate-pulse" />
+          <span className="text-sm text-[hsl(210_40%_92%)]">{t("hero.badge")}</span>
         </div>
 
-        <h1 className="enter [--enter-delay:1.4s] text-[2.6rem] md:text-6xl lg:text-[4.6rem] font-semibold tracking-[-0.03em] text-[hsl(220_8%_97%)] mb-7 leading-[1.06] text-balance">
+        <h1 className="enter [--enter-delay:1.4s] text-[2.6rem] md:text-6xl lg:text-[4.6rem] font-semibold tracking-[-0.03em] text-[hsl(210_40%_98%)] mb-7 leading-[1.06] text-balance">
           {t("hero.title")}
-          {/* Monochrome: the highlight steps down in tone rather than changing
-              hue, so emphasis comes from contrast instead of colour. */}
-          <span className="text-[hsl(220_7%_66%)]"> {t("hero.titleHighlight")}</span>
+          {/* The accent's loudest moment on the page: the second half of the
+              headline in the bright cyan (#00C2FF, 8.6:1 on the navy). */}
+          <span className="text-[hsl(194_100%_50%)]"> {t("hero.titleHighlight")}</span>
         </h1>
 
-        <p className="enter [--enter-delay:1.55s] text-lg md:text-xl text-[hsl(220_7%_88%/0.74)] mb-12 max-w-[38rem] mx-auto leading-[1.65]">
+        <p className="enter [--enter-delay:1.55s] text-lg md:text-xl text-[hsl(214_32%_82%)] mb-12 max-w-[38rem] mx-auto leading-[1.65]">
           {t("hero.subtitle")}
         </p>
         
         <div className="enter [--enter-delay:1.7s] flex flex-col sm:flex-row items-center justify-center gap-4">
           {/* The hero is a fixed dark panel, so the CTA is fixed too: in light
-              mode --primary is near-black, which would sit dark-on-dark here. */}
+              mode --primary is navy, which would sit dark-on-dark here. Cyan
+              with navy text reads 7.4:1; white text on cyan would fail. */}
           <Button
             size="lg"
             asChild
-            className="px-8 bg-[hsl(220_8%_96%)] text-[hsl(220_12%_8%)] hover:bg-[hsl(0_0%_100%)]"
+            className="px-8 bg-[hsl(189_94%_43%)] text-[hsl(222_47%_11%)] hover:bg-[hsl(188_86%_53%)]"
           >
             <a href={auditBookingUrl("hero")} target="_blank" rel="noopener noreferrer">
               {t("hero.cta")}
@@ -90,7 +91,7 @@ const HeroSection = () => {
             variant="outline" 
             size="lg"
             onClick={() => scrollToSection("what-we-do")}
-            className="px-8 bg-transparent border-[hsl(220_8%_96%/0.28)] text-[hsl(220_8%_96%)] hover:bg-[hsl(220_8%_96%/0.10)] hover:text-[hsl(220_8%_99%)]"
+            className="px-8 bg-transparent border-[hsl(210_40%_98%/0.30)] text-[hsl(210_40%_98%)] hover:bg-[hsl(210_40%_98%/0.10)] hover:text-[hsl(0_0%_100%)]"
           >
             {t("hero.secondary")}
           </Button>
@@ -98,8 +99,8 @@ const HeroSection = () => {
       </div>
 
       <div className="enter [--enter-delay:2.1s] absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-        <div className="w-6 h-10 rounded-full border-2 border-[hsl(220_8%_96%/0.30)] flex items-start justify-center pt-2">
-          <div className="w-1 h-2 bg-[hsl(220_8%_96%/0.5)] rounded-full" />
+        <div className="w-6 h-10 rounded-full border-2 border-[hsl(194_100%_50%/0.34)] flex items-start justify-center pt-2">
+          <div className="w-1 h-2 bg-[hsl(194_100%_50%/0.62)] rounded-full" />
         </div>
       </div>
     </section>
