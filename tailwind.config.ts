@@ -110,6 +110,13 @@ export default {
   			'2xl': 'var(--shadow-2xl)'
   		},
   		fontFamily: {
+  			display: [
+  				'Saira Semi Condensed',
+  				'Work Sans',
+  				'ui-sans-serif',
+  				'system-ui',
+  				'sans-serif'
+  			],
   			sans: [
   				'Work Sans',
   				'ui-sans-serif',
