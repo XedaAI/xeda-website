@@ -144,7 +144,7 @@ const SectionDust = ({ fromId, toId }: SectionDustProps) => {
     // The palette lives in CSS so it has a light and a dark set, and is read
     // only when the theme actually changes — reading computed style every frame
     // would force a style recalc every frame.
-    let inks = TINTS.map(() => "#F8FAFC");
+    let inks = TINTS.map(() => "#ECEFE2");
     const readInks = () => {
       const cs = getComputedStyle(canvas);
       inks = TINTS.map((v, i) => cs.getPropertyValue(v).trim() || inks[i]);
