@@ -890,32 +890,36 @@ All colors MUST be HSL.
 }
 /* --- Delivery cascade -------------------------------------------------------
    Palette for the seven-step water-wheel illustration (DeliveryCascade.tsx).
-   Stone and wood take their tone from the page's own tokens so the drawing sits
-   in whatever theme is active; the water is the one place a hue enters, because
-   the metaphor needs water to look like water. Both sets are defined here, so
-   dropping the --dc-water pair back onto a foreground token makes the whole
-   illustration monochrome again. */
+   Every colour here is taken from the theme's own tokens, so the drawing sits
+   in whatever colour scheme is active and has nothing fixed underneath it:
+   stone and wood are the scheme's neutral, and the water and the seven stages
+   are its text accent. --brand-accent is the one accent every scheme keeps
+   readable as text on the page background, which matters because a stage's
+   label is drawn in its colour when it lights up. The tokens already switch
+   between light and dark, so one definition serves both themes. */
 .dc-flow {
-  --dc-wood: hsl(28 34% 44%);
-  --dc-wood-lit: hsl(30 42% 58%);
-  --dc-stone: hsl(36 22% 60%);
-  --dc-stone-lit: hsl(38 30% 75%);
-  --dc-water: hsl(204 84% 44%);
-  --dc-water-soft: hsl(204 84% 44% / 0.22);
-  --dc-water-deep: hsl(206 72% 30% / 0.2);
-  --dc-on-water: hsl(0 0% 100%);
+  --dc-wood: hsl(var(--muted-foreground));
+  --dc-wood-lit: hsl(var(--foreground) / 0.72);
+  --dc-stone: hsl(var(--muted-foreground) / 0.32);
+  --dc-stone-lit: hsl(var(--muted-foreground) / 0.52);
+  --dc-water: hsl(var(--brand-accent));
+  --dc-water-soft: hsl(var(--brand-accent) / 0.22);
+  --dc-water-deep: hsl(var(--brand-accent) / 0.18);
+  --dc-on-water: hsl(var(--background));
   --dc-label: hsl(var(--foreground) / 0.82);
   --dc-label-soft: hsl(var(--muted-foreground));
 
-  /* One hue per stage, as HSL triples so a single value serves both the solid
-     fill and every washed-back form of it. */
-  --dc-s1: 210 68% 40%;
-  --dc-s2: 152 60% 30%;
-  --dc-s3: 38 76% 38%;
-  --dc-s4: 6 66% 46%;
-  --dc-s5: 282 44% 45%;
-  --dc-s6: 187 74% 29%;
-  --dc-s7: 245 48% 50%;
+  /* The stages share the accent rather than each taking a fixed hue: they are
+     told apart by their number, label and position, and the one that is live
+     is already singled out. HSL triples, so one value serves the solid fill
+     and every washed-back form of it. */
+  --dc-s1: var(--brand-accent);
+  --dc-s2: var(--brand-accent);
+  --dc-s3: var(--brand-accent);
+  --dc-s4: var(--brand-accent);
+  --dc-s5: var(--brand-accent);
+  --dc-s6: var(--brand-accent);
+  --dc-s7: var(--brand-accent);
 }
 /* A hovered or focused stage reads as the live one. The cursor is a pointer so
    it announces itself as something to hover, though nothing navigates. */
@@ -1031,24 +1035,6 @@ All colors MUST be HSL.
   .dc-line { opacity: 1; animation: none; }
 }
 
-.dark .dc-flow {
-  --dc-wood: hsl(28 28% 40%);
-  --dc-wood-lit: hsl(30 36% 54%);
-  --dc-stone: hsl(36 16% 47%);
-  --dc-stone-lit: hsl(38 24% 63%);
-  --dc-water: hsl(200 88% 60%);
-  --dc-water-soft: hsl(200 88% 60% / 0.2);
-  --dc-water-deep: hsl(202 72% 58% / 0.15);
-  --dc-on-water: hsl(206 40% 12%);
-
-  --dc-s1: 207 80% 63%;
-  --dc-s2: 152 52% 53%;
-  --dc-s3: 38 86% 59%;
-  --dc-s4: 6 76% 65%;
-  --dc-s5: 282 58% 70%;
-  --dc-s6: 187 66% 53%;
-  --dc-s7: 245 68% 70%;
-}
 
 /* Anything that should carry the current stage's hue. One variable, set on the
    readout and on each card, so a colour change is one line in the palette. */
