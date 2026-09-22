@@ -62,6 +62,7 @@ const translations: Record<SiteLanguage, Record<string, string>> = {
     "howWeWork.step3.desc": "We design the system around the tools you already use — CRM, ERP, DATEV, inbox — and build it to production in weeks, not months.",
     "howWeWork.step4.title": "Activate",
     "howWeWork.step4.desc": "We deploy it, host it, and monitor it — then extend it as you grow, with more automations and new use cases.",
+    "howWeWork.detailLink": "See the full method — seven phases and the rules we hold ourselves to",
     // For Businesses
     "forBusinesses.label": "For Businesses",
     "forBusinesses.title": "Adopt AI With Confidence",
@@ -375,6 +376,7 @@ const translations: Record<SiteLanguage, Record<string, string>> = {
     "howWeWork.step3.desc": "Wir entwerfen das System rund um Ihre bestehenden Tools — CRM, ERP, DATEV, Postfach — und bauen es in Wochen bis zur Produktion, nicht in Monaten.",
     "howWeWork.step4.title": "Aktivieren",
     "howWeWork.step4.desc": "Wir nehmen es in Betrieb, hosten und überwachen es — und erweitern es mit Ihrem Wachstum um weitere Automatisierungen und Anwendungsfälle.",
+    "howWeWork.detailLink": "Das vollständige Vorgehen ansehen — sieben Phasen und die Regeln, an die wir uns halten",
     // For Businesses
     "forBusinesses.label": "Für Unternehmen",
     "forBusinesses.title": "KI mit Vertrauen einführen",
