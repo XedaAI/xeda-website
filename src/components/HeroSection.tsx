@@ -22,9 +22,13 @@ const HeroSection = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* The photo is a purple stock image, and the scrim above it lets
+          4-16% of it through — enough to tint the hero purple under any colour
+          scheme. Greyscale keeps its texture and lets the scrim's colour be
+          the only colour here. */}
       <div
         ref={bgRef}
-        className="absolute top-0 left-0 right-0 h-[140%] bg-cover bg-center will-change-transform"
+        className="absolute top-0 left-0 right-0 h-[140%] bg-cover bg-center grayscale will-change-transform"
         style={{ backgroundImage: `url(${heroBg})` }}
       />
       {/* The hero is always a dark panel (photo + scrim), so its colours are
