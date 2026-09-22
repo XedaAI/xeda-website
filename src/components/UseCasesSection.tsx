@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Receipt, Factory, ShoppingCart, Building2, Stethoscope, HardHat, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import TiltWrapper from "@/components/TiltWrapper";
 
 // Illustrative use cases — examples of what we build, NOT specific client data.
 // Each card is the entry point to that industry's landing page (src/data/verticals.ts),
@@ -30,8 +31,8 @@ const UseCasesSection = () => {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mt-12">
           {cases.map(({ icon: Icon, key, slug }, index) => (
+            <TiltWrapper key={key}>
             <Link
-              key={key}
               to={`/${slug}`}
               className="group block h-full rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
@@ -64,6 +65,7 @@ const UseCasesSection = () => {
               </CardContent>
             </Card>
             </Link>
+            </TiltWrapper>
           ))}
         </div>
       </div>

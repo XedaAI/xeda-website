@@ -459,30 +459,427 @@ All colors MUST be HSL.
   .card-lift { transition: none; }
   .card-lift:hover { transform: none; }
 }
+/* --- Assembly line: the hero's centre argument, rendered ---------------------
+   A pipe running left to right through the mark.
 
-/* --- AI robot: subtle idle float only (decorative, faint hero background) --- */
-@keyframes robotFloat {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
+   LEFT   raw unstructured input and nothing else: binary, hex, magic bytes,
+          half-written subject lines, scan filenames, a stray CSV header. No
+          paper, no container — none of it has a shape yet. It funnels into the
+          intake and shrinks away into it, so it visibly goes IN.
+   BORE   the same material travelling inside the pipe. Crooked and off-axis up
+          to the mark; at the mark it snaps straight and onto a lane.
+   RIGHT  out of the outlet, every item boxed, labelled and riding its lane.
+
+   The pipe tapers away to the right, so the run has depth: the intake is near
+   and wide, the outlet further off and narrower. It is built from clip-path
+   trapezoids, not SVG, so it stretches with the viewport without distorting
+   stroke widths or either mouth.
+
+   Geometry, all relative to --core-y (the mark's centre, measured in JS) and
+   to --al-pipe-h, so the pipe can change height in one place:
+     container  top = core-y - .404h      near edge centre  core-y + .077h
+     height     h                         far edge centre   core-y - .077h
+   The two centres average to core-y, so the axis passes through the mark. The
+   pipe runs 22%..72% rather than 25%..75%: the output needs the wider margin,
+   and three percent of tilt over half the width is under a pixel of error.
+   --bore-dx and --out-dx are measured too; everything else is percentages. */
+.al-field {
+  pointer-events: none; overflow: hidden; --al-alpha: 1;
+  --al-pipe-h: 100px; --al-y: .96;
+  /* Where the pipe starts and ends. Everything hung off it reads these, and
+     AssemblyLine.tsx measures the result rather than re-deriving it, so the two
+     can never drift apart. */
+  --al-x0: 22%; --al-x1: 72%;
+}
+.al-layer { position: absolute; inset: 0; will-change: transform; }
+
+/* ---- the pipe ---- */
+.al-pipe {
+  position: absolute; left: var(--al-x0); right: calc(100% - var(--al-x1));
+  top: calc(var(--core-y, 240px) - var(--al-pipe-h) * .404); height: var(--al-pipe-h);
+  clip-path: polygon(0% 7.7%, 100% 1.9%, 100% 63.5%, 0% 88.5%);
+  background: linear-gradient(90deg, hsl(220 8% 96% / .62), hsl(220 8% 96% / .34) 56%, hsl(220 8% 96% / .24));
+}
+/* Two pixels smaller on the long edges, so the outer box reads as a lit rim.
+   The opaque base matters: without it the hero photo shows through the tube. */
+.al-pipe-skin {
+  position: absolute; inset: 0;
+  clip-path: polygon(0% 9.6%, 100% 3.8%, 100% 61.6%, 0% 86.6%);
+  background:
+    linear-gradient(180deg,
+      hsl(220 8% 96% / .17) 0%, hsl(220 8% 96% / .06) 34%,
+      hsl(220 14% 2% / .44) 72%, hsl(220 14% 2% / .7) 100%),
+    hsl(220 12% 5%);
 }
 
-.robot-part {
-  transform-box: fill-box;
-  transform-origin: center;
+/* ---- the surface, as dust ----
+   PipeDust.tsx draws the grains and drives these four values. The mask is what
+   turns specks ON the pipe into the pipe itself coming apart: a soft hole under
+   the cursor, plus an overall fade from how fast the cursor is moving. Both are
+   only attached while the effect is awake — a mask recomputed every frame on a
+   pipe nobody is touching is pure cost.
+
+   The 60px offsets mirror PAD in PipeDust.tsx: the canvas is larger than the
+   pipe so grains have somewhere to drift. Its width and height are set there,
+   from the pipe's measured box. */
+.al-dust {
+  position: absolute; pointer-events: none;
+  left: calc(var(--al-x0) - 60px);
+  top: calc(var(--core-y, 240px) - var(--al-pipe-h) * .404 - 60px);
+  /* Zero until PipeDust sizes it. On touch and under reduced motion it bails
+     before sizing, so the element stays genuinely nothing rather than a
+     canvas's default 300x150 sitting over the hero. */
+  width: 0; height: 0;
+}
+.al-pipe.is-dusting {
+  opacity: calc(1 - var(--burn-a, 0) * .8);
+  -webkit-mask-image: radial-gradient(circle var(--burn-r, 0px) at var(--burn-x, -400px) var(--burn-y, -400px),
+    transparent 0%, transparent 38%, #000 100%);
+          mask-image: radial-gradient(circle var(--burn-r, 0px) at var(--burn-x, -400px) var(--burn-y, -400px),
+    transparent 0%, transparent 38%, #000 100%);
 }
 
-.robot-float {
-  animation: robotFloat 5s ease-in-out infinite;
+/* The intake: a dark bore behind a bright rim, so it reads as an opening and
+   not as a cap. Its height matches the pipe's near edge exactly. */
+.al-mouth {
+  position: absolute; left: var(--al-x0); top: calc(var(--core-y, 240px) + var(--al-pipe-h) * .077);
+  width: 28px; height: calc(var(--al-pipe-h) * .808); margin: 0;
+  transform: translate(-50%, -50%); border-radius: 50%;
+  background: hsl(220 14% 3%); border: 2.5px solid hsl(220 8% 96% / .88);
+}
+.al-mouth-bore {
+  position: absolute; left: 50%; top: 50%; width: 16px; height: 46%;
+  transform: translate(-50%, -50%); border-radius: 50%;
+  border: 1px solid hsl(220 8% 96% / .3);
+}
+/* The outlet is smaller because it sits further away. */
+.al-outlet {
+  position: absolute; left: var(--al-x1); top: calc(var(--core-y, 240px) - var(--al-pipe-h) * .077);
+  width: 20px; height: calc(var(--al-pipe-h) * .615);
+  transform: translate(-50%, -50%); border-radius: 50%;
+  border: 2px solid hsl(220 8% 96% / .62);
+}
+.al-glow {
+  position: absolute; left: var(--al-x0); top: calc(var(--core-y, 240px) + var(--al-pipe-h) * .077);
+  width: 240px; height: 170px; transform: translate(-50%, -50%);
+  background: radial-gradient(closest-side, hsl(220 8% 96% / .15), transparent);
+}
+
+/* ---- the collar: the mark, as a ring the pipe runs through ----
+   The hero's mark used to be a hoop lying ALONG the business line, so the line
+   could only pass it, never go through it. Turned 58° about the vertical, the
+   ring's plane crosses the pipe instead — which is the whole difference between
+   "beside" and "through", and it says literally what the brand claims.
+
+   Turned that way the right half is always the far one, so depth needs no
+   timing trick: the right half and the ball's right pass are drawn under the
+   pipe, the left half and its left pass over it. The two halves cross-fade over
+   about seven pixels at the silhouette; a hard cut there leaves a hairline and
+   an overlap of two translucent strokes leaves a bright seam.
+
+   Authored at 244px and scaled by --al-collar-k, because offset-path takes
+   absolute coordinates and would not follow a fluid box. */
+.al-collar-wrap {
+  position: absolute; left: calc(var(--al-x0) / 2 + var(--al-x1) / 2); top: var(--core-y, 240px);
+  width: 244px; height: 244px; margin: -122px 0 0 -122px;
+  perspective: 700px; perspective-origin: 50% 50%;
+  transform: scale(var(--al-collar-k, 1));
+}
+.al-collar {
+  position: absolute; inset: 0; transform-style: preserve-3d;
+  transform: rotateY(58deg) rotateZ(-2.2deg);
+}
+.al-collar svg { display: block; overflow: visible; }
+.al-half-far {
+  position: absolute; inset: 0;
+  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,0) 49%, rgba(0,0,0,1) 52%, rgba(0,0,0,.38) 100%);
+          mask-image: linear-gradient(to right, rgba(0,0,0,0) 49%, rgba(0,0,0,1) 52%, rgba(0,0,0,.38) 100%);
+}
+.al-half-near {
+  position: absolute; inset: 0;
+  -webkit-mask-image: linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 48%, rgba(0,0,0,0) 51%);
+          mask-image: linear-gradient(to right, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 48%, rgba(0,0,0,0) 51%);
+}
+
+/* The ball circles the collar, so it circles the pipe. Its size comes from the
+   perspective itself rather than from a scripted pulse: nearer on the left,
+   smaller on the right. Two copies, swapped at the top and bottom of the
+   circle, where it sits on the silhouette and is neither in front nor behind. */
+.al-ball {
+  position: absolute; left: 0; top: 0; width: 30px; height: 30px; border-radius: 50%;
+  background: radial-gradient(circle at 34% 30%, hsl(0 0% 100%) 0%, hsl(220 8% 96%) 42%, hsl(220 6% 64%) 100%);
+  transform: rotateZ(2.2deg) rotateY(-58deg);
+  offset-path: path('M 122 19 A 103 103 0 0 1 122 225 A 103 103 0 0 1 122 19');
+  offset-rotate: 0deg;
+}
+.al-ball--far  { filter: blur(.5px); animation: alRide 10s linear infinite, alBallFar 10s step-end infinite; }
+.al-ball--near { box-shadow: 0 0 18px hsl(220 8% 96% / .55); animation: alRide 10s linear infinite, alBallNear 10s step-end infinite; }
+@keyframes alRide { from { offset-distance: 0%; } to { offset-distance: 100%; } }
+@keyframes alBallFar  { 0% { opacity: .5; } 50% { opacity: 0; } 100% { opacity: 0; } }
+@keyframes alBallNear { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 1; } }
+
+/* ---- the intake, as one point ----
+   Everything on the left converges on a single opening. Drawn guides make that
+   readable at a glance instead of leaving it to be inferred from the motion:
+   faint at the frame's edge, firmer as they close on the mouth, so the eye
+   follows them inward rather than reading them as decoration. */
+.al-funnel {
+  position: absolute; left: 0; width: var(--al-x0); height: 0;
+  top: calc(var(--core-y, 240px) + var(--al-pipe-h) * .077);
+}
+.al-fray {
+  position: absolute; right: 16px; top: 0; width: 132%; height: 1px;
+  transform-origin: right center; transform: rotate(var(--deg));
+  background: linear-gradient(90deg, hsl(220 8% 96% / 0), hsl(220 8% 96% / .18));
+}
+/* The aperture itself, breathing. Small and slow: it marks the point, it does
+   not compete with the collar for attention. */
+.al-spark {
+  position: absolute; left: var(--al-x0); top: calc(var(--core-y, 240px) + var(--al-pipe-h) * .077);
+  width: 86px; height: 86px; margin: -43px 0 0 -43px; border-radius: 50%;
+  background: radial-gradient(closest-side, hsl(220 8% 96% / .4), transparent);
+  animation: alSpark 3.4s ease-in-out infinite;
+}
+@keyframes alSpark {
+  0%, 100% { transform: scale(.72); opacity: .35; }
+  50%      { transform: scale(1); opacity: .7; }
+}
+
+/* ---- rays down the bore ----
+   Light, not data: they run in about three seconds where a document takes
+   thirteen, which is what keeps the two readable as different things. They
+   converge on the axis and shrink as they recede, like everything else in the
+   tube, and they carry no snap — only the data earns that beat. */
+.al-rays {
+  position: absolute; left: var(--al-x0); right: calc(100% - var(--al-x1));
+  top: calc(var(--core-y, 240px) - var(--al-pipe-h) * .404); height: var(--al-pipe-h);
+  clip-path: polygon(0% 9.6%, 100% 3.8%, 100% 61.6%, 0% 86.6%);
+}
+.al-ray {
+  position: absolute; left: 22px; top: calc(var(--al-pipe-h) * .48 + var(--y0) * var(--al-y));
+  width: var(--rw); height: var(--rh); border-radius: 9999px; opacity: 0;
+  background: linear-gradient(90deg, hsl(220 8% 96% / 0), hsl(220 8% 96%) 58%, hsl(220 8% 96% / 0));
+  /* Static halo, animated opacity: a shadow that only fades composites, one
+     recomputed per frame does not. */
+  box-shadow: 0 0 7px hsl(220 8% 96% / .45);
+  animation: alRay var(--d) linear infinite; animation-delay: var(--dl);
+}
+@keyframes alRay {
+  0%   { transform: translate(0, 0) scale(1); opacity: 0; }
+  12%  { opacity: calc(var(--a) * var(--al-alpha)); }
+  72%  { opacity: calc(var(--a) * var(--al-alpha)); }
+  100% { transform: translate(calc(var(--bore-dx, 300px) - 40px), calc(var(--y3) * var(--al-y))) scale(.42); opacity: 0; }
+}
+
+/* ---- lanes: order you can see even between items ---- */
+.al-lanes {
+  position: absolute; left: var(--al-x1); right: 0; top: calc(var(--core-y, 240px) - var(--al-pipe-h) * .077); height: 0;
+}
+.al-lane {
+  position: absolute; left: 12px; top: 0; width: 130%; height: 1px;
+  transform-origin: left center; transform: rotate(var(--deg));
+  background: linear-gradient(90deg, hsl(220 8% 96% / .04), hsl(220 8% 96% / .24) 34%, hsl(220 8% 96% / .3));
+}
+
+/* ---- inside the bore ----
+   y1 is where the item still is at the mark, y2 where it lands once it snaps
+   onto a lane, y3 where it reaches the outlet. AssemblyLine.tsx derives all
+   three from the item's start offset and its lane, so a lane change needs one
+   number edited, not four. The 48%/54% pair is the snap: the mark sits at half
+   the bore's length, and six percent of the travel is a beat, not a jump. */
+.al-bore {
+  position: absolute; left: var(--al-x0); right: calc(100% - var(--al-x1));
+  top: calc(var(--core-y, 240px) - var(--al-pipe-h) * .404); height: var(--al-pipe-h);
+  clip-path: polygon(0% 9.6%, 100% 3.8%, 100% 61.6%, 0% 86.6%);
+}
+.al-boreitem {
+  position: absolute; left: 18px; top: calc(var(--al-pipe-h) * .48 + var(--y0) * var(--al-y)); opacity: 0;
+  will-change: transform, opacity;
+  font-family: Inconsolata, ui-monospace, monospace; font-size: 9px; letter-spacing: .04em;
+  color: hsl(220 8% 96%); white-space: nowrap;
+  animation: alBore var(--d) linear infinite; animation-delay: var(--dl);
+}
+@keyframes alBore {
+  0%   { transform: translate(0, 0) rotate(var(--r0)) scale(1); opacity: 0; }
+  9%   { opacity: calc(var(--a) * var(--al-alpha)); }
+  48%  { transform: translate(calc(var(--bore-dx, 300px) * .49), calc(var(--y1) * var(--al-y))) rotate(var(--r0)) scale(.74);
+         opacity: calc(var(--a) * var(--al-alpha)); }
+  54%  { transform: translate(calc(var(--bore-dx, 300px) * .53), calc(var(--y2) * var(--al-y))) rotate(0deg) scale(.71);
+         opacity: calc(var(--a) * var(--al-alpha)); }
+  88%  { opacity: calc(var(--a) * var(--al-alpha)); }
+  100% { transform: translate(var(--bore-dx, 300px), calc(var(--y3) * var(--al-y))) rotate(0deg) scale(.42); opacity: 0; }
+}
+
+/* ---- inbound and outbound ---- */
+.al-item { position: absolute; will-change: transform, opacity; opacity: 0; }
+.al-in  { animation: alIn  var(--d) cubic-bezier(.4, 0, .75, .5) infinite; animation-delay: var(--dl); }
+.al-out {
+  left: var(--al-x1); top: calc(var(--core-y, 240px) - var(--al-pipe-h) * .077 + var(--lane-start, 0px));
+  margin-left: 14px;
+  animation: alOut var(--d) cubic-bezier(.25, .55, .6, 1) infinite; animation-delay: var(--dl);
+}
+
+/* Inbound ends at .22 rather than fading in place: it is going into a hole. */
+@keyframes alIn {
+  0%   { transform: translate(0, 0) rotate(var(--r0)) scale(1); opacity: 0; }
+  14%  { opacity: calc(var(--a) * var(--al-alpha)); }
+  74%  { opacity: calc(var(--a) * var(--al-alpha)); }
+  100% { transform: translate(var(--dx, 0px), var(--dy, 0px)) rotate(calc(var(--r0) * .2)) scale(.22); opacity: 0; }
+}
+/* --dy is derived from --out-dx and the lane's slope, so the fan keeps its
+   shape at any width instead of collapsing or overshooting. */
+@keyframes alOut {
+  0%   { transform: translate(0, 0) scale(.3); opacity: 0; }
+  16%  { opacity: calc(var(--a) * var(--al-alpha)); }
+  82%  { opacity: calc(var(--a) * var(--al-alpha)); }
+  100% { transform: translate(var(--out-dx, 200px), calc(var(--out-dx, 200px) * var(--slope, 0))) scale(1); opacity: 0; }
+}
+
+/* ---- inbound: raw data, no paper, no box ---- */
+.al-raw {
+  font-family: Inconsolata, ui-monospace, monospace; font-size: 13px; letter-spacing: .06em;
+  color: hsl(220 8% 96% / .62); white-space: nowrap;
+}
+/* Machine noise sits a touch dimmer and wider than anything a person typed. */
+.al-raw--bin { letter-spacing: .18em; color: hsl(220 8% 96% / .5); }
+
+/* ---- outbound: structured output, every item contained ---- */
+.al-card {
+  box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; padding: 10px 12px;
+  background: hsl(220 8% 96%); border-radius: 4px; box-shadow: 0 8px 26px hsl(220 14% 2% / .5);
+  min-width: 128px;
+}
+.al-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.al-key {
+  font-family: Inconsolata, ui-monospace, monospace; font-size: 8.5px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase; color: hsl(220 10% 44%);
+}
+.al-val {
+  font-family: Inconsolata, ui-monospace, monospace; font-size: 10px; font-weight: 700;
+  color: hsl(220 12% 16%);
+}
+.al-chip {
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 9999px;
+  background: hsl(220 8% 96%); box-shadow: 0 8px 22px hsl(220 14% 2% / .5);
+  font-family: Inconsolata, ui-monospace, monospace; font-size: 10px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; color: hsl(220 12% 16%); white-space: nowrap;
+}
+.al-badge {
+  width: 18px; height: 18px; border-radius: 50%; background: hsl(220 12% 16%);
+  display: flex; align-items: center; justify-content: center; flex: none;
+}
+
+/* The two items that carry a brand line out of the outlet. They used to be
+   tall paper sheets, which is the wrong shape for a fan of five lanes — at any
+   width under about 1400px they landed on their neighbours. Same card family as
+   everything else now, so the line rides the belt like any other result. */
+.al-note {
+  box-sizing: border-box; display: flex; align-items: center; gap: 8px;
+  width: 168px; padding: 8px 11px; background: hsl(220 8% 96%); border-radius: 4px;
+  box-shadow: 0 8px 26px hsl(220 14% 2% / .5);
+}
+.al-quote {
+  font-family: 'Work Sans', system-ui, sans-serif; font-weight: 600; font-size: 10px;
+  line-height: 1.3; letter-spacing: -0.01em; color: hsl(220 12% 16%); text-wrap: balance;
+}
+
+/* ---- the captions that name the three stages ---- */
+.al-caption {
+  position: absolute;
+  font-family: Inconsolata, ui-monospace, monospace; font-size: 10px; font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase; color: hsl(220 8% 96% / .4);
+  white-space: nowrap;
+}
+.al-caption--in  { left: calc(var(--al-x0) - 28px); top: calc(var(--core-y, 240px) + var(--al-pipe-h) * .98); }
+.al-caption--mid { left: calc(var(--al-x0) / 2 + var(--al-x1) / 2); transform: translateX(-50%); top: calc(var(--core-y, 240px) + var(--al-pipe-h) * 1.3); }
+.al-caption--out { left: calc(var(--al-x1) - 20px); top: calc(var(--core-y, 240px) + var(--al-pipe-h) * .52); }
+
+/* Off-screen: hold every animation rather than burning frames. */
+.al-field.is-paused .al-item,
+.al-field.is-paused .al-boreitem,
+.al-field.is-paused .al-ray,
+.al-field.is-paused .al-spark,
+.al-field.is-paused .al-ball { animation-play-state: paused; }
+
+/* Small screens: a shorter pipe, fewer and smaller items, no stage captions. */
+@media (max-width: 767px) {
+  .al-field { --al-x0: 6%; --al-x1: 54%; }
+  .al-item--desk { display: none; }
+  .al-raw { font-size: 10px; }
+  .al-boreitem { font-size: 7px; }
+  .al-mouth { width: 19px; border-width: 2px; }
+  .al-core-shade { width: 210px; height: 140px; }
+  .al-mouth-bore { width: 10px; }
+  .al-outlet { width: 14px; border-width: 1.5px; }
+  .al-glow { width: 160px; height: 110px; }
+  .al-spark { width: 56px; height: 56px; margin: -28px 0 0 -28px; }
+  .al-note { width: 132px; padding: 6px 9px; gap: 6px; }
+  .al-quote { font-size: 8.5px; }
+  .al-card { min-width: 96px; padding: 8px 10px; }
+  .al-key { font-size: 7px; }
+  .al-val { font-size: 8.5px; }
+  .al-chip { font-size: 8px; padding: 5px 9px; }
+  .al-caption { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .robot-float {
+  /* One still frame of the run: material on its way into the intake, material
+     mid-bore already straightened, results out on their lanes. The pipe itself
+     never moved, so the argument survives intact without any movement. */
+  .al-in {
     animation: none;
+    opacity: calc(var(--a) * var(--al-alpha));
+    transform: translate(calc(var(--dx, 0px) * .35), calc(var(--dy, 0px) * .35)) rotate(var(--r0)) scale(.8);
   }
+  .al-boreitem {
+    animation: none;
+    opacity: calc(var(--a) * var(--al-alpha));
+    transform: translate(calc(var(--bore-dx, 300px) * .6), calc(var(--y2) * var(--al-y))) scale(.68);
+  }
+  .al-out {
+    animation: none;
+    opacity: calc(var(--a) * var(--al-alpha));
+    transform: translate(calc(var(--out-dx, 200px) * .6), calc(var(--out-dx, 200px) * var(--slope, 0) * .6)) scale(.85);
+  }
+  .al-spark { animation: none; opacity: .5; }
+  .al-ray {
+    animation: none;
+    opacity: calc(var(--a) * var(--al-alpha));
+    transform: translate(calc((var(--bore-dx, 300px) - 40px) * .5), calc(var(--y3) * var(--al-y) * .5)) scale(.7);
+  }
+  .al-ball--far { animation: none; opacity: 0; }
+  .al-ball--near { animation: none; offset-distance: 66%; }
+}
+
+/* --- Section dust -----------------------------------------------------------
+   A fixed layer that frames "How we work", streams down the screen's sides as
+   you scroll to "Start with a free AI audit", and frames that instead. Above
+   the sections' own backgrounds so it is visible at all, below the header and
+   the chat so it never sits on a control. `color` is what SectionDust.tsx
+   paints the grains with — it is read from here so the dust stays legible in
+   both themes rather than being white on a light section. */
+.section-dust {
+  position: fixed; inset: 0; z-index: 40; pointer-events: none;
+
+  /* The palette SectionDust.tsx paints with, read from here so it has a light
+     and a dark set and stays legible in both. The site is monochrome by design,
+     so --dust-5 is the foreground and carries most of the grains; the four
+     tints are held well down in saturation and are a minority — dust catching
+     the light, not confetti. Deleting the four tints leaves the whole thing
+     monochrome again with nothing else to change. */
+  --dust-1: hsl(212 48% 42%);
+  --dust-2: hsl(32 55% 44%);
+  --dust-3: hsl(266 38% 48%);
+  --dust-4: hsl(172 40% 34%);
+  --dust-5: hsl(var(--foreground));
+}
+/* Dark sections need the tints lifted, or they vanish into the panel. */
+.dark .section-dust {
+  --dust-1: hsl(210 62% 70%);
+  --dust-2: hsl(36 70% 66%);
+  --dust-3: hsl(268 50% 74%);
+  --dust-4: hsl(168 46% 62%);
+  --dust-5: hsl(var(--foreground));
 }
 /* --- Delivery cascade -------------------------------------------------------
    Palette for the seven-step water-wheel illustration (DeliveryCascade.tsx).

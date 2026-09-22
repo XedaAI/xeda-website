@@ -22,6 +22,7 @@ import BackToTop from "@/components/BackToTop";
 import CookieConsent from "@/components/CookieConsent";
 import { AnimatedSection } from "@/components/AnimatedSection";
 import SEOHead from "@/components/SEOHead";
+import SectionDust from "@/components/SectionDust";
 import { lazy, Suspense } from "react";
 
 // Chatbot is a heavy floating widget (voice, markdown, date-fns) that isn't needed
@@ -32,6 +33,10 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead />
+      {/* Frames "How we work", streams down the screen's sides as you scroll,
+          and frames the free-audit section instead. Fixed layer, never
+          interactive; it reads the two sections by id. */}
+      <SectionDust fromId="how-we-work" toId="audit" />
       <Header />
       <main>
         <HeroSection />
