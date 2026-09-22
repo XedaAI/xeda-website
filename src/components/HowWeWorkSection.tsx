@@ -1,4 +1,5 @@
-import { Search, Code, BarChart3, Zap } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Search, Code, BarChart3, Zap, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const HowWeWorkSection = () => {
@@ -35,7 +36,9 @@ const HowWeWorkSection = () => {
 
   return (
     <section id="how-we-work" className="py-28 md:py-36 bg-card">
-      <div className="container mx-auto px-6">
+      {/* data-dust-frame: SectionDust frames this block, not the full-bleed
+          section, whose edges are the screen's own. */}
+      <div className="container mx-auto px-6" data-dust-frame>
         <div className="text-center mb-16">
           <span className="text-sm font-semibold tracking-wide text-brand-accent mb-4 block">{t("howWeWork.label")}</span>
           <h2 className="text-3xl md:text-5xl font-semibold tracking-[-0.022em] text-foreground mb-5 text-balance">
@@ -69,6 +72,18 @@ const HowWeWorkSection = () => {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* The four steps are the summary; /process carries the seven phases,
+            the deliverable of each, and the gates between them. */}
+        <div className="text-center mt-14">
+          <Link
+            to="/process"
+            className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-medium transition-colors group"
+          >
+            {t("howWeWork.detailLink")}
+            <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+          </Link>
         </div>
       </div>
     </section>

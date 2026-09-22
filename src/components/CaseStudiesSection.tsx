@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, CalendarClock, PhoneCall, CalendarCheck } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { auditBookingUrl } from "@/lib/booking";
+import TiltWrapper from "@/components/TiltWrapper";
 
 // Proof, not a product catalogue. These are real products we built and operate,
 // and on a site with no client logos or testimonials yet they are the only
@@ -39,9 +40,9 @@ const CaseStudiesSection = () => {
 
         <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
           {products.map(({ icon: Icon, name, key }, index) => (
+            <TiltWrapper key={key}>
             <Card
-              key={key}
-              className="card-lift enter bg-card border-border/50"
+              className="card-lift enter h-full bg-card border-border/50"
               style={{ "--enter-delay": `${index * 0.07}s` } as React.CSSProperties}
             >
               <CardContent className="p-6 text-center">
@@ -54,6 +55,7 @@ const CaseStudiesSection = () => {
                 </p>
               </CardContent>
             </Card>
+            </TiltWrapper>
           ))}
         </div>
 

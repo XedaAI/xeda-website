@@ -3,6 +3,7 @@ import HeroSection from "@/components/HeroSection";
 import TrustStrip from "@/components/TrustStrip";
 import WhatWeDoSection from "@/components/WhatWeDoSection";
 import UseCasesSection from "@/components/UseCasesSection";
+import ClaimsSection from "@/components/ClaimsSection";
 import HowWeWorkSection from "@/components/HowWeWorkSection";
 import ForBusinessesSection from "@/components/ForBusinessesSection";
 // ForDevelopersSection (recruiting) moved off the buyer flow to the /careers page.
@@ -22,6 +23,7 @@ import BackToTop from "@/components/BackToTop";
 import CookieConsent from "@/components/CookieConsent";
 import { AnimatedSection } from "@/components/AnimatedSection";
 import SEOHead from "@/components/SEOHead";
+import SectionDust from "@/components/SectionDust";
 import { lazy, Suspense } from "react";
 
 // Chatbot is a heavy floating widget (voice, markdown, date-fns) that isn't needed
@@ -32,6 +34,10 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <SEOHead />
+      {/* Frames "How we work", streams down the screen's sides as you scroll,
+          and frames the free-audit section instead. Fixed layer, never
+          interactive; it reads the two sections by id. */}
+      <SectionDust fromId="how-we-work" toId="audit" />
       <Header />
       <main>
         <HeroSection />
@@ -43,6 +49,10 @@ const Index = () => {
         </AnimatedSection>
         <AnimatedSection>
           <UseCasesSection />
+        </AnimatedSection>
+        {/* Who we serve is settled above; this is what we claim, before how we work. */}
+        <AnimatedSection>
+          <ClaimsSection />
         </AnimatedSection>
         <AnimatedSection>
           <HowWeWorkSection />

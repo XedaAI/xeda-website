@@ -16,6 +16,7 @@ const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const Careers = lazy(() => import("./pages/Careers"));
 const VerticalLanding = lazy(() => import("./pages/VerticalLanding"));
+const Process = lazy(() => import("./pages/Process"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Impressum = lazy(() => import("./pages/Impressum"));
@@ -42,8 +43,11 @@ const App = () => (
                 <Route path="/blog" element={<Blog />} />
                 <Route path="/blog/:id" element={<BlogPost />} />
                 <Route path="/careers" element={<Careers />} />
+                <Route path="/process" element={<Process />} />
                 {/* Standalone outbound-campaign landing pages, one per vertical
-                    (src/data/verticals.ts) rendered by a single template. */}
+                    (src/data/verticals.ts) rendered by a single template.
+                    /steuerkanzleien is one of these — the standalone page that
+                    #63 branched from has since been folded into this template. */}
                 {verticals.map((v) => (
                   <Route
                     key={v.slug}
