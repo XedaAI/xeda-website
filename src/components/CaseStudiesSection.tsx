@@ -1,137 +1,61 @@
+import type React from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Check, CalendarClock, PhoneCall, CalendarCheck } from "lucide-react";
-import { useScrollAnimation } from "@/hooks/useScrollAnimation";
+import { ArrowRight, CalendarClock, PhoneCall, CalendarCheck } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { auditBookingUrl } from "@/lib/booking";
-import { cn } from "@/lib/utils";
 import TiltWrapper from "@/components/TiltWrapper";
 
-// Real products built and operated by xeda.ai. No fabricated clients or metrics —
-// these are our own GenAI/software products, described by what they actually do.
+// Proof, not a product catalogue. These are real products we built and operate,
+// and on a site with no client logos or testimonials yet they are the only
+// evidence that we ship. So they are deliberately compact: name and what it
+// does, nothing more. The feature lists, stack tags ("Next.js, Stripe, Docker")
+// and category badges ("Vertical SaaS") were removed — they read as "we sell
+// products" and speak to developers, not to the person buying the work.
+//
+// Replace this with a real client case study once one exists; the products can
+// then retire to a single line.
 const products = [
-  {
-    icon: CalendarClock,
-    name: "FahrPlan",
-    category: "Vertical SaaS",
-    tagline: "Scheduling platform for driving schools",
-    description:
-      "A multi-tenant SaaS that lets driving schools manage instructors, publish available slots, and take student bookings from a live weekly calendar — with self-serve signup, free trials, and subscription billing.",
-    highlights: [
-      "Multi-tenant with self-serve onboarding & trials",
-      "Instructor slot publishing + student booking",
-      "Stripe subscription billing",
-      "Bilingual DE/EN, GDPR-ready legal pages",
-    ],
-    tags: ["Next.js", "Stripe", "SQLite", "Docker"],
-  },
-  {
-    icon: PhoneCall,
-    name: "Handwerker Rezeption",
-    category: "Voice AI",
-    tagline: "AI phone receptionist for tradespeople",
-    description:
-      "An AI receptionist for German trade businesses that answers calls around the clock — it understands the caller, captures the job details, and logs every enquiry to a dashboard so no lead is ever missed.",
-    highlights: [
-      "24/7 AI call answering in German",
-      "Automatic job & lead capture",
-      "Multi-tenant business dashboard",
-      "Pluggable voice + telephony stack",
-    ],
-    tags: ["Python", "LLMs", "Voice AI", "Telephony"],
-  },
-  {
-    icon: CalendarCheck,
-    name: "OmniBook",
-    category: "Booking Platform",
-    tagline: "Appointment booking for service businesses",
-    description:
-      "A booking and scheduling platform for service businesses, built on a layered, multi-tenant backend with secure authentication, versioned database migrations, and a modern TypeScript front end.",
-    highlights: [
-      "Availability & appointment booking",
-      "Secure multi-tenant authentication",
-      "PostgreSQL with versioned migrations",
-      "React 19 + TypeScript front end",
-    ],
-    tags: ["FastAPI", "React", "PostgreSQL", "Docker"],
-  },
+  { icon: CalendarClock, name: "FahrPlan", key: "fahrplan" },
+  { icon: PhoneCall, name: "Handwerker Rezeption", key: "rezeption" },
+  { icon: CalendarCheck, name: "OmniBook", key: "omnibook" },
 ];
 
-const ProductCard = ({ product, index }: { product: typeof products[0]; index: number }) => {
-  const { ref, isVisible } = useScrollAnimation();
-  const delays = ["delay-0", "delay-100", "delay-200"];
-  const Icon = product.icon;
-
-  return (
-    <TiltWrapper>
-    <Card
-      ref={ref}
-      className={cn(
-        "h-full bg-card/50 backdrop-blur-sm border-border/50 transition-all duration-300 ease-out hover:shadow-lg hover:shadow-primary/10 hover:border-primary/30 overflow-hidden",
-        delays[index % 3],
-        isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-      )}
-    >
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center">
-            <Icon className="w-5 h-5 text-primary" />
-          </div>
-          <Badge variant="secondary" className="text-xs">
-            {product.category}
-          </Badge>
-        </div>
-
-        <h3 className="text-xl font-bold text-foreground mb-1">{product.name}</h3>
-        <p className="text-sm text-primary font-medium mb-4">{product.tagline}</p>
-
-        <p className="text-sm text-foreground/80 leading-relaxed mb-6">
-          {product.description}
-        </p>
-
-        <div className="border-t border-border pt-4 mb-4">
-          <ul className="space-y-2">
-            {product.highlights.map((highlight) => (
-              <li key={highlight} className="flex items-start gap-2 text-sm text-foreground/80">
-                <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                <span>{highlight}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          {product.tags.map((tag) => (
-            <Badge key={tag} variant="outline" className="text-xs">
-              {tag}
-            </Badge>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-    </TiltWrapper>
-  );
-};
-
 const CaseStudiesSection = () => {
+  const { t } = useLanguage();
+
   return (
-    <section id="case-studies" className="py-20 bg-background">
+    <section id="case-studies" className="py-28 md:py-36 bg-background">
       <div className="container mx-auto px-6">
         <div className="text-center mb-12">
-          <Badge variant="outline" className="mb-4">
-            What We've Built
-          </Badge>
+          <span className="text-sm font-semibold tracking-wide text-brand-accent mb-4 block">
+            {t("caseStudies.label")}
+          </span>
           <h2 className="text-3xl md:text-5xl font-semibold tracking-[-0.022em] text-foreground mb-5 text-balance">
-            We don't just advise on AI — we ship it
+            {t("caseStudies.title")}
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            These are our own products: real software we've designed, built, and operate.
-            The same team builds for our clients.
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto text-pretty">
+            {t("caseStudies.subtitle")}
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {products.map((product, index) => (
-            <ProductCard key={index} product={product} index={index} />
+        <div className="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          {products.map(({ icon: Icon, name, key }, index) => (
+            <TiltWrapper key={key}>
+            <Card
+              className="card-lift enter h-full bg-card border-border/50"
+              style={{ "--enter-delay": `${index * 0.07}s` } as React.CSSProperties}
+            >
+              <CardContent className="p-6 text-center">
+                <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                  <Icon className="w-5 h-5 text-primary" />
+                </div>
+                <h3 className="text-lg font-bold text-foreground mb-1.5">{name}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed text-pretty">
+                  {t(`caseStudies.${key}.tagline`)}
+                </p>
+              </CardContent>
+            </Card>
+            </TiltWrapper>
           ))}
         </div>
 
@@ -142,7 +66,7 @@ const CaseStudiesSection = () => {
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-medium transition-colors group"
           >
-            Want something like this built for your business? Book a free audit
+            {t("caseStudies.cta")}
             <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
           </a>
         </div>
