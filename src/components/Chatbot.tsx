@@ -144,7 +144,7 @@ const CopyButton = ({ text }: { text: string }) => {
       className="h-5 w-5"
       onClick={handleCopy}
     >
-      {copied ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
+      {copied ? <Check className="h-3 w-3 text-brand-accent" /> : <Copy className="h-3 w-3" />}
     </Button>
   );
 };
