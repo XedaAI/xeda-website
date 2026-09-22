@@ -12,15 +12,15 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* --- Light -----------------------------------------------------------
-       Navy / white / cyan, weighted 60 / 30 / 10: deep navy (#0F172A,
-       #102A43) carries the surfaces, white and off-white (#FFFFFF, #F8FAFC)
-       the text and light panels, and cyan (#06B6D4, #00C2FF) the accents.
-       Dark is the site's default theme, so that is where the 60/30/10 holds;
-       this light theme flips the first two.
+       Navy / white / orange. Deep navy (#0F172A, #102A43) carries the
+       surfaces, white and off-white (#FFFFFF, #F8FAFC) the text and light
+       panels, and orange (#FF7A00) the actions: it sits almost opposite the
+       navy on the colour wheel, so a button is the first thing the eye finds.
+       Dark is the site's default theme; this light theme flips navy and white.
 
-       Cyan cannot carry text on white — #06B6D4 on #FFFFFF is 2.4:1 — so
-       here it darkens to cyan-700 (#0E7490) for eyebrows and icons, and the
-       primary button stays navy with off-white text. */
+       Buttons keep the exact #FF7A00 with navy text (6.8:1) — white text on
+       it is 2.6:1 and fails. Orange cannot carry text on white either (2.6:1),
+       so eyebrows and links here use a darker orange, 21 90% 40% (4.9:1). */
     --background: 0 0% 100%;
     --foreground: 222 47% 11%;
 
@@ -31,11 +31,11 @@ All colors MUST be HSL.
     --popover-foreground: 222 47% 11%;
 
     /* Buttons are near-black with white text — the OpenAI move. */
-    --primary: 222 47% 11%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 29 100% 50%;
+    --primary-foreground: 222 47% 11%;
 
     /* Eyebrows and labels: muted grey, not a colour. */
-    --brand-accent: 192 82% 31%;
+    --brand-accent: 21 90% 40%;
 
     --section-alt: 210 40% 98%;
 
@@ -53,22 +53,21 @@ All colors MUST be HSL.
 
     --border: 214 32% 91%;
     --input: 213 27% 84%;
-    --ring: 189 94% 43%;
+    --ring: 21 90% 40%;
 
     --radius: 0.75rem;
 
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222 47% 11%;
-    --sidebar-primary: 222 47% 11%;
-    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-primary: 29 100% 50%;
+    --sidebar-primary-foreground: 222 47% 11%;
     --sidebar-accent: 210 40% 96%;
     --sidebar-accent-foreground: 222 47% 11%;
     --sidebar-border: 214 32% 91%;
-    --sidebar-ring: 189 94% 43%;
+    --sidebar-ring: 21 90% 40%;
 
-    /* Charts step from cyan through blue to navy-grey, staying inside the
-       palette's own family. */
-    --chart-1: 192 82% 31%;
+    /* Charts lead with the orange, then step through the navy's blues. */
+    --chart-1: 21 90% 40%;
     --chart-2: 199 89% 40%;
     --chart-3: 217 76% 50%;
     --chart-4: 222 47% 30%;
@@ -106,9 +105,9 @@ All colors MUST be HSL.
   .dark {
     /* --- Dark ------------------------------------------------------------
        The default theme. Navy #0F172A is the ground and #102A43 the raised
-       surface. Buttons are cyan #06B6D4 with navy text (7.4:1 — white text
-       on cyan would be 2.4:1 and fail), and the brighter #00C2FF is kept for
-       text accents like eyebrows and the hero highlight (8.6:1 on navy). */
+       surface. Buttons are orange #FF7A00 with navy text (6.8:1 — white text
+       on it would be 2.6:1 and fail). On navy the same orange also works as
+       text, for eyebrows and the hero highlight (6.8:1; 5.6:1 on cards). */
     --background: 222 47% 11%;
     --foreground: 210 40% 98%;
 
@@ -118,10 +117,10 @@ All colors MUST be HSL.
     --popover: 210 61% 17%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 189 94% 43%;
+    --primary: 29 100% 50%;
     --primary-foreground: 222 47% 11%;
 
-    --brand-accent: 194 100% 50%;
+    --brand-accent: 29 100% 50%;
 
     --section-alt: 223 50% 8%;
 
@@ -139,16 +138,16 @@ All colors MUST be HSL.
 
     --border: 212 40% 21%;
     --input: 212 40% 24%;
-    --ring: 194 100% 50%;
+    --ring: 29 100% 50%;
     --sidebar-background: 223 50% 8%;
     --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 189 94% 43%;
+    --sidebar-primary: 29 100% 50%;
     --sidebar-primary-foreground: 222 47% 11%;
     --sidebar-accent: 210 50% 20%;
     --sidebar-accent-foreground: 210 40% 96%;
     --sidebar-border: 212 40% 21%;
-    --sidebar-ring: 194 100% 50%;
-    --chart-1: 194 100% 50%;
+    --sidebar-ring: 29 100% 50%;
+    --chart-1: 29 100% 50%;
     --chart-2: 199 89% 60%;
     --chart-3: 213 94% 68%;
     --chart-4: 215 20% 65%;
@@ -193,12 +192,12 @@ All colors MUST be HSL.
   --muted-foreground: 214 25% 74%;
   --border: 212 40% 21%;
   --input: 212 40% 24%;
-  --primary: 189 94% 43%;
+  --primary: 29 100% 50%;
   --primary-foreground: 222 47% 11%;
-  --brand-accent: 194 100% 50%;
+  --brand-accent: 29 100% 50%;
   --accent: 210 50% 20%;
   --accent-foreground: 210 40% 96%;
-  --ring: 194 100% 50%;
+  --ring: 29 100% 50%;
   --secondary: 215 25% 27%;
   --secondary-foreground: 210 40% 98%;
 
@@ -870,12 +869,12 @@ All colors MUST be HSL.
 
   /* The palette SectionDust.tsx paints with, read from here so it has a light
      and a dark set and stays legible in both. --dust-5 is the foreground and
-     carries most of the grains; the four tints stay in the cyan-to-blue family
-     and are held well down in saturation — dust catching the light, not
-     confetti. Deleting the four tints leaves the whole thing
+     carries most of the grains; three tints stay in the navy's blues and one
+     picks up the orange, all held well down in saturation — dust catching the
+     light, not confetti. Deleting the four tints leaves the whole thing
      monochrome again with nothing else to change. */
   --dust-1: hsl(199 60% 40%);
-  --dust-2: hsl(189 70% 34%);
+  --dust-2: hsl(24 80% 44%);
   --dust-3: hsl(217 55% 48%);
   --dust-4: hsl(205 40% 45%);
   --dust-5: hsl(var(--foreground));
@@ -883,7 +882,7 @@ All colors MUST be HSL.
 /* Dark sections need the tints lifted, or they vanish into the panel. */
 .dark .section-dust {
   --dust-1: hsl(199 70% 68%);
-  --dust-2: hsl(188 70% 60%);
+  --dust-2: hsl(29 90% 62%);
   --dust-3: hsl(213 75% 72%);
   --dust-4: hsl(205 45% 70%);
   --dust-5: hsl(var(--foreground));

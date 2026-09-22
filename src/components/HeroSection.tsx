@@ -57,16 +57,16 @@ const HeroSection = () => {
           className="h-[160px] w-[160px] md:h-[236px] md:w-[236px] mx-auto mb-8 md:mb-10"
         />
 
-        <div className="enter [--enter-delay:1.25s] inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[hsl(194_100%_50%/0.10)] border border-[hsl(194_100%_50%/0.30)] mb-8">
-          <span className="w-2 h-2 rounded-full bg-[hsl(194_100%_50%)] animate-pulse" />
+        <div className="enter [--enter-delay:1.25s] inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[hsl(29_100%_50%/0.10)] border border-[hsl(29_100%_50%/0.32)] mb-8">
+          <span className="w-2 h-2 rounded-full bg-[hsl(29_100%_50%)] animate-pulse" />
           <span className="text-sm text-[hsl(210_40%_92%)]">{t("hero.badge")}</span>
         </div>
 
         <h1 className="enter [--enter-delay:1.4s] text-[2.6rem] md:text-6xl lg:text-[4.6rem] font-semibold tracking-[-0.03em] text-[hsl(210_40%_98%)] mb-7 leading-[1.06] text-balance">
           {t("hero.title")}
           {/* The accent's loudest moment on the page: the second half of the
-              headline in the bright cyan (#00C2FF, 8.6:1 on the navy). */}
-          <span className="text-[hsl(194_100%_50%)]"> {t("hero.titleHighlight")}</span>
+              headline in the orange (#FF7A00, 6.8:1 on the navy). */}
+          <span className="text-[hsl(29_100%_50%)]"> {t("hero.titleHighlight")}</span>
         </h1>
 
         <p className="enter [--enter-delay:1.55s] text-lg md:text-xl text-[hsl(214_32%_82%)] mb-12 max-w-[38rem] mx-auto leading-[1.65]">
@@ -75,12 +75,13 @@ const HeroSection = () => {
         
         <div className="enter [--enter-delay:1.7s] flex flex-col sm:flex-row items-center justify-center gap-4">
           {/* The hero is a fixed dark panel, so the CTA is fixed too: in light
-              mode --primary is navy, which would sit dark-on-dark here. Cyan
-              with navy text reads 7.4:1; white text on cyan would fail. */}
+              mode --primary is orange with navy text, which would read fine,
+              but a fixed panel keeps it from depending on the theme. Orange
+              with navy text reads 6.8:1; white text on orange would fail. */}
           <Button
             size="lg"
             asChild
-            className="px-8 bg-[hsl(189_94%_43%)] text-[hsl(222_47%_11%)] hover:bg-[hsl(188_86%_53%)]"
+            className="px-8 bg-[hsl(29_100%_50%)] text-[hsl(222_47%_11%)] hover:bg-[hsl(29_100%_58%)]"
           >
             <a href={auditBookingUrl("hero")} target="_blank" rel="noopener noreferrer">
               {t("hero.cta")}
@@ -99,8 +100,8 @@ const HeroSection = () => {
       </div>
 
       <div className="enter [--enter-delay:2.1s] absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-        <div className="w-6 h-10 rounded-full border-2 border-[hsl(194_100%_50%/0.34)] flex items-start justify-center pt-2">
-          <div className="w-1 h-2 bg-[hsl(194_100%_50%/0.62)] rounded-full" />
+        <div className="w-6 h-10 rounded-full border-2 border-[hsl(29_100%_50%/0.36)] flex items-start justify-center pt-2">
+          <div className="w-1 h-2 bg-[hsl(29_100%_50%/0.66)] rounded-full" />
         </div>
       </div>
     </section>
