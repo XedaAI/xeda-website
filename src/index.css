@@ -12,66 +12,67 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* --- Light -----------------------------------------------------------
-       "Beautiful sunset", weighted 60 / 30 / 10 in the default dark theme:
-       dusky plum #493948 for the surfaces (60), terracotta #955849 and
-       twilight slate #777C8A in support (30), and the light breaking through
-       — orange #D77D40 and golden yellow #F2C94A — as the accents (10).
+       "Beautiful sunset", four colours, weighted 60 / 30 / 10 in the default
+       dark theme: plum #463A47 for the surfaces (60), terracotta #8D5B4C in
+       support (30) — borders, secondary buttons and a terracotta-tinted band
+       between sections — and orange #CB814C and yellow #EBCA61 as the
+       accents (10). With no grey in the palette, muted text is a pale plum.
 
        This light theme turns the sky to a warm white. Yellow cannot carry
-       text on it (1.5:1), so labels and links use the terracotta (5.2:1);
-       buttons stay orange with deep-plum text (6.0:1 — white text on the
-       orange is 3.0:1 and fails). */
+       text on it (1.5:1), so labels and links use the terracotta (5.3:1);
+       buttons stay orange with deep-plum text (5.9:1 — white text on the
+       orange is 3.1:1 and fails). */
     --background: 30 33% 97%;
-    --foreground: 304 16% 16%;
+    --foreground: 295 14% 16%;
 
     --card: 0 0% 100%;
-    --card-foreground: 304 16% 16%;
+    --card-foreground: 295 14% 16%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 304 16% 16%;
+    --popover-foreground: 295 14% 16%;
 
     /* Buttons are near-black with white text — the OpenAI move. */
-    --primary: 24 65% 55%;
-    --primary-foreground: 300 16% 10%;
+    --primary: 25 55% 55%;
+    --primary-foreground: 295 14% 9%;
 
     /* Eyebrows and labels: muted grey, not a colour. */
-    --brand-accent: 12 34% 44%;
+    --brand-accent: 14 30% 43%;
 
-    --section-alt: 30 30% 93%;
+    --section-alt: 20 30% 93%;
 
-    --secondary: 12 34% 44%;
+    --secondary: 14 30% 43%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 224 8% 50%;
-    --muted-foreground: 224 10% 38%;
+    --muted: 295 8% 55%;
+    --muted-foreground: 295 10% 38%;
 
-    --accent: 30 30% 93%;
-    --accent-foreground: 304 16% 16%;
+    --accent: 20 30% 93%;
+    --accent-foreground: 295 14% 16%;
 
     --destructive: 0 65% 44%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 30 16% 86%;
-    --input: 30 14% 80%;
-    --ring: 12 34% 44%;
+    --border: 14 25% 86%;
+    --input: 14 22% 80%;
+    --ring: 14 30% 43%;
 
     --radius: 0.75rem;
 
     --sidebar-background: 30 33% 97%;
-    --sidebar-foreground: 304 16% 16%;
-    --sidebar-primary: 24 65% 55%;
-    --sidebar-primary-foreground: 300 16% 10%;
-    --sidebar-accent: 30 30% 93%;
-    --sidebar-accent-foreground: 304 16% 16%;
-    --sidebar-border: 30 16% 86%;
-    --sidebar-ring: 12 34% 44%;
+    --sidebar-foreground: 295 14% 16%;
+    --sidebar-primary: 25 55% 55%;
+    --sidebar-primary-foreground: 295 14% 9%;
+    --sidebar-accent: 20 30% 93%;
+    --sidebar-accent-foreground: 295 14% 16%;
+    --sidebar-border: 14 25% 86%;
+    --sidebar-ring: 14 30% 43%;
 
-    /* Charts: the sunset's own five colours, warm first. */
-    --chart-1: 24 65% 55%;
-    --chart-2: 12 34% 44%;
-    --chart-3: 304 12% 25%;
-    --chart-4: 224 8% 50%;
-    --chart-5: 45 70% 45%;
+    /* Charts: the sunset's own four colours, warm first. */
+    --chart-1: 25 55% 55%;
+    --chart-2: 14 30% 43%;
+    --chart-3: 295 10% 25%;
+    --chart-4: 46 65% 45%;
+    --chart-5: 295 8% 55%;
 
     --sidebar: 30 33% 97%;
 
@@ -105,56 +106,56 @@ All colors MUST be HSL.
   .dark {
     /* --- Dark ------------------------------------------------------------
        The default theme. The ground is a deeper plum from the palette's own
-       hue, so the warm accents glow against it; #493948 itself is the raised
-       surface. Buttons are orange with deep-plum text (6.0:1), yellow is the
-       text accent (10.3:1 on the ground), and secondary buttons are
-       terracotta (4.9:1). The slate is 3.9:1 as text, so it stays on borders
-       and a lightened version of it carries muted text (8.8:1). */
-    --background: 304 14% 13%;
+       hue, so the warm accents glow against it; #463A47 itself is the raised
+       surface, and alternate sections sit on a plum band warmed toward the
+       terracotta. Buttons are orange with deep-plum text (5.9:1), yellow is
+       the text accent (10.3:1 on the ground), secondary buttons are
+       terracotta (5.0:1), and muted text is a pale plum (9.4:1). */
+    --background: 295 12% 13%;
     --foreground: 30 25% 94%;
 
-    --card: 304 12% 25%;
+    --card: 295 10% 25%;
     --card-foreground: 30 25% 94%;
 
-    --popover: 304 12% 27%;
+    --popover: 295 10% 27%;
     --popover-foreground: 30 25% 94%;
 
-    --primary: 24 65% 55%;
-    --primary-foreground: 300 16% 10%;
+    --primary: 25 55% 55%;
+    --primary-foreground: 295 14% 9%;
 
-    --brand-accent: 45 87% 62%;
+    --brand-accent: 46 78% 65%;
 
-    --section-alt: 304 13% 17%;
+    --section-alt: 350 14% 16%;
 
-    --secondary: 12 34% 44%;
+    --secondary: 14 30% 43%;
     --secondary-foreground: 30 25% 94%;
 
-    --muted: 304 12% 25%;
-    --muted-foreground: 228 12% 76%;
+    --muted: 295 10% 25%;
+    --muted-foreground: 295 10% 78%;
 
-    --accent: 304 12% 29%;
+    --accent: 295 10% 29%;
     --accent-foreground: 30 25% 94%;
 
     --destructive: 0 62% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 304 10% 31%;
-    --input: 304 10% 34%;
-    --ring: 45 87% 62%;
-    --sidebar-background: 304 13% 17%;
+    --border: 14 20% 30%;
+    --input: 14 20% 33%;
+    --ring: 46 78% 65%;
+    --sidebar-background: 350 14% 16%;
     --sidebar-foreground: 30 25% 94%;
-    --sidebar-primary: 24 65% 55%;
-    --sidebar-primary-foreground: 300 16% 10%;
-    --sidebar-accent: 304 12% 29%;
+    --sidebar-primary: 25 55% 55%;
+    --sidebar-primary-foreground: 295 14% 9%;
+    --sidebar-accent: 295 10% 29%;
     --sidebar-accent-foreground: 30 25% 94%;
-    --sidebar-border: 304 10% 31%;
-    --sidebar-ring: 45 87% 62%;
-    --chart-1: 24 65% 55%;
-    --chart-2: 45 87% 62%;
-    --chart-3: 12 34% 44%;
-    --chart-4: 224 8% 50%;
-    --chart-5: 304 10% 55%;
-    --sidebar: 304 12% 25%;
+    --sidebar-border: 14 20% 30%;
+    --sidebar-ring: 46 78% 65%;
+    --chart-1: 25 55% 55%;
+    --chart-2: 46 78% 65%;
+    --chart-3: 14 30% 43%;
+    --chart-4: 295 10% 55%;
+    --chart-5: 14 30% 62%;
+    --sidebar: 295 10% 25%;
     --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
     --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
     --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
@@ -184,23 +185,23 @@ All colors MUST be HSL.
    In light mode this is a full inversion; in dark mode the page is already dark,
    so it only drops a step deeper to keep the rhythm readable. */
 .section-ink {
-  --background: 300 16% 9%;
+  --background: 295 14% 9%;
   --foreground: 30 25% 94%;
-  --card: 304 12% 20%;
+  --card: 295 10% 20%;
   --card-foreground: 30 25% 94%;
-  --popover: 304 12% 27%;
+  --popover: 295 10% 27%;
   --popover-foreground: 30 25% 94%;
-  --muted: 304 12% 25%;
-  --muted-foreground: 228 12% 76%;
-  --border: 304 10% 31%;
-  --input: 304 10% 34%;
-  --primary: 24 65% 55%;
-  --primary-foreground: 300 16% 10%;
-  --brand-accent: 45 87% 62%;
-  --accent: 304 12% 29%;
+  --muted: 295 10% 25%;
+  --muted-foreground: 295 10% 78%;
+  --border: 14 20% 30%;
+  --input: 14 20% 33%;
+  --primary: 25 55% 55%;
+  --primary-foreground: 295 14% 9%;
+  --brand-accent: 46 78% 65%;
+  --accent: 295 10% 29%;
   --accent-foreground: 30 25% 94%;
-  --ring: 45 87% 62%;
-  --secondary: 12 34% 44%;
+  --ring: 46 78% 65%;
+  --secondary: 14 30% 43%;
   --secondary-foreground: 30 25% 94%;
 
   background-color: hsl(var(--background));
@@ -210,8 +211,8 @@ All colors MUST be HSL.
 /* In dark mode the page is already ink, so these drop a step deeper instead
    of inverting — otherwise the rhythm disappears entirely. */
 .dark .section-ink {
-  --background: 300 18% 7%;
-  --card: 304 12% 18%;
+  --background: 295 16% 7%;
+  --card: 295 10% 18%;
 }
 
 /* Hairline rule that fades at both ends — separates ink sections without a
@@ -615,7 +616,7 @@ All colors MUST be HSL.
    circle, where it sits on the silhouette and is neither in front nor behind. */
 .al-ball {
   position: absolute; left: 0; top: 0; width: 30px; height: 30px; border-radius: 50%;
-  background: radial-gradient(circle at 34% 30%, hsl(0 0% 100%) 0%, hsl(30 25% 96%) 42%, hsl(224 10% 66%) 100%);
+  background: radial-gradient(circle at 34% 30%, hsl(0 0% 100%) 0%, hsl(30 25% 96%) 42%, hsl(295 8% 66%) 100%);
   transform: rotateZ(2.2deg) rotateY(-58deg);
   offset-path: path('M 122 19 A 103 103 0 0 1 122 225 A 103 103 0 0 1 122 19');
   offset-rotate: 0deg;
@@ -760,7 +761,7 @@ All colors MUST be HSL.
 .al-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
 .al-key {
   font-family: Inconsolata, ui-monospace, monospace; font-size: 8.5px; font-weight: 700;
-  letter-spacing: .1em; text-transform: uppercase; color: hsl(224 8% 48%);
+  letter-spacing: .1em; text-transform: uppercase; color: hsl(295 7% 48%);
 }
 .al-val {
   font-family: Inconsolata, ui-monospace, monospace; font-size: 10px; font-weight: 700;
@@ -872,21 +873,21 @@ All colors MUST be HSL.
   /* The palette SectionDust.tsx paints with, read from here so it has a light
      and a dark set and stays legible in both. --dust-5 is the foreground and
      carries most of the grains; the four tints are the sunset's orange,
-     yellow, terracotta and slate, held well down in saturation — dust
+     yellow, terracotta and a pale plum, held well down in saturation — dust
      catching the light, not confetti. Deleting the four tints leaves the whole thing
      monochrome again with nothing else to change. */
-  --dust-1: hsl(24 55% 45%);
-  --dust-2: hsl(40 70% 40%);
-  --dust-3: hsl(12 34% 44%);
-  --dust-4: hsl(224 8% 50%);
+  --dust-1: hsl(25 50% 45%);
+  --dust-2: hsl(42 65% 40%);
+  --dust-3: hsl(14 30% 43%);
+  --dust-4: hsl(295 10% 45%);
   --dust-5: hsl(var(--foreground));
 }
 /* Dark sections need the tints lifted, or they vanish into the panel. */
 .dark .section-dust {
-  --dust-1: hsl(24 65% 62%);
-  --dust-2: hsl(45 80% 66%);
-  --dust-3: hsl(12 40% 62%);
-  --dust-4: hsl(224 10% 70%);
+  --dust-1: hsl(25 58% 62%);
+  --dust-2: hsl(46 72% 68%);
+  --dust-3: hsl(14 34% 62%);
+  --dust-4: hsl(295 12% 72%);
   --dust-5: hsl(var(--foreground));
 }
 /* --- Delivery cascade -------------------------------------------------------
