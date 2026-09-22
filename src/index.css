@@ -1,6 +1,9 @@
 @import url("https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap");
+/* Display face for the "What We Build" statement only: squared, technical
+   capitals that read as engineering rather than as the body text shouting. */
+@import url("https://fonts.googleapis.com/css2?family=Saira+Semi+Condensed:wght@500&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -1137,3 +1140,62 @@ All colors MUST be HSL.
   .dc-bucket { animation: none; opacity: 0.9; }
   .dc-ripple { display: none; }
 }
+
+/* --- What We Build panel ----------------------------------------------------
+   The framed visual beside the section's statement. Two opposite corners are
+   cut at 45 degrees, the other two left square, so it reads as a panel rather
+   than a card. The glow gathers at the two cut corners and is drawn in
+   --brand-accent, and the element also carries .section-ink, so the panel is
+   dark in both themes and takes its colour from whichever scheme is active —
+   nothing in it is a fixed colour. */
+.wwd-panel {
+  --cut: clamp(40px, 6vw, 92px);
+  clip-path: polygon(
+    var(--cut) 0, 100% 0,
+    100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%,
+    0 100%, 0 var(--cut)
+  );
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 62% 55% at 6% 4%, hsl(var(--brand-accent) / 0.40), transparent 70%),
+    radial-gradient(ellipse 55% 50% at 96% 94%, hsl(var(--brand-accent) / 0.30), transparent 70%),
+    linear-gradient(140deg, hsl(var(--card)) 0%, hsl(var(--background)) 55%, hsl(var(--card)) 100%);
+}
+
+/* A soft light behind the mark, so it sits in the panel instead of on it. */
+.wwd-halo { position: relative; display: grid; place-items: center; }
+.wwd-halo::before {
+  content: "";
+  position: absolute;
+  inset: -45%;
+  background: radial-gradient(closest-side, hsl(var(--brand-accent) / 0.28), transparent);
+  pointer-events: none;
+}
+
+/* Bits falling behind the mark, faded out at the top and bottom edges. */
+.wwd-streams {
+  position: absolute;
+  inset: 0;
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
+}
+.wwd-stream {
+  position: absolute;
+  top: -30%;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: hsl(var(--brand-accent) / 0.5);
+  animation: wwdFall var(--dur, 12s) linear infinite;
+  animation-delay: var(--delay, 0s);
+}
+@keyframes wwdFall {
+  from { transform: translateY(0); }
+  to   { transform: translateY(160%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wwd-stream { animation: none; top: 12%; }
+}
+
