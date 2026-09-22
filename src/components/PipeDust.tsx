@@ -261,7 +261,7 @@ const PipeDust = ({ pipeRef }: PipeDustProps) => {
         const n = counts[l];
         if (!n) continue;
         ctx.globalAlpha = ((l + 1) / LEVELS) * MAX_ALPHA;
-        ctx.fillStyle = "#F8FAFC";
+        ctx.fillStyle = "#F8F2EC";
         const buf = bufs[l];
         for (let i = 0; i < n; i++) {
           ctx.fillRect(buf[i * 2], buf[i * 2 + 1], SIZE, SIZE);
