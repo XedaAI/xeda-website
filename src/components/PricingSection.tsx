@@ -105,7 +105,7 @@ const PricingSection = () => {
                 <ul className="space-y-3 mb-8">
                   {pkg.features.map((featureKey, featureIndex) => (
                     <li key={featureIndex} className="flex items-start gap-3">
-                      <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                      <Check className="h-5 w-5 text-success shrink-0 mt-0.5" />
                       <span className="text-sm text-muted-foreground">
                         {t(featureKey)}
                       </span>

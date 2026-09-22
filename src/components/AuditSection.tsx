@@ -32,7 +32,7 @@ const AuditSection = () => {
               <ul className="grid sm:grid-cols-2 gap-4 mb-10">
                 {points.map((key) => (
                   <li key={key} className="flex items-start gap-3">
-                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <Check className="h-5 w-5 text-success mt-0.5 flex-shrink-0" />
                     <span className="text-foreground/80">{t(key)}</span>
                   </li>
                 ))}

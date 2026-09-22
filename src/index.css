@@ -12,15 +12,15 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* --- Light -----------------------------------------------------------
-       Navy / white / cyan, weighted 60 / 30 / 10: deep navy (#0F172A,
-       #102A43) carries the surfaces, white and off-white (#FFFFFF, #F8FAFC)
-       the text and light panels, and cyan (#06B6D4, #00C2FF) the accents.
-       Dark is the site's default theme, so that is where the 60/30/10 holds;
-       this light theme flips the first two.
+       Enterprise slate: navy #0F172A, white #FFFFFF, light gray #F1F5F9,
+       cyan #06B6D4 for calls to action, green #22C55E for success. Each
+       colour has one job, so its meaning holds: cyan means "click this",
+       green means "done / included", and everything else stays in slate.
 
-       Cyan cannot carry text on white — #06B6D4 on #FFFFFF is 2.4:1 — so
-       here it darkens to cyan-700 (#0E7490) for eyebrows and icons, and the
-       primary button stays navy with off-white text. */
+       Buttons are cyan with navy text (7.4:1; white text on it is 2.4:1 and
+       fails). Neither the cyan nor the green passes on white as text or as a
+       focus ring, so here the ring uses cyan-700 #0E7490 (5.4:1) and the
+       success checks green-700 #15803D (5.0:1). Eyebrows are slate-600. */
     --background: 0 0% 100%;
     --foreground: 222 47% 11%;
 
@@ -31,18 +31,18 @@ All colors MUST be HSL.
     --popover-foreground: 222 47% 11%;
 
     /* Buttons are near-black with white text — the OpenAI move. */
-    --primary: 222 47% 11%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 189 94% 43%;
+    --primary-foreground: 222 47% 11%;
 
     /* Eyebrows and labels: muted grey, not a colour. */
-    --brand-accent: 192 82% 31%;
+    --brand-accent: 215 19% 35%;
 
-    --section-alt: 210 40% 98%;
+    --section-alt: 210 40% 96%;
 
-    --secondary: 215 28% 25%;
+    --secondary: 215 25% 27%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 215 16% 57%;
+    --muted: 215 20% 65%;
     --muted-foreground: 215 19% 35%;
 
     --accent: 210 40% 96%;
@@ -50,29 +50,30 @@ All colors MUST be HSL.
 
     --destructive: 0 65% 44%;
     --destructive-foreground: 0 0% 100%;
+    --success: 142 72% 29%;
+    --success-foreground: 0 0% 100%;
 
     --border: 214 32% 91%;
     --input: 213 27% 84%;
-    --ring: 189 94% 43%;
+    --ring: 192 82% 31%;
 
     --radius: 0.75rem;
 
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222 47% 11%;
-    --sidebar-primary: 222 47% 11%;
-    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-primary: 189 94% 43%;
+    --sidebar-primary-foreground: 222 47% 11%;
     --sidebar-accent: 210 40% 96%;
     --sidebar-accent-foreground: 222 47% 11%;
     --sidebar-border: 214 32% 91%;
-    --sidebar-ring: 189 94% 43%;
+    --sidebar-ring: 192 82% 31%;
 
-    /* Charts step from cyan through blue to navy-grey, staying inside the
-       palette's own family. */
+    /* Charts: cyan, green, then slate — the palette and nothing else. */
     --chart-1: 192 82% 31%;
-    --chart-2: 199 89% 40%;
-    --chart-3: 217 76% 50%;
-    --chart-4: 222 47% 30%;
-    --chart-5: 215 20% 65%;
+    --chart-2: 142 72% 29%;
+    --chart-3: 215 16% 47%;
+    --chart-4: 217 33% 17%;
+    --chart-5: 213 27% 84%;
 
     --sidebar: 0 0% 100%;
 
@@ -105,55 +106,57 @@ All colors MUST be HSL.
 
   .dark {
     /* --- Dark ------------------------------------------------------------
-       The default theme. Navy #0F172A is the ground and #102A43 the raised
-       surface. Buttons are cyan #06B6D4 with navy text (7.4:1 — white text
-       on cyan would be 2.4:1 and fail), and the brighter #00C2FF is kept for
-       text accents like eyebrows and the hero highlight (8.6:1 on navy). */
+       The default theme. Navy #0F172A is the ground, slate-800 #1E293B the
+       raised surface, and the light gray #F1F5F9 the text (16.3:1). Cyan
+       stays on buttons, green on success checks (7.8:1 on navy), and labels
+       are slate-400 (7.0:1) rather than a colour. */
     --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
+    --foreground: 210 40% 96%;
 
-    --card: 210 61% 16%;
-    --card-foreground: 210 40% 98%;
+    --card: 217 33% 17%;
+    --card-foreground: 210 40% 96%;
 
-    --popover: 210 61% 17%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 217 33% 18%;
+    --popover-foreground: 210 40% 96%;
 
     --primary: 189 94% 43%;
     --primary-foreground: 222 47% 11%;
 
-    --brand-accent: 194 100% 50%;
+    --brand-accent: 215 20% 65%;
 
-    --section-alt: 223 50% 8%;
+    --section-alt: 222 47% 8%;
 
     --secondary: 215 25% 27%;
     --secondary-foreground: 210 40% 98%;
 
     --muted: 215 25% 27%;
-    --muted-foreground: 214 25% 74%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 210 50% 20%;
+    --accent: 217 33% 17%;
     --accent-foreground: 210 40% 96%;
 
     --destructive: 0 62% 55%;
     --destructive-foreground: 0 0% 100%;
+    --success: 142 71% 45%;
+    --success-foreground: 222 47% 11%;
 
-    --border: 212 40% 21%;
-    --input: 212 40% 24%;
-    --ring: 194 100% 50%;
-    --sidebar-background: 223 50% 8%;
-    --sidebar-foreground: 210 40% 98%;
+    --border: 215 25% 23%;
+    --input: 215 25% 27%;
+    --ring: 189 94% 43%;
+    --sidebar-background: 222 47% 8%;
+    --sidebar-foreground: 210 40% 96%;
     --sidebar-primary: 189 94% 43%;
     --sidebar-primary-foreground: 222 47% 11%;
-    --sidebar-accent: 210 50% 20%;
+    --sidebar-accent: 217 33% 17%;
     --sidebar-accent-foreground: 210 40% 96%;
-    --sidebar-border: 212 40% 21%;
-    --sidebar-ring: 194 100% 50%;
-    --chart-1: 194 100% 50%;
-    --chart-2: 199 89% 60%;
-    --chart-3: 213 94% 68%;
-    --chart-4: 215 20% 65%;
-    --chart-5: 215 25% 45%;
-    --sidebar: 210 61% 16%;
+    --sidebar-border: 215 25% 23%;
+    --sidebar-ring: 189 94% 43%;
+    --chart-1: 189 94% 43%;
+    --chart-2: 142 71% 45%;
+    --chart-3: 215 20% 65%;
+    --chart-4: 215 16% 47%;
+    --chart-5: 213 27% 84%;
+    --sidebar: 217 33% 17%;
     --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
     --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
     --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
@@ -183,22 +186,24 @@ All colors MUST be HSL.
    In light mode this is a full inversion; in dark mode the page is already dark,
    so it only drops a step deeper to keep the rhythm readable. */
 .section-ink {
-  --background: 223 52% 8%;
-  --foreground: 210 40% 98%;
-  --card: 210 61% 14%;
-  --card-foreground: 210 40% 98%;
-  --popover: 210 61% 17%;
-  --popover-foreground: 210 40% 98%;
+  --background: 222 47% 8%;
+  --foreground: 210 40% 96%;
+  --card: 217 33% 15%;
+  --card-foreground: 210 40% 96%;
+  --popover: 217 33% 18%;
+  --popover-foreground: 210 40% 96%;
   --muted: 215 25% 27%;
-  --muted-foreground: 214 25% 74%;
-  --border: 212 40% 21%;
-  --input: 212 40% 24%;
+  --muted-foreground: 215 20% 65%;
+  --border: 215 25% 23%;
+  --input: 215 25% 27%;
   --primary: 189 94% 43%;
   --primary-foreground: 222 47% 11%;
-  --brand-accent: 194 100% 50%;
-  --accent: 210 50% 20%;
+  --brand-accent: 215 20% 65%;
+  --accent: 217 33% 17%;
   --accent-foreground: 210 40% 96%;
-  --ring: 194 100% 50%;
+  --ring: 189 94% 43%;
+  --success: 142 71% 45%;
+  --success-foreground: 222 47% 11%;
   --secondary: 215 25% 27%;
   --secondary-foreground: 210 40% 98%;
 
@@ -209,8 +214,8 @@ All colors MUST be HSL.
 /* In dark mode the page is already ink, so these drop a step deeper instead
    of inverting — otherwise the rhythm disappears entirely. */
 .dark .section-ink {
-  --background: 224 55% 6%;
-  --card: 210 61% 13%;
+  --background: 223 50% 6%;
+  --card: 217 33% 14%;
 }
 
 /* Hairline rule that fades at both ends — separates ink sections without a
@@ -870,22 +875,21 @@ All colors MUST be HSL.
 
   /* The palette SectionDust.tsx paints with, read from here so it has a light
      and a dark set and stays legible in both. --dust-5 is the foreground and
-     carries most of the grains; the four tints stay in the cyan-to-blue family
-     and are held well down in saturation — dust catching the light, not
-     confetti. Deleting the four tints leaves the whole thing
+     carries most of the grains; the four tints are slate with one cyan, held
+     well down in saturation — dust catching the light, not confetti. Deleting the four tints leaves the whole thing
      monochrome again with nothing else to change. */
-  --dust-1: hsl(199 60% 40%);
+  --dust-1: hsl(215 25% 45%);
   --dust-2: hsl(189 70% 34%);
-  --dust-3: hsl(217 55% 48%);
-  --dust-4: hsl(205 40% 45%);
+  --dust-3: hsl(215 16% 55%);
+  --dust-4: hsl(205 30% 45%);
   --dust-5: hsl(var(--foreground));
 }
 /* Dark sections need the tints lifted, or they vanish into the panel. */
 .dark .section-dust {
-  --dust-1: hsl(199 70% 68%);
-  --dust-2: hsl(188 70% 60%);
-  --dust-3: hsl(213 75% 72%);
-  --dust-4: hsl(205 45% 70%);
+  --dust-1: hsl(215 25% 70%);
+  --dust-2: hsl(189 75% 55%);
+  --dust-3: hsl(213 27% 78%);
+  --dust-4: hsl(205 30% 68%);
   --dust-5: hsl(var(--foreground));
 }
 /* --- Delivery cascade -------------------------------------------------------

@@ -114,7 +114,7 @@ const Process = () => {
                     <ul className="space-y-2.5 mb-6">
                       {p.steps.map((s) => (
                         <li key={s} className="flex items-start gap-2.5 text-sm text-muted-foreground">
-                          <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                          <Check className="h-4 w-4 text-success mt-0.5 flex-shrink-0" />
                           <span className="text-pretty">{s}</span>
                         </li>
                       ))}

@@ -137,7 +137,7 @@ const VerticalLanding = ({ vertical }: { vertical: Vertical }) => {
               <ul className="space-y-4">
                 {buildPoints.map((b) => (
                   <li key={b} className="flex items-start gap-3">
-                    <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                    <Check className="h-5 w-5 text-success mt-0.5 flex-shrink-0" />
                     <span className="text-foreground/80">{b}</span>
                   </li>
                 ))}
