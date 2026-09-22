@@ -7,12 +7,13 @@ import {
   Check,
   ShieldCheck,
   FileText,
-  Sparkles,
   Search,
   Wrench,
   RefreshCw,
 } from "lucide-react";
 import SEOHead from "@/components/SEOHead";
+import XedaMark from "@/components/XedaMark";
+import XedaWordmark from "@/components/XedaWordmark";
 import DeliveryCascade from "@/components/DeliveryCascade";
 import { auditBookingUrl } from "@/lib/booking";
 import type { Vertical } from "@/data/verticals";
@@ -67,9 +68,11 @@ const VerticalLanding = ({ vertical }: { vertical: Vertical }) => {
       {/* Top bar */}
       <header className="border-b border-border">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
-            <span className="font-semibold text-lg text-foreground">xeda.ai</span>
+          {/* Same lockup as the homepage header, so a visitor arriving from a
+              campaign sees the brand they will meet on the rest of the site. */}
+          <Link to="/" className="flex items-center gap-2.5">
+            <XedaMark className="h-7 w-auto text-foreground" />
+            <XedaWordmark className="h-5 w-auto text-foreground" />
           </Link>
           <Button asChild size="sm">
             <a href={bookingUrl} target="_blank" rel="noopener noreferrer">
