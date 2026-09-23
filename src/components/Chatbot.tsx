@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { MessageCircle, Send, X, Loader2, Mic, MicOff, Volume2, VolumeX, Trash2, History, Plus, ChevronLeft, Globe, User, Copy, Check } from "lucide-react";
 import { format } from "date-fns";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -163,9 +164,14 @@ const Chatbot = () => {
   const [autoSpeak, setAutoSpeak] = useState(true);
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
+  // The chat keeps its own language so a visitor can switch it independently,
+  // but it should START where the site is. It previously fell back to "en",
+  // which greeted every German visitor in English on a German page.
+  const { language: siteLanguage } = useLanguage();
   const [language, setLanguage] = useState<Language>(() => {
     const saved = localStorage.getItem("chatbot_language");
-    return (saved === "de" || saved === "en") ? saved : "en";
+    if (saved === "de" || saved === "en") return saved;
+    return siteLanguage === "de" ? "de" : "en";
   });
   const [selectedVoice, setSelectedVoice] = useState<string>(() => {
     return localStorage.getItem("chatbot_voice") || voices[0].id;
@@ -207,10 +213,19 @@ const Chatbot = () => {
     });
   }, [getChatSession]);
 
-  // Save preferences
+  // Only an explicit pick from the chat's own language menu is persisted. If we
+  // wrote on mount instead, the defaulted value would look like a choice and
+  // the chat would stay English for a visitor who then switched the site to
+  // German. Until they choose, the chat follows the site.
+  const chooseLanguage = useCallback((next: Language) => {
+    localStorage.setItem("chatbot_language", next);
+    setLanguage(next);
+  }, []);
+
   useEffect(() => {
-    localStorage.setItem("chatbot_language", language);
-  }, [language]);
+    if (localStorage.getItem("chatbot_language")) return;
+    setLanguage(siteLanguage === "de" ? "de" : "en");
+  }, [siteLanguage]);
 
   useEffect(() => {
     localStorage.setItem("chatbot_voice", selectedVoice);
@@ -625,10 +640,10 @@ const Chatbot = () => {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => setLanguage("en")}>
+                        <DropdownMenuItem onClick={() => chooseLanguage("en")}>
                           <span className="mr-2">🇬🇧</span> English
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setLanguage("de")}>
+                        <DropdownMenuItem onClick={() => chooseLanguage("de")}>
                           <span className="mr-2">🇩🇪</span> Deutsch
                         </DropdownMenuItem>
                       </DropdownMenuContent>
