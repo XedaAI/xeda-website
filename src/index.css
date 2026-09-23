@@ -1162,14 +1162,46 @@ All colors MUST be HSL.
     linear-gradient(140deg, hsl(var(--card)) 0%, hsl(var(--background)) 55%, hsl(var(--card)) 100%);
 }
 
-/* A soft light behind the mark, so it sits in the panel instead of on it. */
-.wwd-halo { position: relative; display: grid; place-items: center; }
-.wwd-halo::before {
-  content: "";
+/* The active service's illustration. Each image carries its own dark square
+   ground: screen blending lets that ground fall away into the panel, and the
+   mask fades only a thin band along each edge, so the drawing floats in the
+   panel the way the reference photograph does rather than sitting in a box.
+   Two straight fades intersected, not one radial one: a radial fade eats the
+   corners, which is where the wider diagrams keep their outer cards. */
+.wwd-art {
   position: absolute;
-  inset: -45%;
-  background: radial-gradient(closest-side, hsl(var(--brand-accent) / 0.28), transparent);
-  pointer-events: none;
+  max-width: 88%;
+  max-height: 88%;
+  object-fit: contain;
+  mix-blend-mode: screen;
+  --fade: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent),
+          linear-gradient(to bottom, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: var(--fade);
+  -webkit-mask-composite: source-in;
+  mask-image: var(--fade);
+  mask-composite: intersect;
+  opacity: 0;
+  transform: translateY(10px) scale(0.97);
+  transition: opacity 0.6s ease, transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.wwd-art.is-active { opacity: 1; transform: none; }
+
+/* Time left on the active service while the panel is cycling. */
+.wwd-progress {
+  position: absolute;
+  left: 1.25rem;
+  right: 1.25rem;
+  bottom: 0.45rem;
+  height: 2px;
+  border-radius: 2px;
+  background: hsl(var(--brand-accent));
+  opacity: 0.7;
+  transform-origin: left;
+  animation: wwdProgress var(--wwd-cycle, 6000ms) linear forwards;
+}
+@keyframes wwdProgress {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
 }
 
 /* Bits falling behind the mark, faded out at the top and bottom edges. */
@@ -1197,5 +1229,6 @@ All colors MUST be HSL.
 }
 @media (prefers-reduced-motion: reduce) {
   .wwd-stream { animation: none; top: 12%; }
+  .wwd-art { transition: none; }
 }
 
