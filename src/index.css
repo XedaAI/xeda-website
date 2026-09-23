@@ -1174,6 +1174,7 @@ All colors MUST be HSL.
   max-width: 88%;
   max-height: 88%;
   object-fit: contain;
+  filter: url(#wwd-blackpoint);
   mix-blend-mode: screen;
   --fade: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent),
           linear-gradient(to bottom, transparent, #000 8%, #000 92%, transparent);
