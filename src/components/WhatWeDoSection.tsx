@@ -1,5 +1,5 @@
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import XedaWordmark from "@/components/XedaWordmark";
 import integrationArt from "@/assets/services/interlocking-modules.webp";
@@ -45,7 +45,19 @@ const WhatWeDoSection = () => {
     return () => mq.removeEventListener("change", sync);
   }, []);
 
-  const autoplay = !hovering && !chosen && !reducedMotion;
+  // Only cycle while the section is on screen, so a visitor arriving at it
+  // starts from the first service rather than wherever the timer had got to.
+  const sectionRef = useRef<HTMLElement>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { threshold: 0.2 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  const autoplay = inView && !hovering && !chosen && !reducedMotion;
   useEffect(() => {
     if (!autoplay) return;
     const id = window.setTimeout(() => setActive((i) => (i + 1) % services.length), CYCLE_MS);
@@ -53,7 +65,22 @@ const WhatWeDoSection = () => {
   }, [active, autoplay, services.length]);
 
   return (
-    <section id="what-we-do" className="py-28 md:py-36 bg-background">
+    <section ref={sectionRef} id="what-we-do" className="relative py-28 md:py-36 bg-background">
+      {/* Moves each illustration's black point up to its own navy ground, so
+          that ground turns true black and the screen blend drops it completely
+          — otherwise a faint, lighter rectangle shows under every scheme.
+          Highlights are stretched back to full brightness. Defined here rather
+          than in the desktop panel: that panel is display:none on phones, and a
+          filter inside a hidden subtree does not apply. */}
+      <svg width="0" height="0" className="absolute" aria-hidden="true" focusable="false">
+        <filter id="wwd-blackpoint" colorInterpolationFilters="sRGB">
+          <feComponentTransfer>
+            <feFuncR type="linear" slope="1.2821" intercept="-0.2821" />
+            <feFuncG type="linear" slope="1.2821" intercept="-0.2821" />
+            <feFuncB type="linear" slope="1.2821" intercept="-0.2821" />
+          </feComponentTransfer>
+        </filter>
+      </svg>
       <div className="container mx-auto px-6">
         {/* Statement on the left, a framed visual on the right. */}
         <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] gap-14 lg:gap-20 items-stretch">
@@ -87,6 +114,19 @@ const WhatWeDoSection = () => {
                           {t(service.titleKey)}
                         </span>
                         <span className="block text-muted-foreground leading-relaxed">{t(service.descKey)}</span>
+                        {/* Phones: the illustration opens under its own service
+                            instead of in a panel below the whole list, where it
+                            would be out of sight. Every fold is the same height
+                            and exactly one is open, so the page length holds
+                            steady while it cycles. Spans throughout, since a
+                            button may only hold phrasing content. */}
+                        <span className={`wwd-fold lg:hidden ${isActive ? "is-open" : ""}`} aria-hidden="true">
+                          <span className="wwd-fold-inner">
+                            <span className="section-ink wwd-panel wwd-panel--mini">
+                              <img src={service.art} alt="" decoding="async" className="wwd-art-inline" />
+                            </span>
+                          </span>
+                        </span>
                       </span>
                       {/* How long until the next service, while it is cycling. */}
                       {isActive && autoplay && (
@@ -99,11 +139,12 @@ const WhatWeDoSection = () => {
             </ul>
           </div>
 
-          {/* Decorative: the list carries the content, so the panel is hidden
-              from assistive tech and its images have empty alt text.
+          {/* Desktop only (phones get the folds above). Decorative: the list
+              carries the content, so the panel is hidden from assistive tech
+              and its images have empty alt text.
               section-ink keeps it a dark panel in both themes, the way a
               photograph would stay dark. */}
-          <div aria-hidden="true" className="section-ink wwd-panel relative min-h-[340px] sm:min-h-[420px] lg:min-h-[560px]">
+          <div aria-hidden="true" className="section-ink wwd-panel relative hidden lg:block lg:min-h-[560px]">
             <div className="wwd-streams">
               {STREAMS.map((s) => (
                 <span
@@ -115,19 +156,6 @@ const WhatWeDoSection = () => {
                 </span>
               ))}
             </div>
-            {/* Moves each illustration's black point up to its own navy ground, so
-                that ground turns true black and the screen blend below drops it
-                completely — otherwise a faint, lighter rectangle shows under
-                every scheme. Highlights are stretched back to full brightness. */}
-            <svg width="0" height="0" className="absolute" focusable="false">
-              <filter id="wwd-blackpoint" colorInterpolationFilters="sRGB">
-                <feComponentTransfer>
-                  <feFuncR type="linear" slope="1.2821" intercept="-0.2821" />
-                  <feFuncG type="linear" slope="1.2821" intercept="-0.2821" />
-                  <feFuncB type="linear" slope="1.2821" intercept="-0.2821" />
-                </feComponentTransfer>
-              </filter>
-            </svg>
             <div className="absolute inset-x-0 top-0 bottom-20 sm:bottom-24 flex items-center justify-center">
               {services.map((service, index) => (
                 <img
