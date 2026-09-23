@@ -68,7 +68,7 @@ const uiText: Record<Language, {
   de: {
     title: "xeda.ai Assistent",
     placeholder: "Nachricht eingeben...",
-    welcome: "Hallo! Frag mich alles über KI-Lösungen.",
+    welcome: "Hallo! Fragen Sie mich alles über KI-Lösungen.",
     history: "Chat-Verlauf",
     noHistory: "Keine vergangenen Gespräche",
     clearConversation: "Gespräch löschen",
