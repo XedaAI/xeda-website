@@ -115,6 +115,19 @@ const WhatWeDoSection = () => {
                 </span>
               ))}
             </div>
+            {/* Moves each illustration's black point up to its own navy ground, so
+                that ground turns true black and the screen blend below drops it
+                completely — otherwise a faint, lighter rectangle shows under
+                every scheme. Highlights are stretched back to full brightness. */}
+            <svg width="0" height="0" className="absolute" focusable="false">
+              <filter id="wwd-blackpoint" colorInterpolationFilters="sRGB">
+                <feComponentTransfer>
+                  <feFuncR type="linear" slope="1.2821" intercept="-0.2821" />
+                  <feFuncG type="linear" slope="1.2821" intercept="-0.2821" />
+                  <feFuncB type="linear" slope="1.2821" intercept="-0.2821" />
+                </feComponentTransfer>
+              </filter>
+            </svg>
             <div className="absolute inset-x-0 top-0 bottom-20 sm:bottom-24 flex items-center justify-center">
               {services.map((service, index) => (
                 <img
