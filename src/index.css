@@ -15,84 +15,85 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* --- Light -----------------------------------------------------------
-       The default theme: muted, mature, mostly cream and white space.
+       The default theme. Green is the identity (roughly four-fifths of the
+       colour on a page) and orange the emphasis; the grounds stay neutral.
 
-         Primary green    #395D4A   CTAs, links, headlines (7.4:1 with white)
-         Primary hover    #2F4E3E
-         Secondary green  #688170   icons' strokes, charts, quiet details
-         Light green      #E8EDE9   secondary buttons, selected rows
-         Soft orange      #DFA06C   hover accents, badges, visual details
-         Orange hover     #CE8C59
-         Light orange     #F7E4D3   icon tiles
-         Cream            #F3EFE8   alternate bands
-         Background       #FAF8F4   Cards #FFFFFF
-         Text             #202520   Secondary text #6F736D
-         Border           #DEDCD5
+         Primary green   #2D7D5B   CTAs, links, labels (5.0:1 with white)
+         Primary hover   #24694C
+         Dark green      #184C39   the hero and ink bands
+         Accent orange   #F5AE73   tags, highlights, selected icons
+         Orange hover    #EA9958
+         Light orange    #FDEBDD   tag and selected-icon grounds
+         Light green     #E4F3EB   icon tiles, secondary buttons
+         Background      #FCFCFA   Secondary #F4F6F3   Cards #FFFFFF
+         Text            #17211D   Secondary text #66706B
+         Border          #DDE4E0
 
-       The soft orange is 2.1:1 on the page, so orange labels and icon glyphs
-       use a bronze drawn from it, #885730 (5.7:1). #6F736D passes on the page
-       (4.6:1) but not on cream (4.2:1) or light green (4.1:1), so those
-       grounds step it darker (see .bg-section-alt). */
-    --background: 40 37% 97%;
-    --foreground: 120 7% 14%;
+       The orange is 1.8:1 on the page, so it is never text on a light
+       ground: it is a fill carrying #17211D (8.8:1), a glyph in a deeper
+       #A15E2B on its light tint, or text on dark green (5.3:1). On the light
+       green, #2D7D5B text drops to 4.4:1 and #66706B to 4.5:1, so that ground
+       uses #184C39 and a darker secondary text (see below). */
+    --background: 60 25% 98%;
+    --foreground: 156 18% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 120 7% 14%;
+    --card-foreground: 156 18% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 120 7% 14%;
+    --popover-foreground: 156 18% 11%;
 
-    --primary: 148 24% 29%;
+    --primary: 154 47% 33%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 149 25% 25%;
+    --primary-hover: 155 49% 28%;
 
-    /* Labels and eyebrows: the bronze. */
-    --brand-accent: 27 48% 36%;
+    /* Labels and eyebrows. */
+    --brand-accent: 154 47% 33%;
 
-    --section-alt: 38 31% 93%;
+    --section-alt: 100 14% 96%;
 
-    --secondary: 132 12% 92%;
-    --secondary-foreground: 149 25% 25%;
+    --secondary: 148 38% 92%;
+    --secondary-foreground: 158 52% 20%;
 
-    --muted: 40 28% 95%;
-    --muted-foreground: 100 3% 44%;
+    --muted: 100 14% 96%;
+    --muted-foreground: 150 5% 42%;
 
-    --accent: 132 12% 92%;
-    --accent-foreground: 149 25% 25%;
+    --accent: 148 38% 92%;
+    --accent-foreground: 158 52% 20%;
 
-    --highlight: 27 64% 65%;
-    --highlight-hover: 26 54% 58%;
-    --highlight-soft: 28 69% 90%;
-    --highlight-foreground: 120 7% 14%;
+    --highlight: 27 87% 71%;
+    --highlight-hover: 27 78% 63%;
+    --highlight-soft: 26 89% 93%;
+    --highlight-foreground: 156 18% 11%;
+    /* An orange glyph on the light orange: 4.4:1. */
+    --highlight-ink: 26 58% 40%;
 
-    --sage: 139 11% 46%;
-
-    --destructive: 0 60% 42%;
+    --destructive: 0 65% 44%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 47 12% 85%;
-    --input: 45 9% 76%;
-    --ring: 148 24% 29%;
+    --border: 146 11% 88%;
+    --input: 146 9% 78%;
+    --ring: 154 47% 33%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 40 37% 97%;
-    --sidebar-foreground: 120 7% 14%;
-    --sidebar-primary: 148 24% 29%;
+    --sidebar-background: 60 25% 98%;
+    --sidebar-foreground: 156 18% 11%;
+    --sidebar-primary: 154 47% 33%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 132 12% 92%;
-    --sidebar-accent-foreground: 149 25% 25%;
-    --sidebar-border: 47 12% 85%;
-    --sidebar-ring: 148 24% 29%;
+    --sidebar-accent: 148 38% 92%;
+    --sidebar-accent-foreground: 158 52% 20%;
+    --sidebar-border: 146 11% 88%;
+    --sidebar-ring: 154 47% 33%;
 
     /* Charts: the greens first, orange as the one contrasting series. */
-    --chart-1: 148 24% 29%;
-    --chart-2: 27 64% 65%;
-    --chart-3: 139 11% 46%;
-    --chart-4: 132 12% 72%;
-    --chart-5: 100 3% 44%;
+    --chart-1: 154 47% 33%;
+    --chart-2: 27 87% 71%;
+    --chart-3: 158 52% 20%;
+    --chart-4: 152 40% 55%;
+    --chart-5: 150 5% 42%;
 
-    --sidebar: 40 37% 97%;
+    --sidebar: 60 25% 98%;
 
     --font-sans: 'Work Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
 
@@ -123,60 +124,61 @@ All colors MUST be HSL.
 
   .dark {
     /* --- Dark ------------------------------------------------------------
-       Derived from the greens: a near-black green-grey ground. #395D4A is
-       too dark to read as text here, so buttons and links lift to a pale
-       sage with dark text; orange stays an accent. */
-    --background: 140 10% 8%;
-    --foreground: 38 31% 93%;
+       Derived from the greens: a near-black green ground and #184C39 for
+       secondary fills. #2D7D5B is too dark to read as text here, so buttons
+       and links lift to a lighter green with dark text; orange stays an
+       accent. */
+    --background: 157 30% 7%;
+    --foreground: 60 25% 98%;
 
-    --card: 140 9% 11%;
-    --card-foreground: 38 31% 93%;
+    --card: 157 25% 10%;
+    --card-foreground: 60 25% 98%;
 
-    --popover: 140 9% 13%;
-    --popover-foreground: 38 31% 93%;
+    --popover: 157 25% 12%;
+    --popover-foreground: 60 25% 98%;
 
-    --primary: 140 20% 70%;
-    --primary-foreground: 140 10% 8%;
-    --primary-hover: 140 22% 78%;
+    --primary: 152 42% 56%;
+    --primary-foreground: 157 30% 7%;
+    --primary-hover: 152 45% 64%;
 
-    --brand-accent: 27 64% 65%;
+    --brand-accent: 152 45% 70%;
 
-    --section-alt: 140 10% 5%;
+    --section-alt: 157 32% 5%;
 
-    --secondary: 148 24% 22%;
-    --secondary-foreground: 38 31% 93%;
+    --secondary: 158 52% 20%;
+    --secondary-foreground: 148 38% 92%;
 
-    --muted: 140 8% 15%;
-    --muted-foreground: 60 5% 68%;
+    --muted: 157 18% 14%;
+    --muted-foreground: 150 8% 70%;
 
-    --accent: 140 9% 16%;
-    --accent-foreground: 38 31% 93%;
+    --accent: 157 20% 15%;
+    --accent-foreground: 60 25% 98%;
 
-    /* The light orange would glare here, and a dim brown turns muddy: icon
-       tiles and badge grounds lift the ground a step and the glyph or its
-       border carries the orange. */
-    --highlight-soft: 140 8% 17%;
+    /* The light orange would glare here; tag grounds go a dim warm brown,
+       and selected icons use the orange itself as their glyph. */
+    --highlight-soft: 27 28% 17%;
+    --highlight-ink: 27 87% 71%;
 
     --destructive: 0 62% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 140 7% 19%;
-    --input: 140 7% 25%;
-    --ring: 140 20% 70%;
-    --sidebar-background: 140 10% 5%;
-    --sidebar-foreground: 38 31% 93%;
-    --sidebar-primary: 140 20% 70%;
-    --sidebar-primary-foreground: 140 10% 8%;
-    --sidebar-accent: 140 9% 16%;
-    --sidebar-accent-foreground: 38 31% 93%;
-    --sidebar-border: 140 7% 19%;
-    --sidebar-ring: 140 20% 70%;
-    --chart-1: 140 20% 70%;
-    --chart-2: 27 64% 65%;
-    --chart-3: 139 11% 52%;
-    --chart-4: 148 24% 35%;
-    --chart-5: 60 5% 55%;
-    --sidebar: 140 9% 11%;
+    --border: 157 16% 18%;
+    --input: 157 14% 24%;
+    --ring: 152 42% 56%;
+    --sidebar-background: 157 32% 5%;
+    --sidebar-foreground: 60 25% 98%;
+    --sidebar-primary: 152 42% 56%;
+    --sidebar-primary-foreground: 157 30% 7%;
+    --sidebar-accent: 157 20% 15%;
+    --sidebar-accent-foreground: 60 25% 98%;
+    --sidebar-border: 157 16% 18%;
+    --sidebar-ring: 152 42% 56%;
+    --chart-1: 152 42% 56%;
+    --chart-2: 27 87% 71%;
+    --chart-3: 152 45% 70%;
+    --chart-4: 158 52% 30%;
+    --chart-5: 150 8% 55%;
+    --sidebar: 157 25% 10%;
     --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
     --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
     --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
@@ -203,53 +205,69 @@ All colors MUST be HSL.
    give the accents a ground to sit against. Rather than restyling each child,
    it re-declares the design tokens for its own subtree, so anything already
    written as text-foreground / bg-card / text-brand-accent flips on its own.
-   It is a deep green in both themes. */
+   It is the dark green #184C39 in both themes. */
 .section-ink {
-  /* A deep green drawn from the primary (#21362B). */
-  --background: 148 24% 17%;
-  --foreground: 38 31% 93%;
-  --card: 148 20% 21%;
-  --card-foreground: 38 31% 93%;
-  --popover: 148 20% 23%;
-  --popover-foreground: 38 31% 93%;
-  --muted: 148 16% 24%;
-  --muted-foreground: 40 12% 78%;
-  --border: 148 14% 28%;
-  --input: 148 12% 33%;
-  /* #395D4A would all but vanish on the deep green (1.7:1), so buttons here
-     are cream with primary-green text (6.5:1), and links and icons read
-     light. */
-  --primary: 38 31% 93%;
-  --primary-foreground: 148 24% 29%;
+  /* The dark green #184C39. */
+  --background: 158 52% 20%;
+  --foreground: 60 25% 98%;
+  --card: 158 44% 24%;
+  --card-foreground: 60 25% 98%;
+  --popover: 158 44% 26%;
+  --popover-foreground: 60 25% 98%;
+  --muted: 158 38% 27%;
+  --muted-foreground: 148 22% 82%;
+  --border: 158 34% 31%;
+  --input: 158 30% 36%;
+  /* #2D7D5B is 2.0:1 on #184C39 and would all but vanish, so buttons here
+     are the light green with dark-green text (8.6:1), and links and icons
+     read light. */
+  --primary: 148 38% 92%;
+  --primary-foreground: 158 52% 20%;
   --primary-hover: 0 0% 100%;
-  /* Orange labels: 5.8:1 on the deep green. */
-  --brand-accent: 27 64% 65%;
-  /* Icon tiles lift the green a step; the glyph carries the orange. */
-  --highlight-soft: 148 16% 26%;
-  --accent: 148 18% 24%;
-  --accent-foreground: 38 31% 93%;
-  --ring: 38 31% 93%;
-  --secondary: 148 18% 27%;
-  --secondary-foreground: 38 31% 93%;
+  /* Orange labels: 5.3:1 on the dark green. */
+  --brand-accent: 27 87% 71%;
+  --highlight-soft: 158 40% 29%;
+  --highlight-ink: 27 87% 71%;
+  --accent: 158 40% 27%;
+  --accent-foreground: 60 25% 98%;
+  --ring: 148 38% 92%;
+  --secondary: 158 40% 30%;
+  --secondary-foreground: 60 25% 98%;
 
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
 }
 
-/* Cream and light-green grounds need secondary text a step darker: #6F736D
-   is 4.2:1 on the cream, #63675F is 5.0:1. */
-:root:not(.dark) :is(
-  .bg-section-alt, .bg-secondary, .bg-accent, .bg-accent\/60,
-  .bg-muted, .bg-muted\/30, .bg-muted\/50
-):not(.section-ink *) {
-  --muted-foreground: 90 4% 39%;
+/* The light green needs secondary text a step darker: #66706B is 4.5:1 on
+   #E4F3EB, #5C6661 is 5.2:1. */
+:root:not(.dark) :is(.bg-secondary, .bg-accent, .bg-accent\/60):not(.section-ink *) {
+  --muted-foreground: 150 5% 38%;
 }
 
-/* Icon tiles: a light-orange square with a bronze glyph (soft orange on dark
-   grounds, where --brand-accent is the soft orange). */
+/* Icon tiles. Green by default — a light-green square with a green glyph —
+   and orange when selected: a hovered card, or .icon-tile--accent for the
+   few icons that lead a section. On dark green the glyph is always the
+   orange, the one warm point on the panel. */
 .icon-tile {
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--primary));
+  transition: background-color 0.28s ease, color 0.28s ease;
+}
+.icon-tile--accent,
+.card-lift:hover .icon-tile {
   background-color: hsl(var(--highlight-soft));
-  color: hsl(var(--brand-accent));
+  color: hsl(var(--highlight-ink));
+}
+.dark .icon-tile {
+  background-color: hsl(var(--accent));
+}
+.dark .icon-tile--accent,
+.dark .card-lift:hover .icon-tile {
+  background-color: hsl(var(--highlight-soft));
+}
+.section-ink .icon-tile {
+  background-color: hsl(var(--highlight-soft));
+  color: hsl(var(--highlight-ink));
 }
 
 /* Hairline rule that fades at both ends — separates ink sections without a
@@ -545,7 +563,7 @@ All colors MUST be HSL.
   position: absolute; left: var(--al-x0); right: calc(100% - var(--al-x1));
   top: calc(var(--core-y, 240px) - var(--al-pipe-h) * .404); height: var(--al-pipe-h);
   clip-path: polygon(0% 7.7%, 100% 1.9%, 100% 63.5%, 0% 88.5%);
-  background: linear-gradient(90deg, hsl(38 31% 93% / .62), hsl(38 31% 93% / .34) 56%, hsl(38 31% 93% / .24));
+  background: linear-gradient(90deg, hsl(148 20% 95% / .62), hsl(148 20% 95% / .34) 56%, hsl(148 20% 95% / .24));
 }
 /* Two pixels smaller on the long edges, so the outer box reads as a lit rim.
    The opaque base matters: without it the hero photo shows through the tube. */
@@ -554,9 +572,9 @@ All colors MUST be HSL.
   clip-path: polygon(0% 9.6%, 100% 3.8%, 100% 61.6%, 0% 86.6%);
   background:
     linear-gradient(180deg,
-      hsl(38 31% 93% / .17) 0%, hsl(38 31% 93% / .06) 34%,
-      hsl(148 20% 4% / .44) 72%, hsl(148 20% 4% / .7) 100%),
-    hsl(148 18% 9%);
+      hsl(148 20% 95% / .17) 0%, hsl(148 20% 95% / .06) 34%,
+      hsl(157 35% 4% / .44) 72%, hsl(157 35% 4% / .7) 100%),
+    hsl(157 32% 9%);
 }
 
 /* ---- the surface, as dust ----
@@ -592,24 +610,24 @@ All colors MUST be HSL.
   position: absolute; left: var(--al-x0); top: calc(var(--core-y, 240px) + var(--al-pipe-h) * .077);
   width: 28px; height: calc(var(--al-pipe-h) * .808); margin: 0;
   transform: translate(-50%, -50%); border-radius: 50%;
-  background: hsl(148 20% 7%); border: 2.5px solid hsl(38 31% 93% / .88);
+  background: hsl(157 34% 7%); border: 2.5px solid hsl(148 20% 95% / .88);
 }
 .al-mouth-bore {
   position: absolute; left: 50%; top: 50%; width: 16px; height: 46%;
   transform: translate(-50%, -50%); border-radius: 50%;
-  border: 1px solid hsl(38 31% 93% / .3);
+  border: 1px solid hsl(148 20% 95% / .3);
 }
 /* The outlet is smaller because it sits further away. */
 .al-outlet {
   position: absolute; left: var(--al-x1); top: calc(var(--core-y, 240px) - var(--al-pipe-h) * .077);
   width: 20px; height: calc(var(--al-pipe-h) * .615);
   transform: translate(-50%, -50%); border-radius: 50%;
-  border: 2px solid hsl(38 31% 93% / .62);
+  border: 2px solid hsl(148 20% 95% / .62);
 }
 .al-glow {
   position: absolute; left: var(--al-x0); top: calc(var(--core-y, 240px) + var(--al-pipe-h) * .077);
   width: 240px; height: 170px; transform: translate(-50%, -50%);
-  background: radial-gradient(closest-side, hsl(38 31% 93% / .15), transparent);
+  background: radial-gradient(closest-side, hsl(148 20% 95% / .15), transparent);
 }
 
 /* ---- the collar: the mark, as a ring the pipe runs through ----
@@ -654,13 +672,13 @@ All colors MUST be HSL.
    circle, where it sits on the silhouette and is neither in front nor behind. */
 .al-ball {
   position: absolute; left: 0; top: 0; width: 30px; height: 30px; border-radius: 50%;
-  background: radial-gradient(circle at 34% 30%, hsl(0 0% 100%) 0%, hsl(38 31% 93%) 42%, hsl(45 8% 64%) 100%);
+  background: radial-gradient(circle at 34% 30%, hsl(0 0% 100%) 0%, hsl(148 20% 95%) 42%, hsl(150 6% 64%) 100%);
   transform: rotateZ(2.2deg) rotateY(-58deg);
   offset-path: path('M 122 19 A 103 103 0 0 1 122 225 A 103 103 0 0 1 122 19');
   offset-rotate: 0deg;
 }
 .al-ball--far  { filter: blur(.5px); animation: alRide 10s linear infinite, alBallFar 10s step-end infinite; }
-.al-ball--near { box-shadow: 0 0 18px hsl(38 31% 93% / .55); animation: alRide 10s linear infinite, alBallNear 10s step-end infinite; }
+.al-ball--near { box-shadow: 0 0 18px hsl(148 20% 95% / .55); animation: alRide 10s linear infinite, alBallNear 10s step-end infinite; }
 @keyframes alRide { from { offset-distance: 0%; } to { offset-distance: 100%; } }
 @keyframes alBallFar  { 0% { opacity: .5; } 50% { opacity: 0; } 100% { opacity: 0; } }
 @keyframes alBallNear { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 1; } }
@@ -677,14 +695,14 @@ All colors MUST be HSL.
 .al-fray {
   position: absolute; right: 16px; top: 0; width: 132%; height: 1px;
   transform-origin: right center; transform: rotate(var(--deg));
-  background: linear-gradient(90deg, hsl(38 31% 93% / 0), hsl(38 31% 93% / .18));
+  background: linear-gradient(90deg, hsl(148 20% 95% / 0), hsl(148 20% 95% / .18));
 }
 /* The aperture itself, breathing. Small and slow: it marks the point, it does
    not compete with the collar for attention. */
 .al-spark {
   position: absolute; left: var(--al-x0); top: calc(var(--core-y, 240px) + var(--al-pipe-h) * .077);
   width: 86px; height: 86px; margin: -43px 0 0 -43px; border-radius: 50%;
-  background: radial-gradient(closest-side, hsl(38 31% 93% / .4), transparent);
+  background: radial-gradient(closest-side, hsl(148 20% 95% / .4), transparent);
   animation: alSpark 3.4s ease-in-out infinite;
 }
 @keyframes alSpark {
@@ -705,10 +723,10 @@ All colors MUST be HSL.
 .al-ray {
   position: absolute; left: 22px; top: calc(var(--al-pipe-h) * .48 + var(--y0) * var(--al-y));
   width: var(--rw); height: var(--rh); border-radius: 9999px; opacity: 0;
-  background: linear-gradient(90deg, hsl(38 31% 93% / 0), hsl(38 31% 93%) 58%, hsl(38 31% 93% / 0));
+  background: linear-gradient(90deg, hsl(148 20% 95% / 0), hsl(148 20% 95%) 58%, hsl(148 20% 95% / 0));
   /* Static halo, animated opacity: a shadow that only fades composites, one
      recomputed per frame does not. */
-  box-shadow: 0 0 7px hsl(38 31% 93% / .45);
+  box-shadow: 0 0 7px hsl(148 20% 95% / .45);
   animation: alRay var(--d) linear infinite; animation-delay: var(--dl);
 }
 @keyframes alRay {
@@ -725,7 +743,7 @@ All colors MUST be HSL.
 .al-lane {
   position: absolute; left: 12px; top: 0; width: 130%; height: 1px;
   transform-origin: left center; transform: rotate(var(--deg));
-  background: linear-gradient(90deg, hsl(38 31% 93% / .04), hsl(38 31% 93% / .24) 34%, hsl(38 31% 93% / .3));
+  background: linear-gradient(90deg, hsl(148 20% 95% / .04), hsl(148 20% 95% / .24) 34%, hsl(148 20% 95% / .3));
 }
 
 /* ---- inside the bore ----
@@ -743,7 +761,7 @@ All colors MUST be HSL.
   position: absolute; left: 18px; top: calc(var(--al-pipe-h) * .48 + var(--y0) * var(--al-y)); opacity: 0;
   will-change: transform, opacity;
   font-family: Inconsolata, ui-monospace, monospace; font-size: 9px; letter-spacing: .04em;
-  color: hsl(38 31% 93%); white-space: nowrap;
+  color: hsl(148 20% 95%); white-space: nowrap;
   animation: alBore var(--d) linear infinite; animation-delay: var(--dl);
 }
 @keyframes alBore {
@@ -785,34 +803,34 @@ All colors MUST be HSL.
 /* ---- inbound: raw data, no paper, no box ---- */
 .al-raw {
   font-family: Inconsolata, ui-monospace, monospace; font-size: 13px; letter-spacing: .06em;
-  color: hsl(38 31% 93% / .62); white-space: nowrap;
+  color: hsl(148 20% 95% / .62); white-space: nowrap;
 }
 /* Machine noise sits a touch dimmer and wider than anything a person typed. */
-.al-raw--bin { letter-spacing: .18em; color: hsl(38 31% 93% / .5); }
+.al-raw--bin { letter-spacing: .18em; color: hsl(148 20% 95% / .5); }
 
 /* ---- outbound: structured output, every item contained ---- */
 .al-card {
   box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; padding: 10px 12px;
-  background: hsl(38 31% 93%); border-radius: 4px; box-shadow: 0 8px 26px hsl(148 20% 4% / .5);
+  background: hsl(148 20% 95%); border-radius: 4px; box-shadow: 0 8px 26px hsl(157 35% 4% / .5);
   min-width: 128px;
 }
 .al-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
 .al-key {
   font-family: Inconsolata, ui-monospace, monospace; font-size: 8.5px; font-weight: 700;
-  letter-spacing: .1em; text-transform: uppercase; color: hsl(100 3% 44%);
+  letter-spacing: .1em; text-transform: uppercase; color: hsl(150 5% 42%);
 }
 .al-val {
   font-family: Inconsolata, ui-monospace, monospace; font-size: 10px; font-weight: 700;
-  color: hsl(120 7% 14%);
+  color: hsl(156 18% 11%);
 }
 .al-chip {
   display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 9999px;
-  background: hsl(38 31% 93%); box-shadow: 0 8px 22px hsl(148 20% 4% / .5);
+  background: hsl(148 20% 95%); box-shadow: 0 8px 22px hsl(157 35% 4% / .5);
   font-family: Inconsolata, ui-monospace, monospace; font-size: 10px; font-weight: 700;
-  letter-spacing: .12em; text-transform: uppercase; color: hsl(120 7% 14%); white-space: nowrap;
+  letter-spacing: .12em; text-transform: uppercase; color: hsl(156 18% 11%); white-space: nowrap;
 }
 .al-badge {
-  width: 18px; height: 18px; border-radius: 50%; background: hsl(120 7% 14%);
+  width: 18px; height: 18px; border-radius: 50%; background: hsl(156 18% 11%);
   display: flex; align-items: center; justify-content: center; flex: none;
 }
 
@@ -822,19 +840,19 @@ All colors MUST be HSL.
    everything else now, so the line rides the belt like any other result. */
 .al-note {
   box-sizing: border-box; display: flex; align-items: center; gap: 8px;
-  width: 168px; padding: 8px 11px; background: hsl(38 31% 93%); border-radius: 4px;
-  box-shadow: 0 8px 26px hsl(148 20% 4% / .5);
+  width: 168px; padding: 8px 11px; background: hsl(148 20% 95%); border-radius: 4px;
+  box-shadow: 0 8px 26px hsl(157 35% 4% / .5);
 }
 .al-quote {
   font-family: 'Work Sans', system-ui, sans-serif; font-weight: 600; font-size: 10px;
-  line-height: 1.3; letter-spacing: -0.01em; color: hsl(120 7% 14%); text-wrap: balance;
+  line-height: 1.3; letter-spacing: -0.01em; color: hsl(156 18% 11%); text-wrap: balance;
 }
 
 /* ---- the captions that name the three stages ---- */
 .al-caption {
   position: absolute;
   font-family: Inconsolata, ui-monospace, monospace; font-size: 10px; font-weight: 700;
-  letter-spacing: .16em; text-transform: uppercase; color: hsl(38 31% 93% / .4);
+  letter-spacing: .16em; text-transform: uppercase; color: hsl(148 20% 95% / .4);
   white-space: nowrap;
 }
 .al-caption--in  { left: calc(var(--al-x0) - 28px); top: calc(var(--core-y, 240px) + var(--al-pipe-h) * .98); }
@@ -911,21 +929,21 @@ All colors MUST be HSL.
   /* The palette SectionDust.tsx paints with, read from here so it has a light
      and a dark set and stays legible in both. --dust-5 is the foreground and
      carries most of the grains; the four tints are the primary green, the
-     orange, the sage and a warm grey, held well down in saturation — dust catching the
+     orange, the dark green and a green-grey, held well down in saturation — dust catching the
      light, not confetti. Deleting the four tints leaves the whole thing
      monochrome again with nothing else to change. */
-  --dust-1: hsl(148 24% 29%);
-  --dust-2: hsl(27 50% 52%);
-  --dust-3: hsl(139 11% 46%);
-  --dust-4: hsl(100 3% 44%);
+  --dust-1: hsl(154 47% 33%);
+  --dust-2: hsl(27 70% 58%);
+  --dust-3: hsl(158 52% 20%);
+  --dust-4: hsl(150 5% 42%);
   --dust-5: hsl(var(--foreground));
 }
 /* Dark sections need the tints lifted, or they vanish into the panel. */
 .dark .section-dust {
-  --dust-1: hsl(140 20% 62%);
-  --dust-2: hsl(27 64% 65%);
-  --dust-3: hsl(139 11% 52%);
-  --dust-4: hsl(60 5% 68%);
+  --dust-1: hsl(152 42% 56%);
+  --dust-2: hsl(27 87% 71%);
+  --dust-3: hsl(152 45% 70%);
+  --dust-4: hsl(150 8% 70%);
   --dust-5: hsl(var(--foreground));
 }
 /* --- Delivery cascade -------------------------------------------------------
@@ -996,7 +1014,7 @@ All colors MUST be HSL.
   box-shadow:
     inset 0 0 0 1px hsl(var(--card)),
     inset 0 0 0 2px hsl(var(--foreground) / 0.1),
-    0 22px 48px hsl(148 20% 4% / 0.5);
+    0 22px 48px hsl(157 35% 4% / 0.5);
   pointer-events: none;
   overflow: hidden;
 }
@@ -1194,7 +1212,8 @@ All colors MUST be HSL.
   );
   overflow: hidden;
   background:
-    radial-gradient(ellipse 62% 55% at 6% 4%, hsl(var(--sage) / 0.16), transparent 70%),
+    radial-gradient(ellipse 62% 55% at 6% 4%, hsl(154 47% 40% / 0.40), transparent 70%),
+    radial-gradient(ellipse 55% 50% at 96% 94%, hsl(154 47% 40% / 0.22), transparent 70%),
     hsl(var(--background));
 }
 

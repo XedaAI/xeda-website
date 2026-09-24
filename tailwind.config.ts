@@ -28,11 +28,11 @@ export default {
   				DEFAULT: 'hsl(var(--highlight))',
   				hover: 'hsl(var(--highlight-hover))',
   				soft: 'hsl(var(--highlight-soft))',
+  				ink: 'hsl(var(--highlight-ink))',
   				foreground: 'hsl(var(--highlight-foreground))'
   			},
   			'brand-accent': 'hsl(var(--brand-accent))',
   			'section-alt': 'hsl(var(--section-alt))',
-  			sage: 'hsl(var(--sage))',
   			secondary: {
   				DEFAULT: 'hsl(var(--secondary))',
   				foreground: 'hsl(var(--secondary-foreground))'
