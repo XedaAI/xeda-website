@@ -21,7 +21,14 @@ export default {
   			foreground: 'hsl(var(--foreground))',
   			primary: {
   				DEFAULT: 'hsl(var(--primary))',
-  				foreground: 'hsl(var(--primary-foreground))'
+  				foreground: 'hsl(var(--primary-foreground))',
+  				hover: 'hsl(var(--primary-hover))'
+  			},
+  			highlight: {
+  				DEFAULT: 'hsl(var(--highlight))',
+  				hover: 'hsl(var(--highlight-hover))',
+  				soft: 'hsl(var(--highlight-soft))',
+  				foreground: 'hsl(var(--highlight-foreground))'
   			},
   			'brand-accent': 'hsl(var(--brand-accent))',
   			'section-alt': 'hsl(var(--section-alt))',

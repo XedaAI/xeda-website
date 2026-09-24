@@ -66,7 +66,7 @@ const WhatWeDoSection = () => {
 
   return (
     <section ref={sectionRef} id="what-we-do" className="relative py-28 md:py-36 bg-background">
-      {/* Moves each illustration's black point up to its own navy ground, so
+      {/* Moves each illustration's black point up to its own dark ground, so
           that ground turns true black and the screen blend drops it completely
           — otherwise a faint, lighter rectangle shows under every scheme.
           Highlights are stretched back to full brightness. Defined here rather
@@ -106,7 +106,7 @@ const WhatWeDoSection = () => {
                       onFocus={() => setActive(index)}
                       className={`wwd-item group relative w-full text-left flex gap-5 rounded-xl px-5 py-5 transition-colors ${isActive ? "bg-accent/60" : "hover:bg-accent/30"}`}
                     >
-                      <span className={`font-mono text-sm pt-1 tabular-nums transition-colors ${isActive ? "text-brand-accent" : "text-muted-foreground/70"}`}>
+                      <span className={`font-mono text-sm pt-1 tabular-nums transition-colors ${isActive ? "text-brand-accent" : "text-muted-foreground"}`}>
                         {String(index + 1).padStart(2, "0")}
                       </span>
                       <span className="block">

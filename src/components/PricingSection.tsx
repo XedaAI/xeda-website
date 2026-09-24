@@ -81,7 +81,7 @@ const PricingSection = () => {
             >
               {pkg.highlighted && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                  <span className="bg-primary text-primary-foreground text-sm font-medium px-4 py-1 rounded-full">
+                  <span className="bg-highlight text-highlight-foreground text-sm font-medium px-4 py-1 rounded-full">
                     {t("pricing.popular")}
                   </span>
                 </div>

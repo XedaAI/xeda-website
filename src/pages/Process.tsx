@@ -97,7 +97,7 @@ const Process = () => {
                       <span
                         className={`ml-auto inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium ${
                           p.withClient
-                            ? "border-primary/30 bg-primary/10 text-foreground"
+                            ? "border-highlight/60 bg-highlight-soft text-foreground"
                             : "border-border text-muted-foreground"
                         }`}
                       >

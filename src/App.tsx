@@ -28,10 +28,10 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    {/* Dark is the brand's native context — the mark was designed on near-black
-        — so it is the default rather than a system-derived preference. The
-        toggle still switches to a fully designed light theme. */}
-    <ThemeProvider attribute="class" defaultTheme="dark">
+    {/* Light is the default: the green-and-orange palette is built on the warm
+        off-white page. The toggle still switches to a fully designed dark
+        theme. */}
+    <ThemeProvider attribute="class" defaultTheme="light">
       <LanguageProvider>
         <TooltipProvider>
           <Toaster />
