@@ -34,7 +34,7 @@ const HeroSection = () => {
       {/* The hero is always a dark panel (photo + scrim), so its colours are
           fixed rather than taken from theme tokens — those invert between
           themes, which previously flipped this scrim light in dark mode. */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[hsl(232_40%_11%/0.90)] via-[hsl(232_40%_12%/0.84)] to-[hsl(232_45%_7%/0.96)]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[hsl(30_9%_9%/0.90)] via-[hsl(30_9%_10%/0.84)] to-[hsl(30_10%_6%/0.96)]" />
 
       {/* Chaos into the intake, order out of the outlet, the mark as the collar
           it all runs through — what we do, watchable. Behind the content,
@@ -50,7 +50,7 @@ const HeroSection = () => {
         className="absolute inset-0 z-[2] pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 54% 42% at 50% 65%, hsl(232 40% 11% / 0.92) 0%, hsl(232 40% 11% / 0.58) 44%, transparent 74%)",
+            "radial-gradient(ellipse 54% 42% at 50% 65%, hsl(30 9% 9% / 0.92) 0%, hsl(30 9% 9% / 0.58) 44%, transparent 74%)",
         }}
       />
 
@@ -63,28 +63,28 @@ const HeroSection = () => {
 
         <div className="enter [--enter-delay:1.25s] inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[hsl(170_55%_62%/0.10)] border border-[hsl(170_55%_62%/0.32)] mb-8">
           <span className="w-2 h-2 rounded-full bg-[hsl(170_55%_62%)] animate-pulse" />
-          <span className="text-sm text-[hsl(225_30%_92%)]">{t("hero.badge")}</span>
+          <span className="text-sm text-[hsl(40_20%_92%)]">{t("hero.badge")}</span>
         </div>
 
-        <h1 className="enter [--enter-delay:1.4s] text-[2.6rem] md:text-6xl lg:text-[4.6rem] font-semibold tracking-[-0.03em] text-[hsl(225_30%_97%)] mb-7 leading-[1.06] text-balance">
+        <h1 className="enter [--enter-delay:1.4s] text-[2.6rem] md:text-6xl lg:text-[4.6rem] font-semibold tracking-[-0.03em] text-[hsl(40_20%_97%)] mb-7 leading-[1.06] text-balance">
           {t("hero.title")}
           {/* The accent's loudest moment on the page: the second half of the
-              headline in the mint (#69D3C2, 9.6:1 on the navy). */}
+              headline in the mint (#69D3C2, 9.5:1 on the charcoal). */}
           <span className="text-[hsl(170_55%_62%)]"> {t("hero.titleHighlight")}</span>
         </h1>
 
-        <p className="enter [--enter-delay:1.55s] text-lg md:text-xl text-[hsl(225_22%_84%)] mb-12 max-w-[38rem] mx-auto leading-[1.65]">
+        <p className="enter [--enter-delay:1.55s] text-lg md:text-xl text-[hsl(40_12%_84%)] mb-12 max-w-[38rem] mx-auto leading-[1.65]">
           {t("hero.subtitle")}
         </p>
         
         <div className="enter [--enter-delay:1.7s] flex flex-col sm:flex-row items-center justify-center gap-4">
           {/* The hero is a fixed dark panel, so the CTA is fixed too: in light
               mode --primary is a deeper orange meant for a white page. The
-              soft orange with navy text reads 6.3:1; white text would fail. */}
+              soft orange with charcoal text reads 6.2:1; white text would fail. */}
           <Button
             size="lg"
             asChild
-            className="px-8 bg-[hsl(25_68%_58%)] text-[hsl(232_40%_14%)] hover:bg-[hsl(25_72%_64%)]"
+            className="px-8 bg-[hsl(25_68%_58%)] text-[hsl(30_9%_11%)] hover:bg-[hsl(25_72%_64%)]"
           >
             <a href={auditBookingUrl("hero")} target="_blank" rel="noopener noreferrer">
               {t("hero.cta")}
@@ -95,7 +95,7 @@ const HeroSection = () => {
             variant="outline" 
             size="lg"
             onClick={() => scrollToSection("what-we-do")}
-            className="px-8 bg-transparent border-[hsl(225_30%_96%/0.30)] text-[hsl(225_30%_96%)] hover:bg-[hsl(225_30%_96%/0.10)] hover:text-[hsl(0_0%_100%)]"
+            className="px-8 bg-transparent border-[hsl(40_20%_96%/0.30)] text-[hsl(40_20%_96%)] hover:bg-[hsl(40_20%_96%/0.10)] hover:text-[hsl(0_0%_100%)]"
           >
             {t("hero.secondary")}
           </Button>

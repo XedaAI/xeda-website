@@ -225,7 +225,7 @@ const COPY = {
 type Copy = (typeof COPY)[keyof typeof COPY];
 
 const Check = () => (
-  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="hsl(225 30% 96%)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="hsl(40 20% 96%)" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M20 6 9 17l-5-5" />
   </svg>
 );
@@ -280,15 +280,15 @@ function CollarBand({ k, lit }: { k: string; lit: [number, number, number, numbe
     <svg viewBox="0 0 244 244" width="244" height="244" fill="none" aria-hidden="true">
       <defs>
         <radialGradient id={`al-tube-${k}`} cx="122" cy="122" r="118" gradientUnits="userSpaceOnUse">
-          <stop offset="74.5%" stopColor="hsl(225 30% 96%)" stopOpacity={lit[0]} />
-          <stop offset="84%" stopColor="hsl(225 30% 96%)" stopOpacity={lit[1]} />
-          <stop offset="92%" stopColor="hsl(225 30% 96%)" stopOpacity={lit[2]} />
-          <stop offset="100%" stopColor="hsl(225 30% 96%)" stopOpacity={lit[3]} />
+          <stop offset="74.5%" stopColor="hsl(40 20% 96%)" stopOpacity={lit[0]} />
+          <stop offset="84%" stopColor="hsl(40 20% 96%)" stopOpacity={lit[1]} />
+          <stop offset="92%" stopColor="hsl(40 20% 96%)" stopOpacity={lit[2]} />
+          <stop offset="100%" stopColor="hsl(40 20% 96%)" stopOpacity={lit[3]} />
         </radialGradient>
         <linearGradient id={`al-lit-${k}`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="hsl(0 0% 100%)" stopOpacity=".3" />
-          <stop offset="55%" stopColor="hsl(232 45% 3%)" stopOpacity="0" />
-          <stop offset="100%" stopColor="hsl(232 45% 3%)" stopOpacity=".5" />
+          <stop offset="55%" stopColor="hsl(30 10% 3%)" stopOpacity="0" />
+          <stop offset="100%" stopColor="hsl(30 10% 3%)" stopOpacity=".5" />
         </linearGradient>
       </defs>
       <circle cx="122" cy="122" r="103" stroke={`url(#al-tube-${k})`} strokeWidth="30" />
