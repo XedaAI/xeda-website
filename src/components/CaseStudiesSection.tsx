@@ -46,8 +46,8 @@ const CaseStudiesSection = () => {
               style={{ "--enter-delay": `${index * 0.07}s` } as React.CSSProperties}
             >
               <CardContent className="p-6 text-center">
-                <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  <Icon className="w-5 h-5 text-primary" />
+                <div className="w-11 h-11 rounded-xl icon-tile flex items-center justify-center mx-auto mb-4">
+                  <Icon className="w-5 h-5" />
                 </div>
                 <h3 className="text-lg font-bold text-foreground mb-1.5">{name}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed text-pretty">

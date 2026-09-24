@@ -20,8 +20,8 @@ const TrustStrip = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
           {items.map((item) => (
             <div key={item.titleKey} className="flex items-start gap-4">
-              <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <item.icon className="w-5 h-5 text-primary" />
+              <div className="w-11 h-11 rounded-xl icon-tile flex items-center justify-center flex-shrink-0">
+                <item.icon className="w-5 h-5" />
               </div>
               <div>
                 <h3 className="font-semibold text-foreground mb-1">{t(item.titleKey)}</h3>

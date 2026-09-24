@@ -161,8 +161,8 @@ const VerticalLanding = ({ vertical }: { vertical: Vertical }) => {
           <div className="grid md:grid-cols-3 gap-8">
             {steps.map(({ icon: StepIcon, title, desc }) => (
               <div key={title} className="text-center">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  <StepIcon className="h-6 w-6 text-primary" />
+                <div className="w-12 h-12 rounded-xl icon-tile flex items-center justify-center mx-auto mb-4">
+                  <StepIcon className="h-6 w-6" />
                 </div>
                 <h3 className="text-lg font-bold text-foreground mb-2">{title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">

@@ -87,8 +87,8 @@ const ContactSection = () => {
       <div className="container mx-auto px-6">
         <div className="max-w-2xl mx-auto">
           <div className="text-center mb-12">
-            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-8">
-              <Mail className="w-8 h-8 text-primary" />
+            <div className="w-16 h-16 rounded-2xl icon-tile flex items-center justify-center mx-auto mb-8">
+              <Mail className="w-8 h-8" />
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
               {t("contact.title")}

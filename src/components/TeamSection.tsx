@@ -120,8 +120,8 @@ const TeamSection = () => {
                 key={index}
                 className="text-center p-6 rounded-lg bg-background/50 border border-border/50 hover:border-primary/30 transition-colors"
               >
-                <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-                  <value.icon className="h-6 w-6 text-primary" />
+                <div className="w-12 h-12 mx-auto mb-4 rounded-full icon-tile flex items-center justify-center">
+                  <value.icon className="h-6 w-6" />
                 </div>
                 <h4 className="font-semibold text-foreground mb-2">
                   {t(value.titleKey)}

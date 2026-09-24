@@ -86,7 +86,7 @@ const WhatWeDoSection = () => {
         <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] gap-14 lg:gap-20 items-stretch">
           <div>
             <span className="text-sm font-semibold tracking-wide text-muted-foreground mb-5 block">{t("whatWeDo.label")}</span>
-            <h2 className="font-display font-medium uppercase text-[2.35rem] sm:text-5xl xl:text-[3.6rem] leading-[1.02] tracking-[-0.005em] text-brand-accent mb-8 text-balance">
+            <h2 className="font-display font-medium uppercase text-[2.35rem] sm:text-5xl xl:text-[3.6rem] leading-[1.02] tracking-[-0.005em] text-primary mb-8 text-balance">
               {t("whatWeDo.title")}
             </h2>
             <p className="text-lg md:text-xl leading-relaxed text-foreground/90 max-w-xl mb-10">

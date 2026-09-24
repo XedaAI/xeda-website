@@ -39,8 +39,8 @@ const ForDevelopersSection = () => {
           <div className="grid sm:grid-cols-2 gap-6 mb-12 text-left">
             {benefits.map((benefit, index) => (
               <div key={index} className="flex items-start gap-4 p-4 rounded-lg bg-background border border-border/50">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <benefit.icon className="w-5 h-5 text-primary" />
+                <div className="w-10 h-10 rounded-lg icon-tile flex items-center justify-center flex-shrink-0">
+                  <benefit.icon className="w-5 h-5" />
                 </div>
                 <p className="text-foreground text-sm leading-relaxed pt-2">
                   {t(benefit.textKey)}

@@ -32,6 +32,7 @@ export default {
   			},
   			'brand-accent': 'hsl(var(--brand-accent))',
   			'section-alt': 'hsl(var(--section-alt))',
+  			sage: 'hsl(var(--sage))',
   			secondary: {
   				DEFAULT: 'hsl(var(--secondary))',
   				foreground: 'hsl(var(--secondary-foreground))'
