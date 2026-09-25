@@ -35,6 +35,17 @@ export type InputItem = { x: number; y: number; r: number; unresolved?: boolean 
   | { kind: "order"; title: Lx; sub: Lx }
 );
 
+/** A compact input for the phone scene: one line of what arrived, plus loose
+ *  fragments for the "scattered data" inputs. */
+export type MobileInput = {
+  kind: "pdf" | "mail" | "chat" | "call" | "rx" | "photo" | "listing" | "site" | "bits";
+  title: Lx | string;
+  meta?: Lx | string;
+  /** Loose values shown as chips instead of a meta line. */
+  bits?: (Lx | string)[];
+  unresolved?: boolean;
+};
+
 /** A field Xeda reads out while it works; `flag` marks the one it questions. */
 export type Field = { label: Lx; flag?: boolean };
 
@@ -45,7 +56,8 @@ export type TableOutput = {
   cols: Lx[];
   /** Grid template for the columns, so each interface keeps its own shape. */
   grid: string;
-  rows: { cells: (Lx | string)[]; status: Status; note?: Lx }[];
+  /** `sub` is the one-line summary the phone layout uses instead of cells. */
+  rows: { cells: (Lx | string)[]; sub: Lx; status: Status; note?: Lx }[];
   footer: { text: Lx; icon: "file" | "send" };
 };
 export type ListOutput = {
@@ -82,6 +94,8 @@ export type Industry = {
   slug: string;
   icon: LucideIcon;
   inputs: InputItem[];
+  /** The two or three most telling inputs, for the phone scene. */
+  mobileInputs: MobileInput[];
   /** The tidy list the inputs collapse into once read. */
   sources: Lx[];
   fields: Field[];
@@ -104,6 +118,11 @@ export const industries: Industry[] = [
       { kind: "field", value: l("VAT 19%", "USt. 19 %"), x: 42, y: 72, r: -3 },
       { kind: "field", value: "RE-1201", x: 12, y: 84, r: 4 },
     ],
+    mobileInputs: [
+      { kind: "pdf", title: l("Invoice · Acme GmbH", "Rechnung · Acme GmbH"), meta: "PDF · 24.04.2025" },
+      { kind: "pdf", title: l("Invoice (scan)", "Rechnung (Scan)"), meta: l("PDF · VAT unreadable", "PDF · USt. unleserlich"), unresolved: true },
+      { kind: "bits", title: l("Copied from emails", "Aus E-Mails kopiert"), bits: [l("€1,190.00", "1.190,00 €"), l("VAT 19%", "USt. 19 %"), "RE-1201"] },
+    ],
     sources: [l("Invoice_Acme.pdf"), l("Scan_0424.pdf"), l("4 more invoices", "4 weitere Rechnungen")],
     fields: [
       { label: l("Vendor", "Lieferant") },
@@ -119,10 +138,10 @@ export const industries: Industry[] = [
       cols: [l("Vendor", "Lieferant"), l("Invoice", "Beleg"), l("Amount", "Betrag"), l("VAT", "USt."), l("", "")],
       grid: "minmax(0,1.35fr) minmax(0,1fr) minmax(0,1.05fr) minmax(0,0.6fr) 1.5rem",
       rows: [
-        { cells: ["Acme GmbH", "RE-1201", l("€1,190.00", "1.190,00 €"), "19%"], status: "ok" },
-        { cells: ["Microsoft", "RE-0423", l("€299.00", "299,00 €"), "19%"], status: "ok" },
-        { cells: ["Telekom", "RE-7781", l("€84.99", "84,99 €"), "7%"], status: "warn", note: l("VAT rate doesn't match", "USt.-Satz passt nicht") },
-        { cells: ["Office Depot", "RE-5567", l("€125.50", "125,50 €"), "19%"], status: "ok" },
+        { cells: ["Acme GmbH", "RE-1201", l("€1,190.00", "1.190,00 €"), "19%"], sub: l("€1,190.00 · VAT 19% · RE-1201", "1.190,00 € · USt. 19 % · RE-1201"), status: "ok" },
+        { cells: ["Microsoft", "RE-0423", l("€299.00", "299,00 €"), "19%"], sub: l("€299.00 · VAT 19% · RE-0423", "299,00 € · USt. 19 % · RE-0423"), status: "ok" },
+        { cells: ["Telekom", "RE-7781", l("€84.99", "84,99 €"), "7%"], sub: l("€84.99 · VAT 7% · RE-7781", "84,99 € · USt. 7 % · RE-7781"), status: "warn", note: l("VAT rate doesn't match", "USt.-Satz passt nicht") },
+        { cells: ["Office Depot", "RE-5567", l("€125.50", "125,50 €"), "19%"], sub: l("€125.50 · VAT 19% · RE-5567", "125,50 € · USt. 19 % · RE-5567"), status: "ok" },
       ],
       footer: { text: l("DATEV import file ready", "DATEV-Importdatei bereit"), icon: "file" },
     },
@@ -143,6 +162,11 @@ export const industries: Industry[] = [
       { kind: "field", value: l("€199.00 / pc", "199,00 € / Stk."), x: 60, y: 57, r: 3, unresolved: true },
       { kind: "field", value: l("Deliver by 02.05.", "Liefern bis 02.05."), x: 14, y: 67, r: 2 },
     ],
+    mobileInputs: [
+      { kind: "mail", title: l("PO 4500-1123 — urgent", "Bestellung 4500-1123 — eilig"), meta: "einkauf@kunde-ag.de" },
+      { kind: "pdf", title: l("Purchase order", "Bestellung"), meta: l("PDF · 4 line items", "PDF · 4 Positionen") },
+      { kind: "bits", title: l("Waiting for manual entry", "Wartet auf Erfassung"), bits: [l("Qty 250", "Menge 250"), l("€199.00 / pc", "199,00 € / Stk."), l("by 02.05.", "bis 02.05.")], unresolved: true },
+    ],
     sources: [l("Email from Kunde AG", "E-Mail von Kunde AG"), l("PO_4500-1123.pdf"), l("4 line items", "4 Positionen")],
     fields: [
       { label: l("Material", "Material") },
@@ -158,10 +182,10 @@ export const industries: Industry[] = [
       cols: [l("Material", "Material"), l("Qty", "Menge"), l("Price", "Preis"), l("Delivery", "Termin"), l("", "")],
       grid: "minmax(0,1.5fr) minmax(0,0.7fr) minmax(0,0.95fr) minmax(0,0.8fr) 1.5rem",
       rows: [
-        { cells: [l("100-240 Housing", "100-240 Gehäuse"), "250", l("€12.50", "12,50 €"), "28.04."], status: "ok" },
-        { cells: [l("100-318 Shaft", "100-318 Welle"), "100", l("€8.90", "8,90 €"), "30.04."], status: "ok" },
-        { cells: [l("200-051 Flange", "200-051 Flansch"), "50", l("€199.00", "199,00 €"), "02.05."], status: "warn", note: l("Price 16× the usual rate", "Preis 16× über dem Üblichen") },
-        { cells: [l("300-112 Bolt set", "300-112 Schraubensatz"), "1,000", l("€3.40", "3,40 €"), "28.04."], status: "ok" },
+        { cells: [l("100-240 Housing", "100-240 Gehäuse"), "250", l("€12.50", "12,50 €"), "28.04."], sub: l("250 pcs · €12.50 · due 28.04.", "250 Stk. · 12,50 € · bis 28.04."), status: "ok" },
+        { cells: [l("100-318 Shaft", "100-318 Welle"), "100", l("€8.90", "8,90 €"), "30.04."], sub: l("100 pcs · €8.90 · due 30.04.", "100 Stk. · 8,90 € · bis 30.04."), status: "ok" },
+        { cells: [l("200-051 Flange", "200-051 Flansch"), "50", l("€199.00", "199,00 €"), "02.05."], sub: l("50 pcs · €199.00 · due 02.05.", "50 Stk. · 199,00 € · bis 02.05."), status: "warn", note: l("Price 16× the usual rate", "Preis 16× über dem Üblichen") },
+        { cells: [l("300-112 Bolt set", "300-112 Schraubensatz"), "1,000", l("€3.40", "3,40 €"), "28.04."], sub: l("1,000 pcs · €3.40 · due 28.04.", "1.000 Stk. · 3,40 € · bis 28.04."), status: "ok" },
       ],
       footer: { text: l("Order confirmation drafted and sent", "Auftragsbestätigung erstellt und versendet"), icon: "send" },
     },
@@ -181,6 +205,11 @@ export const industries: Industry[] = [
       { kind: "chat", text: l("I want to return this.", "Ich möchte das zurückschicken."), from: l("Max · 6 min", "Max · vor 6 Min."), x: 45, y: 50, r: -4 },
       { kind: "order", title: l("Order #1042", "Bestellung #1042"), sub: l("Runner Pro · size 42", "Runner Pro · Gr. 42"), x: 6, y: 70, r: 3 },
       { kind: "field", value: l("4 unanswered", "4 unbeantwortet"), x: 60, y: 82, r: -2, unresolved: true },
+    ],
+    mobileInputs: [
+      { kind: "chat", title: l("Where's my order?", "Wo ist meine Bestellung?"), meta: l("Lena · 2 min ago", "Lena · vor 2 Min.") },
+      { kind: "chat", title: l("What size should I get?", "Welche Größe soll ich nehmen?"), meta: l("Aylin · 5 min ago", "Aylin · vor 5 Min.") },
+      { kind: "chat", title: l("I want to return this.", "Ich möchte das zurückschicken."), meta: l("Max · and 1 more waiting", "Max · und 1 weitere wartet"), unresolved: true },
     ],
     sources: [l("4 customer requests", "4 Kundenanfragen"), l("Order #1042", "Bestellung #1042"), l("Carrier tracking", "Sendungsdaten")],
     fields: [
@@ -220,6 +249,11 @@ export const industries: Industry[] = [
       { kind: "chat", text: l("Can I book a viewing?", "Kann ich eine Besichtigung buchen?"), from: l("Website visitor", "Website-Besucher"), x: 6, y: 38, r: 2 },
       { kind: "listing", price: l("€525,000", "525.000 €"), place: l("3 rooms · Schwabing", "3 Zimmer · Schwabing"), x: 47, y: 47, r: 3 },
       { kind: "field", value: l("Lead #218 · unqualified", "Lead #218 · unqualifiziert"), x: 4, y: 80, r: -2, unresolved: true },
+    ],
+    mobileInputs: [
+      { kind: "chat", title: l("Is this property still available?", "Ist die Wohnung noch verfügbar?"), meta: l("Website visitor", "Website-Besucher") },
+      { kind: "chat", title: l("Can I book a viewing?", "Kann ich eine Besichtigung buchen?"), meta: l("Website visitor · unqualified", "Website-Besucher · unqualifiziert"), unresolved: true },
+      { kind: "listing", title: l("€525,000 · 3 rooms", "525.000 € · 3 Zimmer"), meta: l("Schwabing · listing 4471", "Schwabing · Exposé 4471") },
     ],
     sources: [l("3 visitor chats", "3 Besucher-Chats"), l("Listing ID 4471", "Exposé-Nr. 4471"), l("Agent calendar", "Kalender des Maklers")],
     fields: [
@@ -261,6 +295,11 @@ export const industries: Industry[] = [
       { kind: "chat", text: l("Question about my lab results", "Frage zu meinen Laborwerten"), from: l("Voicemail", "Mailbox"), x: 4, y: 64, r: 3 },
       { kind: "call", title: l("3 missed calls", "3 verpasste Anrufe"), sub: l("Reception busy", "Empfang besetzt"), missed: true, x: 50, y: 80, r: -2, unresolved: true },
     ],
+    mobileInputs: [
+      { kind: "call", title: l("Patient call", "Patientenanruf"), meta: l("Wants an appointment", "Möchte einen Termin") },
+      { kind: "rx", title: l("Repeat prescription request", "Folgerezept-Anfrage"), meta: l("Online form", "Online-Formular") },
+      { kind: "chat", title: l("Question about my lab results", "Frage zu meinen Laborwerten"), meta: l("Voicemail · 3 more waiting", "Mailbox · 3 weitere warten"), unresolved: true },
+    ],
     sources: [l("Phone line", "Telefonleitung"), l("Online form & voicemail", "Online-Formular & Mailbox"), l("Practice calendar", "Praxiskalender")],
     fields: [
       { label: l("Request type", "Anliegen") },
@@ -297,6 +336,11 @@ export const industries: Industry[] = [
       { kind: "doc", tag: "PDF", title: l("Invoice €8,420", "Rechnung 8.420 €"), icon: "invoice", x: 50, y: 50, r: 3 },
       { kind: "note", text: l("Call electrician re level 2", "Elektriker wg. 2. OG anrufen"), x: 5, y: 70, r: -4 },
       { kind: "field", value: l("Plan rev. C?", "Plan Rev. C?"), x: 58, y: 84, r: 2, unresolved: true },
+    ],
+    mobileInputs: [
+      { kind: "site", title: l("Concrete arrives 2 pm, crane idle", "Beton kommt 14 Uhr, Kran steht"), meta: l("Site chat · foreman", "Baustellen-Chat · Polier") },
+      { kind: "photo", title: "IMG_2291.jpg", meta: l("Site photo · level 2", "Baustellenfoto · 2. OG") },
+      { kind: "pdf", title: l("Invoice €8,420", "Rechnung 8.420 €"), meta: l("PDF · not yet filed", "PDF · nicht abgelegt"), unresolved: true },
     ],
     sources: [l("Site chat · 14 messages", "Baustellen-Chat · 14 Nachrichten"), l("6 photos", "6 Fotos"), l("3 PDFs", "3 PDFs")],
     fields: [

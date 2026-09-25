@@ -8,3 +8,9 @@ export const delay = (ms: number) => ({ "--d": ms }) as React.CSSProperties;
 
 /** When output row i starts filling, in ms from the click. */
 export const rowAt = (i: number) => 1150 + i * 150;
+
+/** Phones run faster (about 1.3 s in all): when phone row i starts to appear. */
+export const mRowAt = (i: number) => 560 + i * 70;
+
+/** How long a full run takes before it settles, desktop and phone. */
+export const RUN_MS = { desktop: 2450, phone: 1250 };

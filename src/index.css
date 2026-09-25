@@ -1859,3 +1859,384 @@ All colors MUST be HSL.
   .ix-scene[data-run] .ix-item { transform: rotate(var(--r)) scale(var(--s)); }
   .ix-pulse { display: none; }
 }
+
+/* --- Industries: selector cues (all sizes; the cues only show when needed) --- */
+.ixs { position: relative; margin-bottom: 1.25rem; }
+.ixs-frame { position: relative; }
+.ixs .ix-tabs { position: relative; margin-bottom: 0; }
+.ixs-arrow, .ixs-count { display: none; }
+@media (max-width: 1023px) {
+  /* The row runs to the screen edges, so the next pill visibly peeks in
+     rather than being cut off where the content column ends. */
+  .ixs-frame { margin-inline: -1.5rem; }
+  .ixs .ix-tabs { padding: 2px 1.5rem; scroll-padding-inline: 1.5rem; }
+  .ix-tab { min-height: 2.75rem; padding: 0.6rem 1.05rem; font-size: 0.9375rem; }
+  .ixs-frame::before,
+  .ixs-frame::after {
+    content: "";
+    position: absolute; top: 0; bottom: 0; z-index: 1;
+    width: 3.25rem;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  .ixs-frame::before { left: 0; background: linear-gradient(90deg, hsl(var(--background)) 35%, hsl(var(--background) / 0)); }
+  .ixs-frame::after { right: 0; background: linear-gradient(270deg, hsl(var(--background)) 35%, hsl(var(--background) / 0)); }
+  .ixs[data-more-left] .ixs-frame::before,
+  .ixs[data-more-right] .ixs-frame::after { opacity: 1; }
+  .ixs-arrow {
+    position: absolute; top: 50%; z-index: 2;
+    display: grid; place-items: center;
+    width: 2rem; height: 2rem;
+    translate: 0 -50%;
+    border-radius: 50%;
+    border: 1px solid hsl(var(--border));
+    background: hsl(var(--card));
+    color: hsl(var(--foreground));
+    box-shadow: 0 4px 14px -6px rgb(0 0 0 / 0.7);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  /* A 44px target around the 32px circle. */
+  .ixs-arrow::after { content: ""; position: absolute; inset: -6px; }
+  .ixs-arrow--left { left: 0.4rem; }
+  .ixs-arrow--right { right: 0.4rem; }
+  .ixs[data-more-left] .ixs-arrow--left,
+  .ixs[data-more-right] .ixs-arrow--right { opacity: 1; pointer-events: auto; }
+  .ixs-count {
+    display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+    margin-top: 0.75rem;
+    font-size: 12px;
+    color: hsl(var(--muted-foreground));
+  }
+  .ixs-dots { display: flex; gap: 5px; }
+  .ixs-dots > span {
+    width: 6px; height: 6px; border-radius: 3px;
+    background: hsl(var(--foreground) / 0.22);
+    transition: width 0.25s var(--ix-ease, ease), background-color 0.25s ease;
+  }
+  .ixs-dots > span.is-active { width: 18px; background: hsl(var(--primary)); }
+}
+
+/* --- Industries: the phone scene -------------------------------------------
+   MobileScene.tsx. A card that sizes itself to what it shows: the inputs fold
+   away and the result folds open, so neither state reserves room for the
+   other. Shorter timings than desktop — about 1.3 s for the whole run. */
+.ixm {
+  position: relative;
+  max-width: 36rem;
+  margin-inline: auto;
+  border-radius: 1.25rem;
+  border: 1px solid hsl(var(--border));
+  background:
+    radial-gradient(hsl(var(--foreground) / 0.05) 1px, transparent 1.2px) 0 0 / 22px 22px,
+    linear-gradient(180deg, hsl(var(--card) / 0.55), hsl(var(--background) / 0.4));
+  padding: 0.9rem 0.9rem 0.25rem;
+}
+.ixm-head { position: relative; display: flex; align-items: center; gap: 0.6rem; min-height: 1.75rem; }
+.ixm-label { position: static; }
+.ixm-read {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  font-size: 0.8125rem;
+  color: hsl(var(--brand-accent));
+  opacity: 0; transform: translateX(-4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.ixm[data-run] .ixm-read { opacity: 1; transform: none; transition: opacity 0.35s ease calc(var(--d) * 1ms), transform 0.35s var(--ix-ease) calc(var(--d) * 1ms); }
+.ixm-env {
+  position: absolute; right: -0.35rem; top: -0.55rem;
+  width: 7.5rem; height: 3.3rem;
+  color: hsl(var(--foreground) / 0.13);
+  pointer-events: none;
+}
+
+.ixm-fold { display: grid; }
+.ixm-fold-inner { min-height: 0; overflow: hidden; }
+.ixm-fold--before { grid-template-rows: 1fr; transition: grid-template-rows 0.3s var(--ix-ease); }
+.ixm[data-run] .ixm-fold--before { grid-template-rows: 0fr; transition: grid-template-rows 0.34s var(--ix-ease) 0.3s; }
+.ixm-fold--after { grid-template-rows: 0fr; transition: grid-template-rows 0.25s ease; }
+.ixm[data-run] .ixm-fold--after { grid-template-rows: 1fr; transition: grid-template-rows 0.38s var(--ix-ease) 0.44s; }
+
+/* Inputs: a small stack, a little askew. */
+.ixm-inputs { display: grid; gap: 0.45rem; padding: 0.7rem 0.3rem 0.3rem; }
+.ixm-in {
+  position: relative;
+  display: flex; align-items: center; gap: 0.7rem;
+  width: calc(100% - 14px);
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  box-shadow: 0 8px 20px -14px rgb(0 0 0 / 0.8);
+  transform: translateX(var(--x)) rotate(var(--r));
+  opacity: 0.95;
+  transition: transform 0.35s var(--ix-ease), opacity 0.3s ease;
+}
+.ixm[data-run] .ixm-in {
+  transform: translateY(2.75rem) scale(0.92);
+  opacity: 0;
+  transition:
+    transform 0.42s cubic-bezier(0.55, 0.05, 0.3, 1) calc(var(--i) * 60ms),
+    opacity 0.28s ease-in calc(var(--i) * 60ms + 0.14s);
+}
+.ixm-in-icon {
+  display: grid; place-items: center; flex-shrink: 0;
+  width: 2.25rem; height: 2.25rem;
+  border-radius: 0.55rem;
+  background: hsl(var(--foreground) / 0.08);
+  color: hsl(var(--foreground) / 0.85);
+}
+.ixm-in-icon--pdf { background: hsl(2 58% 50% / 0.85); color: hsl(0 0% 100%); font-size: 10px; font-weight: 700; letter-spacing: 0.04em; }
+.ixm-in-icon--site { background: hsl(150 22% 17%); color: hsl(150 40% 70%); }
+.ixm-in-icon--art { overflow: hidden; }
+.ixm-in-icon--art svg { width: 100%; height: 100%; }
+.ixm-in-title { display: block; font-size: 0.9375rem; font-weight: 600; line-height: 1.3; color: hsl(var(--foreground)); overflow-wrap: anywhere; }
+.ixm-in-meta { display: block; margin-top: 2px; font-size: 0.8125rem; color: hsl(var(--muted-foreground)); }
+.ixm-bits { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.35rem; }
+.ixm-bits > span {
+  border-radius: 5px;
+  border: 1px dashed hsl(var(--foreground) / 0.26);
+  padding: 1px 7px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: hsl(var(--foreground) / 0.88);
+}
+.ixm-unresolved {
+  display: grid; place-items: center; flex-shrink: 0;
+  width: 1.4rem; height: 1.4rem;
+  border-radius: 50%;
+  border: 1px solid hsl(var(--ix-amber) / 0.55);
+  color: hsl(var(--ix-amber));
+  font-size: 12px; font-weight: 700;
+}
+
+/* The short vertical links between the three parts. A dot runs down them
+   while Xeda works. */
+.ixm-link {
+  position: relative;
+  display: block;
+  width: 2px; height: 1.5rem;
+  margin: 0.2rem auto 0.3rem;
+  background: repeating-linear-gradient(to bottom, hsl(var(--foreground) / 0.25) 0 3px, transparent 3px 7px);
+  transition: background 0.3s ease;
+}
+.ixm-link::after {
+  content: "";
+  position: absolute; left: 50%; bottom: -1px;
+  width: 7px; height: 7px;
+  border-right: 1.5px solid hsl(var(--foreground) / 0.35);
+  border-bottom: 1.5px solid hsl(var(--foreground) / 0.35);
+  transform: translateX(-50%) rotate(45deg);
+}
+.ixm-link > span {
+  position: absolute; left: 50%; top: 0;
+  width: 6px; height: 6px; margin-left: -3px;
+  border-radius: 50%;
+  background: hsl(var(--primary));
+  opacity: 0;
+}
+.ixm[data-run] .ixm-link { background: hsl(var(--primary) / 0.4); }
+.ixm[data-phase="after"] .ixm-link { background: hsl(var(--brand-accent) / 0.45); }
+.ixm[data-phase="processing"] .ixm-link > span { animation: ixmDrop 0.42s ease-in 2 both; }
+.ixm[data-phase="processing"] .ixm-fold--after .ixm-link > span { animation-delay: 0.5s; animation-iteration-count: 1; }
+@keyframes ixmDrop {
+  0% { opacity: 0; transform: translateY(0); }
+  20%, 80% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(1.5rem); }
+}
+
+/* Xeda: a wide module, the mark at its left, the action spelled out. */
+.ixm-module {
+  border-radius: 1rem;
+  border: 1px solid hsl(var(--foreground) / 0.14);
+  background: linear-gradient(160deg, hsl(var(--card)), hsl(var(--background)));
+  padding: 0.3rem;
+  box-shadow: 0 16px 36px -22px rgb(0 0 0 / 0.9);
+  transition: border-color 0.35s ease, box-shadow 0.4s ease;
+}
+.ixm[data-phase="processing"] .ixm-module {
+  border-color: hsl(var(--primary) / 0.45);
+  box-shadow: 0 0 0 1px hsl(var(--primary) / 0.14), 0 0 26px -12px hsl(var(--primary) / 0.5);
+}
+.ixm[data-phase="after"] .ixm-module { border-color: hsl(var(--brand-accent) / 0.4); }
+.ixm-xeda {
+  display: flex; align-items: center; gap: 0.85rem;
+  width: 100%; min-height: 4rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 0.75rem;
+  transition: background-color 0.2s ease;
+}
+.ixm[data-phase="before"] .ixm-xeda:hover { background: hsl(var(--primary) / 0.06); }
+.ixm[data-phase="before"] .ixm-xeda:active { background: hsl(var(--primary) / 0.1); }
+.ixm-xeda:focus-visible { outline: none; box-shadow: 0 0 0 2px hsl(var(--ring)); }
+.ixm-xeda[aria-disabled="true"] { cursor: progress; }
+.ixm-tile {
+  position: relative;
+  display: grid; place-items: center; flex-shrink: 0;
+  width: 3.25rem; height: 3.25rem;
+  border-radius: 0.9rem;
+  border: 1px solid hsl(var(--foreground) / 0.12);
+  background: hsl(var(--background));
+}
+.ixm-tile::before {
+  content: ""; position: absolute; inset: -5px;
+  border-radius: 1.15rem;
+  border: 1px solid hsl(var(--primary) / 0.45);
+  opacity: 0; pointer-events: none;
+}
+.ixm[data-phase="before"] .ixm-tile::before { animation: ixIdle 3.4s ease-in-out infinite; }
+.ixm .ix-node-done { top: -6px; right: -6px; width: 20px; height: 20px; }
+.ixm[data-phase="after"] .ix-node-done { transform: scale(1); transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.ixm-mark { width: 72%; height: auto; color: hsl(var(--foreground) / 0.5); transition: color 0.3s ease; }
+.ixm[data-phase="processing"] .ixm-mark { color: hsl(var(--primary)); }
+.ixm[data-phase="after"] .ixm-mark { color: hsl(var(--foreground)); }
+.ixm .ix-node-scan { top: 26%; }
+.ixm[data-phase="processing"] .ix-node-scan { animation: ixmScan 0.5s ease-in-out 0.1s 2 alternate both; }
+@keyframes ixmScan {
+  0% { opacity: 0; transform: translateY(0); }
+  20%, 80% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(1.35rem); }
+}
+.ixm[data-phase="processing"] .ix-node-ring { animation-duration: 0.8s; }
+.ixm-xeda-title { display: flex; align-items: center; gap: 0.35rem; font-size: 1rem; font-weight: 600; color: hsl(var(--foreground)); }
+.ixm-xeda-sub { display: block; margin-top: 1px; font-size: 0.8125rem; color: hsl(var(--muted-foreground)); }
+.ixm-go { flex-shrink: 0; color: hsl(var(--primary)); }
+/* What Xeda reads: chips that wrap to the width, never squeezed. */
+.ixm-fields { display: flex; flex-wrap: wrap; gap: 0.35rem; padding: 0.2rem 0.5rem 0.55rem; }
+.ixm .ix-field { font-size: 0.8125rem; padding: 0.28rem 0.6rem; overflow: visible; }
+
+/* Result */
+.ixm-panel {
+  border-radius: 0.9rem;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card) / 0.94);
+  overflow: hidden;
+  margin-top: 0.45rem;
+}
+.ixm[data-phase="after"] .ixm-panel { border-color: hsl(var(--brand-accent) / 0.28); }
+.ixm-panel-head {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.2rem 0.55rem;
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid hsl(var(--border) / 0.8);
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground));
+}
+.ixm-panel-meta {
+  margin-left: auto; flex-shrink: 0;
+  font-size: 0.75rem; font-weight: 600;
+  color: hsl(var(--brand-accent));
+  opacity: 0; transition: opacity 0.2s ease;
+}
+.ixm[data-run] .ixm-panel-meta { opacity: 1; transition: opacity 0.35s ease calc(var(--d) * 1ms); }
+.ixm-row {
+  display: flex; align-items: center; gap: 0.7rem;
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid hsl(var(--border) / 0.5);
+  opacity: 0; transform: translateY(-6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.ixm-row:last-child { border-bottom: 0; }
+.ixm[data-run] .ixm-row { opacity: 1; transform: none; transition: opacity 0.3s ease calc(var(--d) * 1ms), transform 0.4s var(--ix-ease) calc(var(--d) * 1ms); }
+.ixm-row:has(.ixm-row-staff) { box-shadow: inset 2px 0 0 hsl(var(--foreground) / 0.45); background: hsl(var(--foreground) / 0.035); }
+.ixm-row-title { font-size: 0.875rem; font-weight: 500; line-height: 1.35; color: hsl(var(--foreground)); }
+.ixm-row-req { font-size: 0.8125rem; font-weight: 400; color: hsl(var(--muted-foreground)); }
+.ixm-row-sub { margin-top: 1px; font-size: 0.8125rem; line-height: 1.4; color: hsl(var(--muted-foreground)); }
+.ixm-row-sub > .text-foreground, .ixm-row-staff { font-size: 0.875rem; font-weight: 500; color: hsl(var(--foreground)); }
+.ixm-row-note { margin-top: 2px; font-size: 0.8125rem; color: hsl(var(--ix-amber)); }
+.ixm-row-icon { width: 1rem; height: 1rem; flex-shrink: 0; color: hsl(var(--brand-accent)); }
+.ixm-steps { display: flex; gap: 3px; margin-top: 0.4rem; }
+.ixm-steps > span { flex: 1; height: 3px; border-radius: 2px; background: hsl(var(--foreground) / 0.12); transition: background-color 0.25s ease; }
+.ixm[data-run] .ixm-steps > span { background: hsl(var(--brand-accent)); transition-delay: calc(var(--d) * 1ms); }
+.ixm-facts {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.55rem 0.9rem;
+  padding: 0.65rem 0.8rem;
+  border-bottom: 1px solid hsl(var(--border) / 0.5);
+  opacity: 0; transition: opacity 0.2s ease;
+}
+.ixm[data-run] .ixm-facts { opacity: 1; transition: opacity 0.35s ease calc(var(--d) * 1ms); }
+.ixm-fact-label { display: block; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: hsl(var(--muted-foreground)); }
+.ixm-fact-value { display: block; font-size: 0.875rem; font-weight: 500; color: hsl(var(--foreground)); }
+.ixm-days { display: flex; gap: 0.3rem; margin-top: 0.4rem; }
+.ixm-days > span {
+  flex: 1; padding: 0.2rem 0; text-align: center;
+  border-radius: 5px; border: 1px solid transparent;
+  background: hsl(var(--foreground) / 0.06);
+  font-size: 11.5px; color: hsl(var(--muted-foreground));
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+.ixm[data-run] .ixm-days > span.is-booked {
+  background: hsl(var(--brand-accent) / 0.18); border-color: hsl(var(--brand-accent) / 0.55); color: hsl(var(--brand-accent));
+  transition-delay: calc(var(--d) * 1ms);
+}
+.ixm-thumb { width: 3.25rem; height: 2.4rem; flex-shrink: 0; overflow: hidden; border-radius: 0.4rem; }
+.ixm-thumb svg { width: 100%; height: 100%; }
+.ixm-fold--after .ixm-head { justify-content: space-between; }
+.ixm-again {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  min-height: 2.75rem; padding-inline: 0.25rem;
+  font-size: 0.875rem; font-weight: 600;
+  color: hsl(var(--foreground));
+  transition: color 0.2s ease;
+}
+.ixm-again:hover { color: hsl(var(--primary)); }
+.ixm-again:focus-visible { outline: none; box-shadow: 0 0 0 2px hsl(var(--ring)); border-radius: 0.4rem; }
+.ixm .ix-zone-label { font-size: 11.5px; }
+.ixm .ix-app { font-size: 11px; }
+.ixm-in-icon--pdf { font-size: 11px; }
+
+/* Previous / next industry, under the result. */
+.ixm-nav {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 0.5rem;
+  margin-top: 0.7rem;
+  border-top: 1px solid hsl(var(--border) / 0.7);
+}
+.ixm-nav > button {
+  display: inline-flex; align-items: center; gap: 0.4rem; min-width: 0; max-width: 100%;
+  min-height: 2.75rem;
+  font-size: 0.875rem; font-weight: 500;
+  color: hsl(var(--muted-foreground));
+  transition: color 0.2s ease;
+}
+.ixm-nav > button:first-child { justify-self: start; text-align: left; }
+/* Long names (German ones especially) wrap onto a second line rather than
+   being cut off. */
+.ixm-nav-name { min-width: 0; line-height: 1.25; hyphens: auto; overflow-wrap: anywhere; }
+.ixm-nav > button:last-child { justify-self: end; text-align: right; }
+.ixm-nav > button:hover { color: hsl(var(--foreground)); }
+.ixm-nav > button:focus-visible { outline: none; box-shadow: 0 0 0 2px hsl(var(--ring)); border-radius: 0.4rem; }
+.ixm-nav-count { font-family: var(--font-mono); font-size: 12px; color: hsl(var(--muted-foreground)); }
+/* The narrowest phones: a smaller mark tile and title so the module keeps
+   to two lines. */
+/* Up to 400px the count lives only by the selector, so the neighbouring
+   industries' names fit in full here. */
+@media (max-width: 399px) {
+  .ixm-nav { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .ixm-nav-count { display: none; }
+}
+@media (max-width: 359px) {
+  .ixm { padding-inline: 0.7rem; }
+  .ixm-tile { width: 2.75rem; height: 2.75rem; border-radius: 0.8rem; }
+  .ixm-xeda { gap: 0.7rem; padding-inline: 0.5rem; }
+  .ixm-xeda-title { font-size: 0.9375rem; }
+  .ixm-in { padding: 0.55rem 0.65rem; gap: 0.6rem; }
+  .ixm-nav > button { font-size: 0.8125rem; gap: 0.3rem; }
+  .ixm-go { display: none; }
+}
+
+/* Copy below the demo: closer to it and in comfortable sizes on a phone. */
+@media (max-width: 1023px) {
+  .ix-copy-stack { margin-top: 2rem; }
+  .ix-copy { gap: 1.25rem; }
+  .ix-copy p { font-size: 1rem; }
+  .ix-copy-label { font-size: 12px; margin-bottom: 0.3rem; }
+}
+
+/* Idle animations rest while the section is off screen. */
+#use-cases[data-offscreen] .ix-scene *,
+#use-cases[data-offscreen] .ix-scene *::before { animation-play-state: paused !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ixm[data-run] .ixm-in { transform: translateX(var(--x)) rotate(var(--r)); }
+  .ixm-fold, .ixm-fold--before, .ixm-fold--after { transition: none !important; }
+}

@@ -136,13 +136,13 @@ const SCENES: Record<Industry["key"], () => JSX.Element> = {
   construction: Construction,
 };
 
-export const Backdrop = ({ industry }: { industry: Industry["key"] }) => {
+export const Backdrop = ({ industry, className = "ix-env" }: { industry: Industry["key"]; className?: string }) => {
   const Scene = SCENES[industry];
   return (
     <svg
       viewBox="0 0 400 300"
       preserveAspectRatio="xMidYMax meet"
-      className="ix-env"
+      className={className}
       fill="none"
       stroke="currentColor"
       strokeWidth="1.3"
