@@ -38,11 +38,15 @@ All colors MUST be HSL.
     --popover-foreground: 30 9% 11%;
 
     /* Buttons are near-black with white text — the OpenAI move. */
-    --primary: 22 66% 42%;
+    --primary: 22 70% 37%;
     --primary-foreground: 0 0% 100%;
 
-    /* Eyebrows and labels: muted grey, not a colour. */
-    --brand-accent: 170 82% 26%;
+    /* Eyebrows, headlines and labels in the primary green (#1F6B51, 6.1:1). */
+    --brand-accent: 160 55% 27%;
+
+    --success: 160 60% 30%;
+    --xeda: 3 64% 46%;
+    --xeda-foreground: 0 0% 100%;
 
     --section-alt: 40 20% 94%;
 
@@ -60,13 +64,13 @@ All colors MUST be HSL.
 
     --border: 35 14% 87%;
     --input: 35 12% 81%;
-    --ring: 170 82% 26%;
+    --ring: 160 55% 27%;
 
     --radius: 0.75rem;
 
     --sidebar-background: 40 20% 98%;
     --sidebar-foreground: 30 9% 11%;
-    --sidebar-primary: 22 66% 42%;
+    --sidebar-primary: 22 70% 37%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 40 20% 94%;
     --sidebar-accent-foreground: 30 9% 11%;
@@ -75,7 +79,7 @@ All colors MUST be HSL.
 
     /* Charts: green and orange first, then the charcoal's warm greys. */
     --chart-1: 170 82% 26%;
-    --chart-2: 22 66% 42%;
+    --chart-2: 22 70% 37%;
     --chart-3: 170 60% 40%;
     --chart-4: 30 10% 35%;
     --chart-5: 35 8% 65%;
@@ -111,56 +115,62 @@ All colors MUST be HSL.
 
   .dark {
     /* --- Dark ------------------------------------------------------------
-       The default theme. Warm charcoal #1F1C1A is the ground and a lighter
-       charcoal the raised surface. Buttons are the orange with charcoal text
-       (6.2:1 — white on it is 2.7:1 and fails); mint carries the eyebrows,
-       headlines and hero highlight (9.5:1), and the deeper green fills
-       secondary buttons with charcoal text (5.9:1). */
-    --background: 30 9% 11%;
+       The default theme. Green is the primary colour: a deep green ground
+       (#0F241E) and a lighter green for raised surfaces. Orange (#DD884B)
+       stays the colour of buttons and accents, with dark-green text on it
+       (6.0:1). Sand (#E0CFAE) is the third colour — headlines, eyebrows and
+       the hero highlight (10.6:1) — so large type is neither more orange nor
+       green on green. Mint (#5EC9AF, 8.1:1) means "done"; red (#C2322A,
+       white text 5.0:1) is kept for the one Xeda action. */
+    --background: 162 43% 10%;
     --foreground: 40 20% 94%;
 
-    --card: 30 7% 15%;
+    --card: 161 40% 14%;
     --card-foreground: 40 20% 94%;
 
-    --popover: 30 7% 17%;
+    --popover: 161 38% 16%;
     --popover-foreground: 40 20% 94%;
 
     --primary: 25 68% 58%;
-    --primary-foreground: 30 9% 11%;
+    --primary-foreground: 162 43% 10%;
 
-    --brand-accent: 170 55% 62%;
+    --brand-accent: 40 45% 78%;
 
-    --section-alt: 30 8% 8%;
+    --section-alt: 162 45% 7%;
 
-    --secondary: 170 87% 36%;
-    --secondary-foreground: 30 9% 11%;
+    --secondary: 158 45% 28%;
+    --secondary-foreground: 40 20% 94%;
 
-    --muted: 30 6% 24%;
-    --muted-foreground: 35 10% 72%;
+    --muted: 160 24% 20%;
+    --muted-foreground: 150 14% 74%;
 
-    --accent: 30 6% 21%;
+    --accent: 160 30% 18%;
     --accent-foreground: 40 20% 94%;
+
+    --success: 165 50% 58%;
+    --xeda: 3 64% 46%;
+    --xeda-foreground: 0 0% 100%;
 
     --destructive: 0 62% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 30 6% 22%;
-    --input: 30 6% 26%;
-    --ring: 170 55% 62%;
-    --sidebar-background: 30 8% 8%;
+    --border: 160 24% 21%;
+    --input: 160 22% 26%;
+    --ring: 40 45% 78%;
+    --sidebar-background: 162 45% 7%;
     --sidebar-foreground: 40 20% 94%;
     --sidebar-primary: 25 68% 58%;
-    --sidebar-primary-foreground: 30 9% 11%;
-    --sidebar-accent: 30 6% 21%;
+    --sidebar-primary-foreground: 162 43% 10%;
+    --sidebar-accent: 160 30% 18%;
     --sidebar-accent-foreground: 40 20% 94%;
-    --sidebar-border: 30 6% 22%;
-    --sidebar-ring: 170 55% 62%;
-    --chart-1: 170 55% 62%;
+    --sidebar-border: 160 24% 21%;
+    --sidebar-ring: 40 45% 78%;
+    --chart-1: 165 50% 58%;
     --chart-2: 25 68% 58%;
-    --chart-3: 170 87% 36%;
-    --chart-4: 35 8% 62%;
-    --chart-5: 35 6% 44%;
-    --sidebar: 30 7% 15%;
+    --chart-3: 40 45% 78%;
+    --chart-4: 158 45% 36%;
+    --chart-5: 150 10% 55%;
+    --sidebar: 161 40% 14%;
     --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
     --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
     --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
@@ -190,24 +200,25 @@ All colors MUST be HSL.
    In light mode this is a full inversion; in dark mode the page is already dark,
    so it only drops a step deeper to keep the rhythm readable. */
 .section-ink {
-  --background: 30 9% 7%;
+  --background: 162 45% 8%;
   --foreground: 40 20% 94%;
-  --card: 30 7% 13%;
+  --card: 161 40% 13%;
   --card-foreground: 40 20% 94%;
-  --popover: 30 7% 17%;
+  --popover: 161 38% 16%;
   --popover-foreground: 40 20% 94%;
-  --muted: 30 6% 24%;
-  --muted-foreground: 35 10% 72%;
-  --border: 30 6% 22%;
-  --input: 30 6% 26%;
+  --muted: 160 24% 20%;
+  --muted-foreground: 150 14% 74%;
+  --border: 160 24% 20%;
+  --input: 160 22% 25%;
   --primary: 25 68% 58%;
-  --primary-foreground: 30 9% 11%;
-  --brand-accent: 170 55% 62%;
-  --accent: 30 6% 21%;
+  --primary-foreground: 162 43% 10%;
+  --brand-accent: 40 45% 78%;
+  --success: 165 50% 58%;
+  --accent: 160 30% 17%;
   --accent-foreground: 40 20% 94%;
-  --ring: 170 55% 62%;
-  --secondary: 170 87% 36%;
-  --secondary-foreground: 30 9% 11%;
+  --ring: 40 45% 78%;
+  --secondary: 158 45% 28%;
+  --secondary-foreground: 40 20% 94%;
 
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
@@ -216,8 +227,8 @@ All colors MUST be HSL.
 /* In dark mode the page is already ink, so these drop a step deeper instead
    of inverting — otherwise the rhythm disappears entirely. */
 .dark .section-ink {
-  --background: 30 9% 6%;
-  --card: 30 7% 11%;
+  --background: 162 48% 6%;
+  --card: 161 40% 11%;
 }
 
 /* Hairline rule that fades at both ends — separates ink sections without a
@@ -522,8 +533,8 @@ All colors MUST be HSL.
   background:
     linear-gradient(180deg,
       hsl(40 20% 96% / .17) 0%, hsl(40 20% 96% / .06) 34%,
-      hsl(30 10% 3% / .44) 72%, hsl(30 10% 3% / .7) 100%),
-    hsl(30 8% 7%);
+      hsl(162 45% 3% / .44) 72%, hsl(162 45% 3% / .7) 100%),
+    hsl(162 40% 7%);
 }
 
 /* ---- the surface, as dust ----
@@ -559,7 +570,7 @@ All colors MUST be HSL.
   position: absolute; left: var(--al-x0); top: calc(var(--core-y, 240px) + var(--al-pipe-h) * .077);
   width: 28px; height: calc(var(--al-pipe-h) * .808); margin: 0;
   transform: translate(-50%, -50%); border-radius: 50%;
-  background: hsl(30 9% 5%); border: 2.5px solid hsl(40 20% 96% / .88);
+  background: hsl(162 42% 5%); border: 2.5px solid hsl(40 20% 96% / .88);
 }
 .al-mouth-bore {
   position: absolute; left: 50%; top: 50%; width: 16px; height: 46%;
@@ -760,7 +771,7 @@ All colors MUST be HSL.
 /* ---- outbound: structured output, every item contained ---- */
 .al-card {
   box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; padding: 10px 12px;
-  background: hsl(40 20% 96%); border-radius: 4px; box-shadow: 0 8px 26px hsl(30 10% 3% / .5);
+  background: hsl(40 20% 96%); border-radius: 4px; box-shadow: 0 8px 26px hsl(162 45% 3% / .5);
   min-width: 128px;
 }
 .al-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
@@ -770,16 +781,16 @@ All colors MUST be HSL.
 }
 .al-val {
   font-family: Inconsolata, ui-monospace, monospace; font-size: 10px; font-weight: 700;
-  color: hsl(30 9% 10%);
+  color: hsl(162 43% 10%);
 }
 .al-chip {
   display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 9999px;
-  background: hsl(40 20% 96%); box-shadow: 0 8px 22px hsl(30 10% 3% / .5);
+  background: hsl(40 20% 96%); box-shadow: 0 8px 22px hsl(162 45% 3% / .5);
   font-family: Inconsolata, ui-monospace, monospace; font-size: 10px; font-weight: 700;
-  letter-spacing: .12em; text-transform: uppercase; color: hsl(30 9% 10%); white-space: nowrap;
+  letter-spacing: .12em; text-transform: uppercase; color: hsl(162 43% 10%); white-space: nowrap;
 }
 .al-badge {
-  width: 18px; height: 18px; border-radius: 50%; background: hsl(30 9% 10%);
+  width: 18px; height: 18px; border-radius: 50%; background: hsl(162 43% 10%);
   display: flex; align-items: center; justify-content: center; flex: none;
 }
 
@@ -790,11 +801,11 @@ All colors MUST be HSL.
 .al-note {
   box-sizing: border-box; display: flex; align-items: center; gap: 8px;
   width: 168px; padding: 8px 11px; background: hsl(40 20% 96%); border-radius: 4px;
-  box-shadow: 0 8px 26px hsl(30 10% 3% / .5);
+  box-shadow: 0 8px 26px hsl(162 45% 3% / .5);
 }
 .al-quote {
   font-family: 'Work Sans', system-ui, sans-serif; font-weight: 600; font-size: 10px;
-  line-height: 1.3; letter-spacing: -0.01em; color: hsl(30 9% 10%); text-wrap: balance;
+  line-height: 1.3; letter-spacing: -0.01em; color: hsl(162 43% 10%); text-wrap: balance;
 }
 
 /* ---- the captions that name the three stages ---- */
@@ -889,10 +900,10 @@ All colors MUST be HSL.
 }
 /* Dark sections need the tints lifted, or they vanish into the panel. */
 .dark .section-dust {
-  --dust-1: hsl(170 55% 64%);
+  --dust-1: hsl(165 50% 58%);
   --dust-2: hsl(25 62% 62%);
-  --dust-3: hsl(170 60% 50%);
-  --dust-4: hsl(35 10% 72%);
+  --dust-3: hsl(40 45% 78%);
+  --dust-4: hsl(150 12% 70%);
   --dust-5: hsl(var(--foreground));
 }
 /* --- Delivery cascade -------------------------------------------------------
@@ -909,9 +920,9 @@ All colors MUST be HSL.
   --dc-wood-lit: hsl(var(--foreground) / 0.72);
   --dc-stone: hsl(var(--muted-foreground) / 0.32);
   --dc-stone-lit: hsl(var(--muted-foreground) / 0.52);
-  --dc-water: hsl(var(--brand-accent));
-  --dc-water-soft: hsl(var(--brand-accent) / 0.22);
-  --dc-water-deep: hsl(var(--brand-accent) / 0.18);
+  --dc-water: hsl(var(--success));
+  --dc-water-soft: hsl(var(--success) / 0.22);
+  --dc-water-deep: hsl(var(--success) / 0.18);
   --dc-on-water: hsl(var(--background));
   --dc-label: hsl(var(--foreground) / 0.82);
   --dc-label-soft: hsl(var(--muted-foreground));
@@ -920,13 +931,13 @@ All colors MUST be HSL.
      told apart by their number, label and position, and the one that is live
      is already singled out. HSL triples, so one value serves the solid fill
      and every washed-back form of it. */
-  --dc-s1: var(--brand-accent);
-  --dc-s2: var(--brand-accent);
-  --dc-s3: var(--brand-accent);
-  --dc-s4: var(--brand-accent);
-  --dc-s5: var(--brand-accent);
-  --dc-s6: var(--brand-accent);
-  --dc-s7: var(--brand-accent);
+  --dc-s1: var(--success);
+  --dc-s2: var(--success);
+  --dc-s3: var(--success);
+  --dc-s4: var(--success);
+  --dc-s5: var(--success);
+  --dc-s6: var(--success);
+  --dc-s7: var(--success);
 }
 /* A hovered or focused stage reads as the live one. The cursor is a pointer so
    it announces itself as something to hover, though nothing navigates. */
@@ -963,7 +974,7 @@ All colors MUST be HSL.
   box-shadow:
     inset 0 0 0 1px hsl(var(--card)),
     inset 0 0 0 2px hsl(var(--foreground) / 0.1),
-    0 22px 48px hsl(30 10% 3% / 0.5);
+    0 22px 48px hsl(162 45% 3% / 0.5);
   pointer-events: none;
   overflow: hidden;
 }
@@ -1161,8 +1172,8 @@ All colors MUST be HSL.
   );
   overflow: hidden;
   background:
-    radial-gradient(ellipse 62% 55% at 6% 4%, hsl(var(--brand-accent) / 0.40), transparent 70%),
-    radial-gradient(ellipse 55% 50% at 96% 94%, hsl(var(--brand-accent) / 0.30), transparent 70%),
+    radial-gradient(ellipse 62% 55% at 6% 4%, hsl(var(--success) / 0.34), transparent 70%),
+    radial-gradient(ellipse 55% 50% at 96% 94%, hsl(var(--success) / 0.24), transparent 70%),
     linear-gradient(140deg, hsl(var(--card)) 0%, hsl(var(--background)) 55%, hsl(var(--card)) 100%);
 }
 
@@ -1222,8 +1233,8 @@ All colors MUST be HSL.
   bottom: 0.45rem;
   height: 2px;
   border-radius: 2px;
-  background: hsl(var(--brand-accent));
-  opacity: 0.7;
+  background: hsl(var(--primary));
+  opacity: 0.85;
   transform-origin: left;
   animation: wwdProgress var(--wwd-cycle, 6000ms) linear forwards;
 }
@@ -1247,7 +1258,7 @@ All colors MUST be HSL.
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.06em;
-  color: hsl(var(--brand-accent) / 0.5);
+  color: hsl(var(--success) / 0.45);
   animation: wwdFall var(--dur, 12s) linear infinite;
   animation-delay: var(--delay, 0s);
 }
@@ -1356,7 +1367,7 @@ All colors MUST be HSL.
   background: hsl(var(--foreground) / 0.3);
   transition: background-color 0.4s ease;
 }
-.ix-scene[data-phase="after"] .ix-zone-label--after::before { background: hsl(var(--brand-accent)); }
+.ix-scene[data-phase="after"] .ix-zone-label--after::before { background: hsl(var(--success)); }
 
 /* Before: inputs over scenery */
 .ix-in { position: relative; height: 21rem; }
@@ -1453,7 +1464,7 @@ All colors MUST be HSL.
   display: grid; place-items: center;
   width: 18px; height: 18px; border-radius: 50%;
   border: 1px solid hsl(var(--ix-amber) / 0.55);
-  background: hsl(30 9% 10%);
+  background: hsl(162 43% 10%);
   color: hsl(var(--ix-amber));
 }
 
@@ -1528,14 +1539,14 @@ All colors MUST be HSL.
   content: "";
   position: absolute; inset: -9px;
   border-radius: inherit;
-  border: 1px solid hsl(var(--primary) / 0.4);
+  border: 1px solid hsl(var(--xeda) / 0.6);
   opacity: 0;
   pointer-events: none;
 }
 .ix-scene[data-phase="before"] .ix-node::before { animation: ixIdle 3.4s ease-in-out infinite; }
 .ix-scene[data-phase="before"] .ix-node:hover {
-  border-color: hsl(var(--primary) / 0.55);
-  box-shadow: 0 0 0 4px hsl(var(--primary) / 0.08), 0 18px 40px -20px rgb(0 0 0 / 0.9);
+  border-color: hsl(var(--xeda) / 0.7);
+  box-shadow: 0 0 0 4px hsl(var(--xeda) / 0.1), 0 18px 40px -20px rgb(0 0 0 / 0.9);
 }
 .ix-scene[data-phase="before"] .ix-node:active { transform: scale(0.97); }
 @keyframes ixIdle {
@@ -1566,7 +1577,7 @@ All colors MUST be HSL.
   position: absolute; top: -7px; right: -7px;
   display: grid; place-items: center;
   width: 24px; height: 24px; border-radius: 50%;
-  background: hsl(var(--brand-accent));
+  background: hsl(var(--success));
   color: hsl(var(--background));
   transform: scale(0);
   transition: transform 0.25s ease;
@@ -1584,7 +1595,7 @@ All colors MUST be HSL.
   15%, 85% { opacity: 1; }
   100% { opacity: 0; transform: translateY(3.6rem); }
 }
-.ix-scene[data-phase="after"] .ix-node { border-color: hsl(var(--brand-accent) / 0.45); }
+.ix-scene[data-phase="after"] .ix-node { border-color: hsl(var(--success) / 0.45); }
 .ix-scene[data-phase="after"] .ix-node-mark { color: hsl(var(--foreground)); }
 .ix-scene[data-phase="after"] .ix-node-done { transform: scale(1); transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
 
@@ -1615,12 +1626,12 @@ All colors MUST be HSL.
 .ix-scene[data-run] .ix-field {
   color: hsl(var(--foreground));
   border-style: solid;
-  border-color: hsl(var(--brand-accent) / 0.35);
-  background: hsl(var(--brand-accent) / 0.06);
+  border-color: hsl(var(--success) / 0.35);
+  background: hsl(var(--success) / 0.06);
   transition-delay: calc(var(--d) * 1ms);
   transition-duration: 0.35s;
 }
-.ix-scene[data-run] .ix-field .ix-field-dot { background: hsl(var(--brand-accent)); transition-delay: calc(var(--d) * 1ms); }
+.ix-scene[data-run] .ix-field .ix-field-dot { background: hsl(var(--success)); transition-delay: calc(var(--d) * 1ms); }
 .ix-scene[data-run] .ix-field--flag { border-color: hsl(var(--ix-amber) / 0.5); background: hsl(var(--ix-amber) / 0.08); }
 .ix-scene[data-run] .ix-field--flag .ix-field-dot { background: hsl(var(--ix-amber)); }
 
@@ -1637,6 +1648,15 @@ All colors MUST be HSL.
   transition: background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
 }
 .ix-action:hover { background: hsl(var(--primary) / 0.2); }
+/* The one Xeda action is red: solid while it invites the run, an outline
+   once it becomes "See before". */
+.ix-scene[data-phase="before"] .ix-action,
+.ix-scene[data-phase="processing"] .ix-action {
+  border-color: hsl(var(--xeda));
+  background: hsl(var(--xeda));
+  color: hsl(var(--xeda-foreground));
+}
+.ix-scene[data-phase="before"] .ix-action:hover { background: hsl(var(--xeda) / 0.88); }
 .ix-action:focus-visible { outline: none; box-shadow: 0 0 0 2px hsl(var(--ring)); }
 .ix-action[aria-disabled="true"] { opacity: 0.6; cursor: progress; }
 .ix-scene[data-phase="after"] .ix-action { border-color: hsl(var(--foreground) / 0.2); background: transparent; }
@@ -1653,7 +1673,7 @@ All colors MUST be HSL.
 .ix-scene[data-run] .ix-path--in { stroke: hsl(var(--primary) / 0.3); stroke-dasharray: none; }
 .ix-scene[data-phase="after"] .ix-path--in { opacity: 0; transition-duration: 0.8s; }
 .ix-scene[data-run] .ix-path--out { stroke: hsl(var(--primary) / 0.22); stroke-dasharray: none; transition-delay: 0.9s; }
-.ix-scene[data-phase="after"] .ix-path--out { stroke: hsl(var(--brand-accent) / 0.35); }
+.ix-scene[data-phase="after"] .ix-path--out { stroke: hsl(var(--success) / 0.35); }
 .ix-pulse {
   fill: none;
   stroke: hsl(var(--primary));
@@ -1686,7 +1706,7 @@ All colors MUST be HSL.
   box-shadow: 0 24px 50px -30px rgb(0 0 0 / 0.85);
   transition: border-color 0.6s ease;
 }
-.ix-scene[data-phase="after"] .ix-panel { border-color: hsl(var(--brand-accent) / 0.28); }
+.ix-scene[data-phase="after"] .ix-panel { border-color: hsl(var(--success) / 0.28); }
 .ix-app {
   flex-shrink: 0;
   border-radius: 4px;
@@ -1699,7 +1719,7 @@ All colors MUST be HSL.
 .ix-sync { display: grid; }
 .ix-sync > span { grid-area: 1 / 1; text-align: right; transition: opacity 0.3s ease; }
 .ix-sync-wait { color: hsl(var(--muted-foreground) / 0.8); }
-.ix-sync-done { color: hsl(var(--brand-accent)); opacity: 0; }
+.ix-sync-done { color: hsl(var(--success)); opacity: 0; }
 .ix-scene[data-run] .ix-sync-wait { opacity: 0; transition-delay: 1.1s; }
 .ix-scene[data-run] .ix-sync-done { opacity: 1; transition-delay: calc(var(--d) * 1ms); }
 
@@ -1763,7 +1783,7 @@ All colors MUST be HSL.
   opacity: 1; transform: none;
   transition: opacity 0.3s ease calc(var(--d) * 1ms), transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) calc(var(--d) * 1ms);
 }
-.ix-status--ok { background: hsl(var(--brand-accent) / 0.16); color: hsl(var(--brand-accent)); }
+.ix-status--ok { background: hsl(var(--success) / 0.16); color: hsl(var(--success)); }
 .ix-status--warn { background: hsl(var(--ix-amber) / 0.16); color: hsl(var(--ix-amber)); }
 .ix-status--draft { background: hsl(var(--foreground) / 0.1); color: hsl(var(--foreground) / 0.85); }
 .ix-status--staff { background: hsl(var(--foreground) / 0.14); color: hsl(var(--foreground)); }
@@ -1798,7 +1818,7 @@ All colors MUST be HSL.
   transition: background-color 0.3s ease;
 }
 .ix-scene[data-run] .ix-track li { color: hsl(var(--foreground) / 0.9); transition-delay: calc(var(--d) * 1ms); }
-.ix-scene[data-run] .ix-track li::before { background: hsl(var(--brand-accent)); transition-delay: calc(var(--d) * 1ms); }
+.ix-scene[data-run] .ix-track li::before { background: hsl(var(--success)); transition-delay: calc(var(--d) * 1ms); }
 
 .ix-avatar {
   display: grid; place-items: center; flex-shrink: 0;
@@ -1820,14 +1840,14 @@ All colors MUST be HSL.
   transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
 }
 .ix-scene[data-run] .ix-cal-slot--booked {
-  background: hsl(var(--brand-accent) / 0.18);
-  border-color: hsl(var(--brand-accent) / 0.55);
-  color: hsl(var(--brand-accent));
+  background: hsl(var(--success) / 0.18);
+  border-color: hsl(var(--success) / 0.55);
+  color: hsl(var(--success));
   transition-delay: calc(var(--d) * 1ms);
   transition-duration: 0.4s;
 }
 .ix-bar { display: block; height: 6px; border-radius: 3px; background: hsl(var(--foreground) / 0.1); overflow: hidden; }
-.ix-bar > span { display: block; height: 100%; border-radius: inherit; background: hsl(var(--brand-accent)); transform: scaleX(0); transform-origin: left; transition: transform 0.25s ease; }
+.ix-bar > span { display: block; height: 100%; border-radius: inherit; background: hsl(var(--success)); transform: scaleX(0); transform-origin: left; transition: transform 0.25s ease; }
 .ix-scene[data-run] .ix-bar > span { transform: scaleX(1); transition: transform 0.9s var(--ix-ease) calc(var(--d) * 1ms); }
 
 /* Copy under the stage */
@@ -1939,7 +1959,7 @@ All colors MUST be HSL.
 .ixm-read {
   display: inline-flex; align-items: center; gap: 0.3rem;
   font-size: 0.8125rem;
-  color: hsl(var(--brand-accent));
+  color: hsl(var(--success));
   opacity: 0; transform: translateX(-4px);
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
@@ -2037,7 +2057,7 @@ All colors MUST be HSL.
   opacity: 0;
 }
 .ixm[data-run] .ixm-link { background: hsl(var(--primary) / 0.4); }
-.ixm[data-phase="after"] .ixm-link { background: hsl(var(--brand-accent) / 0.45); }
+.ixm[data-phase="after"] .ixm-link { background: hsl(var(--success) / 0.45); }
 .ixm[data-phase="processing"] .ixm-link > span { animation: ixmDrop 0.42s ease-in 2 both; }
 .ixm[data-phase="processing"] .ixm-fold--after .ixm-link > span { animation-delay: 0.5s; animation-iteration-count: 1; }
 @keyframes ixmDrop {
@@ -2055,20 +2075,21 @@ All colors MUST be HSL.
   box-shadow: 0 16px 36px -22px rgb(0 0 0 / 0.9);
   transition: border-color 0.35s ease, box-shadow 0.4s ease;
 }
+.ixm[data-phase="before"] .ixm-module { border-color: hsl(var(--xeda) / 0.6); }
 .ixm[data-phase="processing"] .ixm-module {
   border-color: hsl(var(--primary) / 0.45);
   box-shadow: 0 0 0 1px hsl(var(--primary) / 0.14), 0 0 26px -12px hsl(var(--primary) / 0.5);
 }
-.ixm[data-phase="after"] .ixm-module { border-color: hsl(var(--brand-accent) / 0.4); }
+.ixm[data-phase="after"] .ixm-module { border-color: hsl(var(--success) / 0.4); }
 .ixm-xeda {
-  display: flex; align-items: center; gap: 0.85rem;
+  display: flex; align-items: center; gap: 0.7rem;
   width: 100%; min-height: 4rem;
   padding: 0.5rem 0.65rem;
   border-radius: 0.75rem;
   transition: background-color 0.2s ease;
 }
-.ixm[data-phase="before"] .ixm-xeda:hover { background: hsl(var(--primary) / 0.06); }
-.ixm[data-phase="before"] .ixm-xeda:active { background: hsl(var(--primary) / 0.1); }
+.ixm[data-phase="before"] .ixm-xeda:hover { background: hsl(var(--xeda) / 0.08); }
+.ixm[data-phase="before"] .ixm-xeda:active { background: hsl(var(--xeda) / 0.14); }
 .ixm-xeda:focus-visible { outline: none; box-shadow: 0 0 0 2px hsl(var(--ring)); }
 .ixm-xeda[aria-disabled="true"] { cursor: progress; }
 .ixm-tile {
@@ -2082,7 +2103,7 @@ All colors MUST be HSL.
 .ixm-tile::before {
   content: ""; position: absolute; inset: -5px;
   border-radius: 1.15rem;
-  border: 1px solid hsl(var(--primary) / 0.45);
+  border: 1px solid hsl(var(--xeda) / 0.6);
   opacity: 0; pointer-events: none;
 }
 .ixm[data-phase="before"] .ixm-tile::before { animation: ixIdle 3.4s ease-in-out infinite; }
@@ -2101,7 +2122,14 @@ All colors MUST be HSL.
 .ixm[data-phase="processing"] .ix-node-ring { animation-duration: 0.8s; }
 .ixm-xeda-title { display: flex; align-items: center; gap: 0.35rem; font-size: 1rem; font-weight: 600; color: hsl(var(--foreground)); }
 .ixm-xeda-sub { display: block; margin-top: 1px; font-size: 0.8125rem; color: hsl(var(--muted-foreground)); }
-.ixm-go { flex-shrink: 0; color: hsl(var(--primary)); }
+.ixm-go {
+  flex-shrink: 0;
+  display: grid; place-items: center;
+  width: 1.75rem; height: 1.75rem; padding: 0.3rem;
+  border-radius: 50%;
+  background: hsl(var(--xeda));
+  color: hsl(var(--xeda-foreground));
+}
 /* What Xeda reads: chips that wrap to the width, never squeezed. */
 .ixm-fields { display: flex; flex-wrap: wrap; gap: 0.35rem; padding: 0.2rem 0.5rem 0.55rem; }
 .ixm .ix-field { font-size: 0.8125rem; padding: 0.28rem 0.6rem; overflow: visible; }
@@ -2114,7 +2142,7 @@ All colors MUST be HSL.
   overflow: hidden;
   margin-top: 0.45rem;
 }
-.ixm[data-phase="after"] .ixm-panel { border-color: hsl(var(--brand-accent) / 0.28); }
+.ixm[data-phase="after"] .ixm-panel { border-color: hsl(var(--success) / 0.28); }
 .ixm-panel-head {
   display: flex; flex-wrap: wrap; align-items: center; gap: 0.2rem 0.55rem;
   padding: 0.6rem 0.8rem;
@@ -2125,7 +2153,7 @@ All colors MUST be HSL.
 .ixm-panel-meta {
   margin-left: auto; flex-shrink: 0;
   font-size: 0.75rem; font-weight: 600;
-  color: hsl(var(--brand-accent));
+  color: hsl(var(--success));
   opacity: 0; transition: opacity 0.2s ease;
 }
 .ixm[data-run] .ixm-panel-meta { opacity: 1; transition: opacity 0.35s ease calc(var(--d) * 1ms); }
@@ -2144,10 +2172,10 @@ All colors MUST be HSL.
 .ixm-row-sub { margin-top: 1px; font-size: 0.8125rem; line-height: 1.4; color: hsl(var(--muted-foreground)); }
 .ixm-row-sub > .text-foreground, .ixm-row-staff { font-size: 0.875rem; font-weight: 500; color: hsl(var(--foreground)); }
 .ixm-row-note { margin-top: 2px; font-size: 0.8125rem; color: hsl(var(--ix-amber)); }
-.ixm-row-icon { width: 1rem; height: 1rem; flex-shrink: 0; color: hsl(var(--brand-accent)); }
+.ixm-row-icon { width: 1rem; height: 1rem; flex-shrink: 0; color: hsl(var(--success)); }
 .ixm-steps { display: flex; gap: 3px; margin-top: 0.4rem; }
 .ixm-steps > span { flex: 1; height: 3px; border-radius: 2px; background: hsl(var(--foreground) / 0.12); transition: background-color 0.25s ease; }
-.ixm[data-run] .ixm-steps > span { background: hsl(var(--brand-accent)); transition-delay: calc(var(--d) * 1ms); }
+.ixm[data-run] .ixm-steps > span { background: hsl(var(--success)); transition-delay: calc(var(--d) * 1ms); }
 .ixm-facts {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.55rem 0.9rem;
   padding: 0.65rem 0.8rem;
@@ -2166,7 +2194,7 @@ All colors MUST be HSL.
   transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
 }
 .ixm[data-run] .ixm-days > span.is-booked {
-  background: hsl(var(--brand-accent) / 0.18); border-color: hsl(var(--brand-accent) / 0.55); color: hsl(var(--brand-accent));
+  background: hsl(var(--success) / 0.18); border-color: hsl(var(--success) / 0.55); color: hsl(var(--success));
   transition-delay: calc(var(--d) * 1ms);
 }
 .ixm-thumb { width: 3.25rem; height: 2.4rem; flex-shrink: 0; overflow: hidden; border-radius: 0.4rem; }
@@ -2216,11 +2244,15 @@ All colors MUST be HSL.
 }
 @media (max-width: 359px) {
   .ixm { padding-inline: 0.7rem; }
-  .ixm-tile { width: 2.75rem; height: 2.75rem; border-radius: 0.8rem; }
-  .ixm-xeda { gap: 0.7rem; padding-inline: 0.5rem; }
+  .ixm-tile { width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; }
+  .ixm-xeda { gap: 0.6rem; padding-inline: 0.45rem; }
   .ixm-xeda-title { font-size: 0.9375rem; }
   .ixm-in { padding: 0.55rem 0.65rem; gap: 0.6rem; }
   .ixm-nav > button { font-size: 0.8125rem; gap: 0.3rem; }
+}
+/* Below 390px the red edge and halo carry the button cue on their own, so
+   the title keeps to one line. */
+@media (max-width: 389px) {
   .ixm-go { display: none; }
 }
 

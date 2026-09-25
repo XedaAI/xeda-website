@@ -25,6 +25,11 @@ export default {
   			},
   			'brand-accent': 'hsl(var(--brand-accent))',
   			'section-alt': 'hsl(var(--section-alt))',
+  			success: 'hsl(var(--success))',
+  			xeda: {
+  				DEFAULT: 'hsl(var(--xeda))',
+  				foreground: 'hsl(var(--xeda-foreground))'
+  			},
   			secondary: {
   				DEFAULT: 'hsl(var(--secondary))',
   				foreground: 'hsl(var(--secondary-foreground))'

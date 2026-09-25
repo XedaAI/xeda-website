@@ -287,8 +287,8 @@ function CollarBand({ k, lit }: { k: string; lit: [number, number, number, numbe
         </radialGradient>
         <linearGradient id={`al-lit-${k}`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="hsl(0 0% 100%)" stopOpacity=".3" />
-          <stop offset="55%" stopColor="hsl(30 10% 3%)" stopOpacity="0" />
-          <stop offset="100%" stopColor="hsl(30 10% 3%)" stopOpacity=".5" />
+          <stop offset="55%" stopColor="hsl(162 45% 3%)" stopOpacity="0" />
+          <stop offset="100%" stopColor="hsl(162 45% 3%)" stopOpacity=".5" />
         </linearGradient>
       </defs>
       <circle cx="122" cy="122" r="103" stroke={`url(#al-tube-${k})`} strokeWidth="30" />

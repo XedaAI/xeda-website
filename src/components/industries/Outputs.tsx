@@ -32,7 +32,7 @@ const TableOut = ({ o, lang }: { o: TableOutput; lang: SiteLanguage }) => {
         </OutRow>
       ))}
       <div className="ix-foot" style={delay(done)}>
-        <FootIcon className="h-3.5 w-3.5 text-brand-accent" />
+        <FootIcon className="h-3.5 w-3.5 text-success" />
         <span>{tx(o.footer.text, lang)}</span>
         <StatusMark status="ok" d={done + 120} lang={lang} />
       </div>
@@ -47,7 +47,7 @@ const ListOut = ({ o, lang }: { o: ListOutput; lang: SiteLanguage }) => {
       app={tx(o.app, lang)}
       title={tx(o.title, lang)}
       lang={lang}
-      right={o.tally && <span className="ix-fill-inline text-brand-accent" style={delay(done)}>{tx(o.tally, lang)} ·</span>}
+      right={o.tally && <span className="ix-fill-inline text-success" style={delay(done)}>{tx(o.tally, lang)} ·</span>}
     >
       {o.rows.map((row, i) => (
         <OutRow key={i} d={rowAt(i)} className={`ix-lrow ${row.status === "staff" ? "ix-lrow--staff" : ""}`}>
@@ -61,7 +61,7 @@ const ListOut = ({ o, lang }: { o: ListOutput; lang: SiteLanguage }) => {
       {o.tracking && (
         <div className="ix-foot ix-foot--stack" style={delay(done)}>
           <div className="flex w-full items-center gap-2">
-            <Truck className="h-3.5 w-3.5 shrink-0 text-brand-accent" />
+            <Truck className="h-3.5 w-3.5 shrink-0 text-success" />
             <ol className="ix-track">
               {o.tracking.steps.map((s, i) => (
                 <li key={i} style={delay(done + 120 + i * 140)}>{tx(s, lang)}</li>
@@ -69,7 +69,7 @@ const ListOut = ({ o, lang }: { o: ListOutput; lang: SiteLanguage }) => {
             </ol>
           </div>
           <div className="flex w-full items-center gap-2">
-            <Store className="h-3.5 w-3.5 shrink-0 text-brand-accent" />
+            <Store className="h-3.5 w-3.5 shrink-0 text-success" />
             <span>{tx(o.tracking.store, lang)}</span>
             <span className="ml-auto"><StatusMark status="ok" d={done + 520} lang={lang} /></span>
           </div>
@@ -117,12 +117,12 @@ const LeadOut = ({ o, lang }: { o: LeadOutput; lang: SiteLanguage }) => {
           ))}
         </div>
         <div className="ix-foot ix-foot--flush mt-2.5" style={delay(cal + 420)}>
-          <CalendarCheck className="h-3.5 w-3.5 text-brand-accent" />
+          <CalendarCheck className="h-3.5 w-3.5 text-success" />
           <span>{tx(o.booked, lang)}</span>
           <StatusMark status="ok" d={cal + 520} lang={lang} />
         </div>
         <div className="ix-foot ix-foot--flush" style={delay(cal + 560)}>
-          <MailCheck className="h-3.5 w-3.5 text-brand-accent" />
+          <MailCheck className="h-3.5 w-3.5 text-success" />
           <span>{tx(o.followUp, lang)}</span>
           <StatusMark status="ok" d={cal + 660} lang={lang} />
         </div>

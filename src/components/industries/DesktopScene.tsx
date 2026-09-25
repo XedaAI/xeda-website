@@ -148,7 +148,7 @@ const DesktopScene = ({
             <li className="ix-sources-head" style={delay(1500)}>{t("useCases.read")}</li>
             {industry.sources.map((s, i) => (
               <li key={i} className="ix-src" style={delay(1560 + i * 90)}>
-                <FileCheck2 className="h-3.5 w-3.5 text-brand-accent" />
+                <FileCheck2 className="h-3.5 w-3.5 text-success" />
                 <span className="truncate">{tx(s, lang)}</span>
               </li>
             ))}

@@ -34,7 +34,7 @@ const HeroSection = () => {
       {/* The hero is always a dark panel (photo + scrim), so its colours are
           fixed rather than taken from theme tokens — those invert between
           themes, which previously flipped this scrim light in dark mode. */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[hsl(30_9%_9%/0.90)] via-[hsl(30_9%_10%/0.84)] to-[hsl(30_10%_6%/0.96)]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[hsl(162_45%_8%/0.92)] via-[hsl(162_43%_10%/0.86)] to-[hsl(162_48%_5%/0.96)]" />
 
       {/* Chaos into the intake, order out of the outlet, the mark as the collar
           it all runs through — what we do, watchable. Behind the content,
@@ -50,7 +50,7 @@ const HeroSection = () => {
         className="absolute inset-0 z-[2] pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 54% 42% at 50% 65%, hsl(30 9% 9% / 0.92) 0%, hsl(30 9% 9% / 0.58) 44%, transparent 74%)",
+            "radial-gradient(ellipse 54% 42% at 50% 65%, hsl(162 45% 8% / 0.92) 0%, hsl(162 45% 8% / 0.58) 44%, transparent 74%)",
         }}
       />
 
@@ -61,16 +61,16 @@ const HeroSection = () => {
           className="h-[160px] w-[160px] md:h-[236px] md:w-[236px] mx-auto mb-8 md:mb-10"
         />
 
-        <div className="enter [--enter-delay:1.25s] inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[hsl(170_55%_62%/0.10)] border border-[hsl(170_55%_62%/0.32)] mb-8">
-          <span className="w-2 h-2 rounded-full bg-[hsl(170_55%_62%)] animate-pulse" />
+        <div className="enter [--enter-delay:1.25s] inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[hsl(40_45%_78%/0.08)] border border-[hsl(40_45%_78%/0.30)] mb-8">
+          <span className="w-2 h-2 rounded-full bg-[hsl(25_68%_58%)] animate-pulse" />
           <span className="text-sm text-[hsl(40_20%_92%)]">{t("hero.badge")}</span>
         </div>
 
         <h1 className="enter [--enter-delay:1.4s] text-[2.6rem] md:text-6xl lg:text-[4.6rem] font-semibold tracking-[-0.03em] text-[hsl(40_20%_97%)] mb-7 leading-[1.06] text-balance">
           {t("hero.title")}
-          {/* The accent's loudest moment on the page: the second half of the
-              headline in the mint (#69D3C2, 9.5:1 on the charcoal). */}
-          <span className="text-[hsl(170_55%_62%)]"> {t("hero.titleHighlight")}</span>
+          {/* The second half of the headline in the sand, the third colour
+              (#E0CFAE, over 10:1 on the green scrim). */}
+          <span className="text-[hsl(40_45%_78%)]"> {t("hero.titleHighlight")}</span>
         </h1>
 
         <p className="enter [--enter-delay:1.55s] text-lg md:text-xl text-[hsl(40_12%_84%)] mb-12 max-w-[38rem] mx-auto leading-[1.65]">
@@ -80,11 +80,11 @@ const HeroSection = () => {
         <div className="enter [--enter-delay:1.7s] flex flex-col sm:flex-row items-center justify-center gap-4">
           {/* The hero is a fixed dark panel, so the CTA is fixed too: in light
               mode --primary is a deeper orange meant for a white page. The
-              soft orange with charcoal text reads 6.2:1; white text would fail. */}
+              soft orange with dark-green text reads 6.0:1; white text would fail. */}
           <Button
             size="lg"
             asChild
-            className="px-8 bg-[hsl(25_68%_58%)] text-[hsl(30_9%_11%)] hover:bg-[hsl(25_72%_64%)]"
+            className="px-8 bg-[hsl(25_68%_58%)] text-[hsl(162_43%_10%)] hover:bg-[hsl(25_72%_64%)]"
           >
             <a href={auditBookingUrl("hero")} target="_blank" rel="noopener noreferrer">
               {t("hero.cta")}
@@ -103,8 +103,8 @@ const HeroSection = () => {
       </div>
 
       <div className="enter [--enter-delay:2.1s] absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-        <div className="w-6 h-10 rounded-full border-2 border-[hsl(170_55%_62%/0.36)] flex items-start justify-center pt-2">
-          <div className="w-1 h-2 bg-[hsl(170_55%_62%/0.66)] rounded-full" />
+        <div className="w-6 h-10 rounded-full border-2 border-[hsl(40_45%_78%/0.36)] flex items-start justify-center pt-2">
+          <div className="w-1 h-2 bg-[hsl(25_68%_58%/0.8)] rounded-full" />
         </div>
       </div>
     </section>

@@ -85,8 +85,8 @@ const VerticalLanding = ({ vertical }: { vertical: Vertical }) => {
       {/* Hero */}
       <section className="py-20 md:py-28 bg-muted/30">
         <div className="container mx-auto px-6 max-w-3xl text-center">
-          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-sm text-primary mb-6">
-            <Icon className="h-4 w-4" /> {eyebrow}
+          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-accent/10 border border-brand-accent/25 text-sm text-foreground mb-6">
+            <Icon className="h-4 w-4 text-brand-accent" /> {eyebrow}
           </span>
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">
             {heroHeadline}
@@ -126,7 +126,7 @@ const VerticalLanding = ({ vertical }: { vertical: Vertical }) => {
       {/* Solution */}
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-6 max-w-3xl">
-          <span className="text-sm font-medium text-primary mb-3 block text-center">
+          <span className="text-sm font-medium text-brand-accent mb-3 block text-center">
             Was wir bauen
           </span>
           <h2 className="text-3xl font-bold text-foreground mb-8 text-center">

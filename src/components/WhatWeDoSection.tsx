@@ -106,7 +106,7 @@ const WhatWeDoSection = () => {
                       onFocus={() => setActive(index)}
                       className={`wwd-item group relative w-full text-left flex gap-5 rounded-xl px-5 py-5 transition-colors ${isActive ? "bg-accent/60" : "hover:bg-accent/30"}`}
                     >
-                      <span className={`font-mono text-sm pt-1 tabular-nums transition-colors ${isActive ? "text-brand-accent" : "text-muted-foreground/70"}`}>
+                      <span className={`font-mono text-sm pt-1 tabular-nums transition-colors ${isActive ? "text-brand-accent" : "text-muted-foreground"}`}>
                         {String(index + 1).padStart(2, "0")}
                       </span>
                       <span className="block">
