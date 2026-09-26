@@ -98,6 +98,17 @@ const UseCasesSection = () => {
     timers.current.push(window.setTimeout(() => setPhase("after"), isDesktop ? RUN_MS.desktop : RUN_MS.phone));
   };
   const reset = () => { clearTimers(); setPhase("before"); };
+  // Replay: back to the before state for a beat, then run again. The inputs
+  // keep the travel vectors measured on the first run.
+  const replay = () => {
+    clearTimers();
+    setPhase("before");
+    if (reducedMotion) { setPhase("after"); return; }
+    timers.current.push(window.setTimeout(() => {
+      setPhase("processing");
+      timers.current.push(window.setTimeout(() => setPhase("after"), isDesktop ? RUN_MS.desktop : RUN_MS.phone));
+    }, 450));
+  };
 
   return (
     <section ref={sectionRef} id="use-cases" lang={lang} className="py-28 md:py-36 section-ink" data-offscreen={offscreen ? "" : undefined}>
@@ -105,7 +116,11 @@ const UseCasesSection = () => {
         <div className="text-center mb-8 lg:mb-10">
           <span className="text-sm font-semibold tracking-wide text-brand-accent mb-4 block">{t("useCases.label")}</span>
           <h2 className="text-3xl md:text-5xl font-semibold tracking-[-0.022em] text-foreground mb-5 text-balance">{t("useCases.title")}</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">{t("useCases.intro")}</p>
+          <p className="text-foreground/90 text-lg max-w-2xl mx-auto">{t("useCases.introCta")}</p>
+          <p className="mt-2 text-muted-foreground max-w-2xl mx-auto">
+            <span className="text-brand-accent font-medium">{t("useCases.introLine")}</span>{" "}
+            <span className="text-sm">{t("useCases.introNote")}</span>
+          </p>
         </div>
 
         <div className="max-w-6xl mx-auto">
@@ -115,7 +130,7 @@ const UseCasesSection = () => {
 
           <div className="ix-demo">
             {isDesktop ? (
-              <DesktopScene industry={industry} phase={phase} fading={fading} lang={lang} t={t} onRun={run} onReset={reset} />
+              <DesktopScene industry={industry} phase={phase} fading={fading} lang={lang} t={t} onRun={run} onReset={reset} onReplay={replay} />
             ) : (
               <MobileScene
                 industry={industry}
@@ -126,6 +141,7 @@ const UseCasesSection = () => {
                 t={t}
                 onActivate={run}
                 onReset={reset}
+                onReplay={replay}
                 onSelect={selectFromBelow}
               />
             )}

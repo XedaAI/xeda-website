@@ -1,11 +1,12 @@
 import type React from "react";
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
-import { ArrowRight, FileCheck2, RotateCcw } from "lucide-react";
+import { ArrowRight, Check, FileCheck2, RotateCcw } from "lucide-react";
 import type { SiteLanguage } from "@/contexts/LanguageContext";
 import { tx, type Industry } from "./data";
 import { InputCard } from "./primitives";
 import { OutputView } from "./Outputs";
-import { Backdrop } from "./Backdrops";
+import { Environment } from "./Environments";
+import StageHead from "./StageHead";
 import XedaNode, { type Phase } from "./XedaNode";
 import { delay } from "./timing";
 
@@ -63,7 +64,7 @@ const measurePaths = (stage: HTMLElement): Paths => {
 };
 
 const DesktopScene = ({
-  industry, phase, fading, lang, t, onRun, onReset,
+  industry, phase, fading, lang, t, onRun, onReset, onReplay,
 }: {
   industry: Industry;
   phase: Phase;
@@ -72,6 +73,7 @@ const DesktopScene = ({
   t: (key: string) => string;
   onRun: () => void;
   onReset: () => void;
+  onReplay: () => void;
 }) => {
   const [paths, setPaths] = useState<Paths>({ inb: [], outb: [] });
   const stageRef = useRef<HTMLDivElement>(null);
@@ -108,7 +110,7 @@ const DesktopScene = ({
     onRun();
   };
   const onNode = () => (phase === "before" ? run() : phase === "after" ? onReset() : undefined);
-  const actionLabel = phase === "before" ? t("useCases.activate") : phase === "processing" ? t("useCases.processing") : t("useCases.reset");
+  const hint = phase === "before" ? t("useCases.clickHint") : phase === "processing" ? t("useCases.working") : t("useCases.mOrganised");
 
   return (
     <div
@@ -122,6 +124,9 @@ const DesktopScene = ({
       data-fading={fading ? "" : undefined}
       data-industry={industry.key}
     >
+      {/* Where the work happens: this industry's environment, behind it all. */}
+      <Environment industry={industry.key} className="ix-envx" />
+
       <svg className="ix-paths" aria-hidden="true">
         {paths.inb.map((d, i) => (
           <g key={`i${i}`}>
@@ -137,10 +142,9 @@ const DesktopScene = ({
         ))}
       </svg>
 
-      {/* Before: the scattered inputs, over the industry's scenery. */}
+      {/* 1 · Before: the scattered inputs. */}
       <div className="ix-in">
-        <span className="ix-zone-label">{t("useCases.before")}</span>
-        <Backdrop industry={industry.key} />
+        <StageHead n={1} title={t("useCases.stage1")} sub={t("useCases.stage1Sub")} />
         <div className="ix-items">
           {industry.inputs.map((item, i) => <InputCard key={`${industry.key}-${i}`} item={item} i={i} lang={lang} />)}
           {/* Once read, the inputs are listed tidily in their place. */}
@@ -156,28 +160,55 @@ const DesktopScene = ({
         </div>
       </div>
 
-      {/* Xeda. */}
+      {/* 2 · Xeda: the node, what to do with it, and what it reads. */}
       <div className="ix-core">
+        <StageHead n={2} title={t("useCases.stage2")} sub={t("useCases.stage2Sub")} center />
+        <div className="ix-core-body">
         <XedaNode
           phase={phase}
           fields={industry.fields}
           lang={lang}
-          label={`Xeda — ${actionLabel}`}
+          label={phase === "after" ? `${t("useCases.mOrganised")} — ${t("useCases.reset")}` : t("useCases.activate")}
           onActivate={onNode}
           nodeRef={nodeRef}
         />
-        <button type="button" className="ix-action" onClick={onNode} aria-disabled={phase === "processing"}>
-          {phase === "after" && <RotateCcw className="h-3.5 w-3.5" />}
-          {actionLabel}
-          {phase === "before" && <ArrowRight className="h-3.5 w-3.5" />}
-        </button>
+        <p className="ix-hint" aria-live="polite">
+          {phase === "after" && <Check className="h-3.5 w-3.5 text-success" strokeWidth={2.8} />}
+          {hint}
+        </p>
+        <div className="ix-actions">
+          {phase === "after" ? (
+            <>
+              <button type="button" className="ix-action ix-action--quiet" onClick={onReplay}>
+                <RotateCcw className="h-3.5 w-3.5" />
+                {t("useCases.replay")}
+              </button>
+              <button type="button" className="ix-link-btn" onClick={onReset}>{t("useCases.reset")}</button>
+            </>
+          ) : (
+            <button type="button" className="ix-action" onClick={onNode} aria-disabled={phase === "processing"}>
+              {phase === "processing" ? t("useCases.processing") : t("useCases.activate")}
+              {phase === "before" && <ArrowRight className="h-4 w-4" />}
+            </button>
+          )}
+        </div>
+        </div>
       </div>
 
-      {/* After: the structured result. */}
+      {/* 3 · After: a dimmed preview until Xeda has made it. */}
       <div className="ix-out">
-        <span className="ix-zone-label ix-zone-label--after">{t("useCases.after")}</span>
+        <StageHead n={3} title={t("useCases.stage3")} sub={t("useCases.stage3Sub")} />
+        <ul className="ix-chips" aria-hidden="true">
+          {industry.chips.map((c, i) => (
+            <li key={i} style={delay(1850 + i * 90)}>
+              <Check className="h-3 w-3" strokeWidth={3} />
+              {tx(c, lang)}
+            </li>
+          ))}
+        </ul>
         <div className="ix-out-inner">
           <OutputView output={industry.output} lang={lang} />
+          <p className="ix-waiting" aria-hidden={phase !== "before"}>{t("useCases.waiting")}</p>
         </div>
       </div>
     </div>

@@ -19,7 +19,7 @@ const TableOut = ({ o, lang }: { o: TableOutput; lang: SiteLanguage }) => {
         {o.cols.map((c, i) => <span key={i}>{tx(c, lang)}</span>)}
       </div>
       {o.rows.map((row, i) => (
-        <OutRow key={i} d={rowAt(i)} className="ix-trow" style={{ gridTemplateColumns: o.grid }}>
+        <OutRow key={i} d={rowAt(i)} className={`ix-trow ${row.traced ? "ix-trow--traced" : ""}`} style={{ gridTemplateColumns: o.grid }}>
           {row.cells.map((c, j) => (
             <span key={j} className={j === 0 ? "truncate font-medium text-foreground" : "truncate font-mono tabular-nums"}>
               {tx(c, lang)}

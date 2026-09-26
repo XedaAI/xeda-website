@@ -57,7 +57,9 @@ export type TableOutput = {
   /** Grid template for the columns, so each interface keeps its own shape. */
   grid: string;
   /** `sub` is the one-line summary the phone layout uses instead of cells. */
-  rows: { cells: (Lx | string)[]; sub: Lx; status: Status; note?: Lx }[];
+  /** `traced` marks the row built from the very fragments shown on the
+   *  left, so it is highlighted as it lands. */
+  rows: { cells: (Lx | string)[]; sub: Lx; status: Status; note?: Lx; traced?: boolean }[];
   footer: { text: Lx; icon: "file" | "send" };
 };
 export type ListOutput = {
@@ -100,6 +102,8 @@ export type Industry = {
   sources: Lx[];
   fields: Field[];
   output: Output;
+  /** What Xeda did, in four short chips shown with the result. */
+  chips: Lx[];
   /** Read out to screen readers when the run completes. */
   summary: Lx;
 };
@@ -135,16 +139,17 @@ export const industries: Industry[] = [
       kind: "table",
       app: "DATEV",
       title: l("Import · posting batch", "Import · Buchungsstapel"),
-      cols: [l("Vendor", "Lieferant"), l("Invoice", "Beleg"), l("Amount", "Betrag"), l("VAT", "USt."), l("", "")],
-      grid: "minmax(0,1.35fr) minmax(0,1fr) minmax(0,1.05fr) minmax(0,0.6fr) 1.5rem",
+      cols: [l("Vendor", "Lieferant"), l("Invoice", "Beleg"), l("Date", "Datum"), l("Amount", "Betrag"), l("VAT", "USt."), l("", "")],
+      grid: "minmax(0,1.3fr) minmax(0,0.95fr) minmax(0,0.95fr) minmax(0,1.05fr) minmax(0,0.5fr) 1.5rem",
       rows: [
-        { cells: ["Acme GmbH", "RE-1201", l("€1,190.00", "1.190,00 €"), "19%"], sub: l("€1,190.00 · VAT 19% · RE-1201", "1.190,00 € · USt. 19 % · RE-1201"), status: "ok" },
-        { cells: ["Microsoft", "RE-0423", l("€299.00", "299,00 €"), "19%"], sub: l("€299.00 · VAT 19% · RE-0423", "299,00 € · USt. 19 % · RE-0423"), status: "ok" },
-        { cells: ["Telekom", "RE-7781", l("€84.99", "84,99 €"), "7%"], sub: l("€84.99 · VAT 7% · RE-7781", "84,99 € · USt. 7 % · RE-7781"), status: "warn", note: l("VAT rate doesn't match", "USt.-Satz passt nicht") },
-        { cells: ["Office Depot", "RE-5567", l("€125.50", "125,50 €"), "19%"], sub: l("€125.50 · VAT 19% · RE-5567", "125,50 € · USt. 19 % · RE-5567"), status: "ok" },
+        { cells: ["Acme GmbH", "RE-1201", "24.04.2025", l("€1,190.00", "1.190,00 €"), "19%"], sub: l("24.04.2025 · €1,190.00 · VAT 19% · RE-1201", "24.04.2025 · 1.190,00 € · USt. 19 % · RE-1201"), status: "ok", traced: true },
+        { cells: ["Microsoft", "RE-0423", "23.04.2025", l("€299.00", "299,00 €"), "19%"], sub: l("€299.00 · VAT 19% · RE-0423", "299,00 € · USt. 19 % · RE-0423"), status: "ok" },
+        { cells: ["Telekom", "RE-7781", "22.04.2025", l("€84.99", "84,99 €"), "7%"], sub: l("€84.99 · VAT 7% · RE-7781", "84,99 € · USt. 7 % · RE-7781"), status: "warn", note: l("VAT rate doesn't match", "USt.-Satz passt nicht") },
+        { cells: ["Office Depot", "RE-5567", "22.04.2025", l("€125.50", "125,50 €"), "19%"], sub: l("€125.50 · VAT 19% · RE-5567", "125,50 € · USt. 19 % · RE-5567"), status: "ok" },
       ],
       footer: { text: l("DATEV import file ready", "DATEV-Importdatei bereit"), icon: "file" },
     },
+    chips: [l("Vendor extracted", "Lieferant erfasst"), l("VAT checked", "USt. geprüft"), l("Invoices validated", "Rechnungen geprüft"), l("DATEV import prepared", "DATEV-Import vorbereitet")],
     summary: l(
       "Xeda read the invoices into a DATEV import: three validated, one VAT exception flagged for review.",
       "Xeda hat die Rechnungen in einen DATEV-Import übertragen: drei geprüft, eine USt.-Abweichung zur Prüfung markiert.",
@@ -184,11 +189,12 @@ export const industries: Industry[] = [
       rows: [
         { cells: [l("100-240 Housing", "100-240 Gehäuse"), "250", l("€12.50", "12,50 €"), "28.04."], sub: l("250 pcs · €12.50 · due 28.04.", "250 Stk. · 12,50 € · bis 28.04."), status: "ok" },
         { cells: [l("100-318 Shaft", "100-318 Welle"), "100", l("€8.90", "8,90 €"), "30.04."], sub: l("100 pcs · €8.90 · due 30.04.", "100 Stk. · 8,90 € · bis 30.04."), status: "ok" },
-        { cells: [l("200-051 Flange", "200-051 Flansch"), "50", l("€199.00", "199,00 €"), "02.05."], sub: l("50 pcs · €199.00 · due 02.05.", "50 Stk. · 199,00 € · bis 02.05."), status: "warn", note: l("Price 16× the usual rate", "Preis 16× über dem Üblichen") },
+        { cells: [l("200-051 Flange", "200-051 Flansch"), "50", l("€199.00", "199,00 €"), "02.05."], sub: l("50 pcs · €199.00 · due 02.05.", "50 Stk. · 199,00 € · bis 02.05."), status: "warn", traced: true, note: l("Price 16× the usual rate", "Preis 16× über dem Üblichen") },
         { cells: [l("300-112 Bolt set", "300-112 Schraubensatz"), "1,000", l("€3.40", "3,40 €"), "28.04."], sub: l("1,000 pcs · €3.40 · due 28.04.", "1.000 Stk. · 3,40 € · bis 28.04."), status: "ok" },
       ],
       footer: { text: l("Order confirmation drafted and sent", "Auftragsbestätigung erstellt und versendet"), icon: "send" },
     },
+    chips: [l("PO extracted", "Bestellung erfasst"), l("Pricing checked", "Preise geprüft"), l("ERP order drafted", "ERP-Auftrag erstellt"), l("Confirmation prepared", "Bestätigung vorbereitet")],
     summary: l(
       "Xeda turned the email and PO into an SAP order draft: three lines confirmed, one unusual price flagged, confirmation sent.",
       "Xeda hat E-Mail und Bestellung in einen SAP-Auftragsentwurf übertragen: drei Positionen bestätigt, ein ungewöhnlicher Preis markiert, Bestätigung versendet.",
@@ -234,6 +240,7 @@ export const industries: Industry[] = [
         store: l("Shopify · order #1042 updated", "Shopify · Bestellung #1042 aktualisiert"),
       },
     },
+    chips: [l("Intent identified", "Anliegen erkannt"), l("Order found", "Bestellung gefunden"), l("Responses prepared", "Antworten vorbereitet"), l("Store updated", "Shop aktualisiert")],
     summary: l(
       "Xeda resolved three support requests, drafted one reply for review and updated the store order.",
       "Xeda hat drei Anfragen gelöst, eine Antwort zur Freigabe entworfen und die Bestellung im Shop aktualisiert.",
@@ -278,6 +285,7 @@ export const industries: Industry[] = [
       booked: l("Viewing booked · Thu 15:00", "Besichtigung gebucht · Do 15:00"),
       followUp: l("Follow-up email scheduled", "Nachfass-E-Mail geplant"),
     },
+    chips: [l("Lead qualified", "Lead qualifiziert"), l("Budget identified", "Budget erkannt"), l("Property matched", "Objekt zugeordnet"), l("Viewing booked", "Besichtigung gebucht")],
     summary: l(
       "Xeda qualified the visitor as a buyer and booked a viewing for Thursday at 15:00.",
       "Xeda hat den Besucher als Käuferin qualifiziert und eine Besichtigung für Donnerstag, 15:00 gebucht.",
@@ -320,6 +328,7 @@ export const industries: Industry[] = [
         { req: l("Question about lab results", "Frage zu Laborwerten"), res: l("Escalated to practice staff", "An das Praxisteam weitergeleitet"), status: "staff" },
       ],
     },
+    chips: [l("Requests classified", "Anliegen zugeordnet"), l("Appointment booked", "Termin gebucht"), l("Question answered", "Frage beantwortet"), l("Complex case escalated", "Komplexer Fall weitergeleitet")],
     summary: l(
       "Xeda booked an appointment, answered a question and prepared a prescription request; the question about results went to practice staff.",
       "Xeda hat einen Termin gebucht, eine Frage beantwortet und ein Rezept vorbereitet; die Frage zu Befunden ging an das Praxisteam.",
@@ -362,6 +371,7 @@ export const industries: Industry[] = [
         { text: l("Plan rev. C linked · confirm with architect", "Plan Rev. C verknüpft · mit Architekt klären"), status: "warn" },
       ],
     },
+    chips: [l("Site update organised", "Baustellen-Update geordnet"), l("Invoice extracted", "Rechnung erfasst"), l("Documents linked", "Dokumente verknüpft"), l("Report generated", "Bericht erstellt")],
     summary: l(
       "Xeda turned messages, photos and PDFs into today's site report: invoice extracted, documents filed, one plan revision to confirm.",
       "Xeda hat Nachrichten, Fotos und PDFs zum Tagesbericht verarbeitet: Rechnung erfasst, Dokumente abgelegt, ein Planstand zu klären.",

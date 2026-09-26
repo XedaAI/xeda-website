@@ -5,7 +5,8 @@ import type { SiteLanguage } from "@/contexts/LanguageContext";
 import { industries, tx, type Industry, type MobileInput } from "./data";
 import { HouseArt, SitePhotoArt } from "./primitives";
 import { MobileOutput } from "./MobileOutputs";
-import { Backdrop } from "./Backdrops";
+import { Environment } from "./Environments";
+import StageHead from "./StageHead";
 import type { Phase } from "./XedaNode";
 import { delay } from "./timing";
 
@@ -48,7 +49,7 @@ const InputIcon = ({ item }: { item: MobileInput }) => {
 const fill = (s: string, n: number) => s.replace("{n}", String(n));
 
 const MobileScene = ({
-  industry, index, phase, fading, lang, t, onActivate, onReset, onSelect,
+  industry, index, phase, fading, lang, t, onActivate, onReset, onReplay, onSelect,
 }: {
   industry: Industry;
   index: number;
@@ -58,6 +59,7 @@ const MobileScene = ({
   t: (key: string) => string;
   onActivate: () => void;
   onReset: () => void;
+  onReplay: () => void;
   onSelect: (i: number) => void;
 }) => {
   const n = industry.mobileInputs.length;
@@ -65,11 +67,8 @@ const MobileScene = ({
   const next = (index + 1) % industries.length;
   const done = phase === "after";
 
-  const title = phase === "before" ? t("useCases.mOrganise") : phase === "processing" ? t("useCases.mReading") : t("useCases.mOrganised");
   const flagged = industry.fields.filter((f) => f.flag).length;
-  const sub = phase === "before" ? fill(t("useCases.mTap"), n)
-    : phase === "processing" ? fill(t("useCases.mExtracting"), industry.fields.length)
-    : fill(t("useCases.mFieldsRead"), industry.fields.length) + (flagged ? ` · ${fill(t("useCases.mFlagged"), flagged)}` : "");
+  const summary = fill(t("useCases.mFieldsRead"), industry.fields.length) + (flagged ? ` · ${fill(t("useCases.mFlagged"), flagged)}` : "");
 
   return (
     <div
@@ -82,15 +81,15 @@ const MobileScene = ({
       data-fading={fading ? "" : undefined}
       data-industry={industry.key}
     >
-      {/* Before */}
-      <div className="ixm-head">
-        <span className="ix-zone-label ixm-label">{t("useCases.before")}</span>
-        <span className="ixm-read" style={delay(700)}>
-          <Check className="h-3.5 w-3.5" strokeWidth={2.6} />
-          {fill(t("useCases.mInputsRead"), n)}
-        </span>
-        <Backdrop industry={industry.key} className="ixm-env" />
-      </div>
+      {/* The industry's environment, as a strip across the top of the card. */}
+      <Environment industry={industry.key} className="ixm-strip" />
+
+      {/* 1 · Before */}
+      <StageHead
+        n={1}
+        title={t("useCases.stage1")}
+        sub={done ? <span className="text-success">{fill(t("useCases.mInputsRead"), n)}</span> : t("useCases.stage1Sub")}
+      />
       <div className="ixm-fold ixm-fold--before">
         <div className="ixm-fold-inner" {...(done ? { inert: "" } : {})}>
           <ul className="ixm-inputs">
@@ -119,48 +118,65 @@ const MobileScene = ({
 
       <span className="ixm-link" aria-hidden="true"><span /></span>
 
-      {/* Xeda: the module is the button; the fields it reads sit under it. */}
+      {/* 2 · Xeda: the mark and what it reads, then the action itself. */}
+      <StageHead n={2} title={t("useCases.stage2")} sub={t("useCases.stage2Sub")} />
       <div className="ixm-module">
-        <button
-          type="button"
-          className="ixm-xeda"
-          onClick={phase === "before" ? onActivate : done ? onReset : undefined}
-          aria-disabled={phase === "processing"}
-          aria-label={done ? `${title} — ${t("useCases.reset")}` : undefined}
-        >
+        <div className="ixm-module-top">
           <span className="ixm-tile" aria-hidden="true">
             <span className="ix-node-ring" />
             <XedaMark className="ixm-mark" />
             <span className="ix-node-scan" />
             <span className="ix-node-done"><Check className="h-3 w-3" strokeWidth={3} /></span>
           </span>
-          <span className="min-w-0 flex-1 text-left">
-            <span className="ixm-xeda-title">{title}</span>
-            <span className="ixm-xeda-sub">{sub}</span>
-          </span>
-          {phase === "before" && <ArrowRight className="ixm-go h-5 w-5" aria-hidden="true" />}
-        </button>
-        <ul className="ixm-fields" aria-label={t("useCases.mReads")}>
-          {industry.fields.map((f, i) => (
-            <li key={i} className={`ix-field ${f.flag ? "ix-field--flag" : ""}`} style={delay(160 + i * 80)}>
-              <span className="ix-field-dot" />
-              {tx(f.label, lang)}
-            </li>
-          ))}
-        </ul>
+          <ul className="ixm-fields" aria-label={t("useCases.mReads")}>
+            {industry.fields.map((f, i) => (
+              <li key={i} className={`ix-field ${f.flag ? "ix-field--flag" : ""}`} style={delay(160 + i * 80)}>
+                <span className="ix-field-dot" />
+                {tx(f.label, lang)}
+              </li>
+            ))}
+          </ul>
+        </div>
+        {done ? (
+          <div className="ixm-done">
+            <p className="ixm-done-line">
+              <Check className="h-4 w-4 text-success" strokeWidth={2.8} />
+              <strong>{t("useCases.mOrganised")}</strong>
+              <span className="sr-only"> · {summary}</span>
+            </p>
+            <div className="ixm-done-actions">
+              <button type="button" className="ixm-again" onClick={onReplay}>
+                <RotateCcw className="h-3.5 w-3.5" />
+                {t("useCases.replay")}
+              </button>
+              <button type="button" className="ixm-again ixm-again--quiet" onClick={onReset}>{t("useCases.reset")}</button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <button type="button" className="ixm-cta" onClick={phase === "before" ? onActivate : undefined} aria-disabled={phase === "processing"}>
+              {phase === "processing" ? t("useCases.processing") : t("useCases.activate")}
+              {phase === "before" && <ArrowRight className="h-4 w-4" />}
+            </button>
+            <p className="ixm-helper">{phase === "processing" ? t("useCases.working") : t("useCases.tapHint")}</p>
+          </>
+        )}
       </div>
 
-      {/* After: no room is kept for it until it arrives. */}
+      <span className="ixm-link ixm-link--out" aria-hidden="true"><span /></span>
+
+      {/* 3 · After: a one-line promise until Xeda makes it, then the result. */}
+      <StageHead n={3} title={t("useCases.stage3")} sub={done || phase === "processing" ? t("useCases.stage3Sub") : t("useCases.teaser")} />
       <div className="ixm-fold ixm-fold--after">
         <div className="ixm-fold-inner" {...(!done ? { inert: "" } : {})}>
-          <span className="ixm-link" aria-hidden="true"><span /></span>
-          <div className="ixm-head">
-            <span className="ix-zone-label ix-zone-label--after ixm-label">{t("useCases.after")}</span>
-            <button type="button" className="ixm-again" onClick={onReset}>
-              <RotateCcw className="h-3.5 w-3.5" />
-              {t("useCases.reset")}
-            </button>
-          </div>
+          <ul className="ix-chips ixm-chips" aria-hidden="true">
+            {industry.chips.map((c, i) => (
+              <li key={i} style={delay(900 + i * 70)}>
+                <Check className="h-3 w-3" strokeWidth={3} />
+                {tx(c, lang)}
+              </li>
+            ))}
+          </ul>
           <MobileOutput output={industry.output} lang={lang} />
         </div>
       </div>

@@ -22,10 +22,10 @@ const Panel = ({ app, title, meta, children }: { app: string; title: string; met
   </div>
 );
 
-const Row = ({ i, status, title, sub, note, lang, lead }: {
-  i: number; status: Status; title: ReactNode; sub?: ReactNode; note?: ReactNode; lang: SiteLanguage; lead?: ReactNode;
+const Row = ({ i, status, title, sub, note, lang, lead, traced }: {
+  i: number; status: Status; title: ReactNode; sub?: ReactNode; note?: ReactNode; lang: SiteLanguage; lead?: ReactNode; traced?: boolean;
 }) => (
-  <div className="ixm-row" style={delay(mRowAt(i))}>
+  <div className={`ixm-row ${traced ? "ixm-row--traced" : ""}`} style={delay(mRowAt(i))}>
     {lead}
     <div className="min-w-0 flex-1">
       <p className="ixm-row-title">{title}</p>
@@ -50,7 +50,7 @@ const TableM = ({ o, lang }: { o: TableOutput; lang: SiteLanguage }) => {
   return (
     <Panel app={o.app} title={tx(o.title, lang)} meta={counts(o.rows, lang)}>
       {o.rows.map((r, i) => (
-        <Row key={i} i={i} status={r.status} lang={lang}
+        <Row key={i} i={i} status={r.status} lang={lang} traced={r.traced}
           title={tx(r.cells[0], lang)} sub={tx(r.sub, lang)} note={r.note && tx(r.note, lang)} />
       ))}
       <Row i={n} status="ok" lang={lang}
