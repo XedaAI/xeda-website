@@ -24,7 +24,7 @@ const Impressum = () => {
           <h1 className="text-4xl font-bold text-foreground mb-8">Impressum</h1>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-foreground mb-4">Angaben gemäß § 5 TMG</h2>
+            <h2 className="text-2xl font-semibold text-foreground mb-4">Angaben gemäß § 5 DDG</h2>
             <p className="text-muted-foreground leading-relaxed">
               Xeda UG (haftungsbeschränkt)<br />
               Bismarckstr. 54<br />

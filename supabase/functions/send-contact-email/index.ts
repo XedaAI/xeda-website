@@ -146,6 +146,12 @@ const handler = async (req: Request): Promise<Response> => {
         <h2>Thank you for contacting us, ${escapeHtml(name)}!</h2>
         <p>We have received your message and will get back to you within one business day.</p>
         <p>Best regards,<br>The xeda.ai Team</p>
+        <hr>
+        <p style="font-size:12px;color:#666">
+          Xeda UG (haftungsbeschränkt), Ludwigshafen am Rhein<br>
+          Amtsgericht Ludwigshafen am Rhein, HRB 71014<br>
+          Geschäftsführer: Muhammad Saad Bakhtiar
+        </p>
       `,
     );
 
