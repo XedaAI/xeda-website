@@ -44,7 +44,7 @@ const Impressum = () => {
             <h2 className="text-2xl font-semibold text-foreground mb-4">Kontakt</h2>
             <p className="text-muted-foreground leading-relaxed">
               Telefon: +49 179 4158530<br />
-              E-Mail: saad.bakhtiyar@xeda.ai
+              E-Mail: contact@xeda.ai
             </p>
           </section>
 

@@ -155,7 +155,7 @@ const Privacy = () => {
             <p className="text-muted-foreground mt-4">
               <strong className="text-foreground">Xeda UG (haftungsbeschränkt)</strong><br />
               Bismarckstr. 54, 67059 Ludwigshafen am Rhein, Deutschland<br />
-              E-Mail: saad.bakhtiyar@xeda.ai
+              E-Mail: contact@xeda.ai
             </p>
           </section>
         </article>
