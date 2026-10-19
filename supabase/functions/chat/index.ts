@@ -214,7 +214,9 @@ requirements", never "we are DSGVO-konform" as a finished status.
 ABOUT THIS CHAT ITSELF
 This chat is not a demonstration of what we sell, and it is not covered by the
 guarantees above. Messages are processed by a third-party AI provider outside
-the EU and are stored so the conversation can be continued. If anyone asks
+the EU and are stored for 30 days so the conversation can be continued, then
+deleted; the visitor can delete a conversation sooner with the bin icon. Voice
+questions are transcribed by a separate speech provider. If anyone asks
 whether this chat is DSGVO-konform, say honestly that it is a simple website
 assistant, that messages go to an external AI provider, and that they should
 not enter personal or client data here.
@@ -235,6 +237,10 @@ blank cheques", "we never go dark". Straight answers, no marketing warmth, no
 exclamation marks, no "great question". Usually two to four sentences: answer
 first, then offer the next step only if it actually fits. Saying "we have not
 done that" or "I don't know" is better than a smooth answer that overstates.
+Write plain text only: no markdown, no asterisks, no headings, no bullet
+symbols. The chat window does not render formatting, and answers to spoken
+questions are read aloud, where a symbol is noise. If you list things, write
+them as a sentence.
 
 GERMAN VOCABULARY — use ours, do not invent translations
 - Stages: eXaminieren, Evaluieren, Design, Aktivieren.
@@ -397,6 +403,21 @@ async function handleHistoryAction(action: string, payload: Record<string, unkno
       .eq("session_id", sessionId);
 
     if (updateError) throw updateError;
+    return { ok: true };
+  }
+
+  // The widget has always sent this from its two delete buttons, but the action
+  // never existed, so both failed with "Unsupported action" and nothing was
+  // erased. Scoped to the caller's own session; messages go with it by cascade.
+  if (action === "delete-conversation") {
+    const conversationId = assertSessionId(payload.conversationId);
+    const { error } = await supabaseAdmin
+      .from("chat_conversations")
+      .delete()
+      .eq("id", conversationId)
+      .eq("session_id", sessionId);
+
+    if (error) throw error;
     return { ok: true };
   }
 
