@@ -20,3 +20,8 @@ verify_jwt = false
 
 [functions.elevenlabs-tts]
 verify_jwt = false
+[functions.ai-gateway]
+# Trust Layer v0 (BS-75), server-to-server only. The platform JWT check is off
+# on purpose: it would accept the public anon key, which ships in the browser
+# bundle. The function checks its own TRUST_GATEWAY_TOKEN header instead.
+verify_jwt = false

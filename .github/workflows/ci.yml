@@ -50,3 +50,7 @@ jobs:
 
       - name: Typecheck edge functions
         run: deno check supabase/functions/*/index.ts
+
+      # Trust Layer unit tests. No remote imports, so they need no network.
+      - name: Test Trust Layer
+        run: deno test supabase/functions/_shared/trust/
