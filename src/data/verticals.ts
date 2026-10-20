@@ -149,7 +149,7 @@ export const verticals: Vertical[] = [
     heroHeadline:
       "Ihr Empfang hängt am Telefon. Die Zeit gehört Ihren Patienten.",
     heroSub:
-      "Wir bauen einen KI-Assistenten, der Standardfragen beantwortet, Termine bucht und komplexe Fälle an Ihr Team weitergibt — DSGVO-konform.",
+      "Wir bauen einen KI-Assistenten, der Standardfragen beantwortet, Termine bucht und komplexe Fälle an Ihr Team weitergibt — nach DSGVO-Vorgaben gebaut.",
     problems: [
       "Der Empfang verbringt Stunden mit Termin- und Rezeptanrufen.",
       "In Stoßzeiten bleibt das Telefon unbeantwortet.",
@@ -161,12 +161,12 @@ export const verticals: Vertical[] = [
       "Bucht und verschiebt Termine rund um die Uhr",
       "Eskaliert komplexe oder dringende Fälle ans Team",
       "Versendet automatische Terminerinnerungen",
-      "DSGVO-konform, mit Hosting in der EU oder On-Premise",
+      "Nach DSGVO-Vorgaben gebaut, mit Hosting in der EU",
     ],
     seoTitle:
       "KI für Arztpraxen — Empfang & Terminbuchung entlasten | xeda.ai",
     seoDescription:
-      "Ein DSGVO-konformer KI-Assistent beantwortet Patientenfragen und bucht Termine. Ihr Team konzentriert sich auf die Versorgung. Kostenloses KI-Audit.",
+      "Ein KI-Assistent nach DSGVO-Vorgaben beantwortet Patientenfragen und bucht Termine. Ihr Team konzentriert sich auf die Versorgung. Kostenloses KI-Audit.",
     ogImage: "/og/arztpraxis.png",
   },
   {
