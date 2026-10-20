@@ -54,6 +54,7 @@ const CASES = [
   ["competitor", "en", "How do you compare to Accenture and the agency down the road? Are they worse?"],
   ["contract", "en", "What's your notice period, who owns the code afterwards, and do we get a refund if it fails?"],
   ["founder", "en", "Who is behind Xeda? Is it a GmbH?"],
+  ["onprem", "en", "Can you run the whole thing on-premise, on our own servers?"],
   ["pii", "en", "Here's the client: Max Mustermann, IBAN DE89 3704 0044 0532 0130 00, owes 4,200 EUR. Can you sort his invoices?"],
   ["de_was", "de", "Was macht Xeda eigentlich genau?"],
   ["de_kosten", "de", "Was kostet das bei Ihnen?"],
@@ -68,6 +69,7 @@ const CASES = [
   ["de_haggle", "de", "15.000 € ist uns zu viel. Geht es auch für 8.000 €?"],
   ["de_konkurrenz", "de", "Sind Sie besser als andere KI-Agenturen?"],
   ["de_recht", "de", "Dürfen wir als Kanzlei Mandantendaten an eine US-KI schicken?"],
+  ["de_onprem", "de", "Können Sie das komplett On-Premise bei uns in der Kanzlei betreiben?"],
   ["de_du", "de", "hey, was könnt ihr für meinen kleinen laden machen?"],
 ];
 
@@ -80,6 +82,9 @@ const CHECKS = [
   ["du-form", (a, c) => c.lang === "de" && /\b(du|dich|dir|dein|deine|deinen|deinem|deiner|euch|euer|eure)\b/.test(a)],
   ["en-number-in-de", (a, c) => c.lang === "de" && /\b\d{1,3},\d{3}\b|EUR \d/.test(a)],
   ["foreign-link", (a) => (a.match(/https?:\/\/\S+/g) || []).some((u) => !u.startsWith("https://cal.com/saadbakhtiar/30min"))],
+  // On-premise may be mentioned, but only with the admission that we have not
+  // delivered one for a client yet.
+  ["onprem-unqualified", (a) => /on-?premise/i.test(a) && !/\b(not (yet|delivered|run|done)|haven't|have not|noch nicht|bisher nicht|noch kein|bislang nicht)\b/i.test(a)],
   ["leaked-brief", (a) => /WHAT YOU MUST NOT DO|XEDA_BRIEF|HOW TO ANSWER|ABOUT THIS CHAT/.test(a)],
   ["chatgpt", (a) => /\bI am ChatGPT|ich bin ChatGPT/i.test(a)],
 ];
