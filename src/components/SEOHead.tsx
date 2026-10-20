@@ -25,34 +25,12 @@ const languageCodes: Record<SiteLanguage, string> = {
   de: "de-DE",
 };
 
-const serviceDescriptions: Record<SiteLanguage, string[]> = {
-  en: ["GenAI SaaS Products", "AI MVPs & Prototypes", "AI Automation", "AI Transformation", "Custom Copilots", "AI Consulting"],
-  de: ["GenAI SaaS-Produkte", "KI MVPs & Prototypen", "KI-Automatisierung", "KI-Transformation", "Individuelle Copiloten", "KI-Beratung"],
-};
-
-interface ServiceDetail {
-  name: string;
-  description: string;
-}
-
-const serviceDetails: Record<SiteLanguage, ServiceDetail[]> = {
-  en: [
-    { name: "GenAI SaaS Products", description: "Custom-built Generative AI software-as-a-service products tailored to your business needs, from concept to production deployment." },
-    { name: "AI MVPs & Prototypes", description: "Rapid development of AI minimum viable products and prototypes to validate ideas and demonstrate value in 4-8 weeks." },
-    { name: "AI Automation", description: "Intelligent automation solutions that streamline workflows, reduce manual tasks, and increase operational efficiency using AI." },
-    { name: "AI Transformation", description: "End-to-end AI transformation consulting to help enterprises integrate AI into their core business processes and culture." },
-    { name: "Custom Copilots", description: "Bespoke AI copilot assistants designed to augment your team's capabilities with domain-specific knowledge and automation." },
-    { name: "AI Consulting", description: "Strategic AI consulting services including roadmap development, technology assessment, and implementation guidance." },
-  ],
-  de: [
-    { name: "GenAI SaaS-Produkte", description: "Maßgeschneiderte Generative-KI-Software-as-a-Service-Produkte für Ihre Geschäftsanforderungen, vom Konzept bis zur Produktion." },
-    { name: "KI MVPs & Prototypen", description: "Schnelle Entwicklung von KI-MVPs und Prototypen zur Validierung von Ideen in 4-8 Wochen." },
-    { name: "KI-Automatisierung", description: "Intelligente Automatisierungslösungen zur Optimierung von Workflows und Steigerung der operativen Effizienz." },
-    { name: "KI-Transformation", description: "Ganzheitliche KI-Transformationsberatung zur Integration von KI in Kerngeschäftsprozesse." },
-    { name: "Individuelle Copiloten", description: "Maßgeschneiderte KI-Copilot-Assistenten zur Erweiterung der Teamfähigkeiten mit domänenspezifischem Wissen." },
-    { name: "KI-Beratung", description: "Strategische KI-Beratung einschließlich Roadmap-Entwicklung und Technologiebewertung." },
-  ],
-};
+// The service structured data is built from the "What we build" section
+// visitors see (WhatWeDoSection, keys whatWeDo.<key>.title/desc). The
+// hand-written copy it replaces still sold "GenAI SaaS products", "AI
+// Transformation" and "AI Consulting" to enterprises -- the slide-deck
+// consultancy the site now says we are not. Keep in step with WhatWeDoSection.
+const SERVICE_KEYS = ["saas", "mvp", "automation"] as const;
 
 // The FAQ structured data is built from the FAQ visitors actually see
 // (FAQSection, keys faq.q1..q6 / faq.a1..a6). It used to be a separate
@@ -105,6 +83,11 @@ const SEOHead = ({ page = "home", customTitle, customDescription, customImage }:
   const ogImage = customImage || pageData.image;
 
   useEffect(() => {
+    const services = SERVICE_KEYS.map((key) => ({
+      name: t(`whatWeDo.${key}.title`),
+      description: t(`whatWeDo.${key}.desc`),
+    }));
+
     // Update document title
     document.title = title;
 
@@ -245,15 +228,15 @@ const SEOHead = ({ page = "home", customTitle, customDescription, customImage }:
         },
         "geoRadius": "5000"
       },
-      "serviceType": serviceDescriptions[language],
+      "serviceType": services.map((service) => service.name),
       "hasOfferCatalog": {
         "@type": "OfferCatalog",
         "name": "AI Services",
-        "itemListElement": serviceDescriptions[language].map((service, index) => ({
+        "itemListElement": services.map((service) => ({
           "@type": "Offer",
           "itemOffered": {
             "@type": "Service",
-            "name": service,
+            "name": service.name,
             "provider": {
               "@type": "Organization",
               "name": "xeda.ai"
@@ -323,7 +306,7 @@ const SEOHead = ({ page = "home", customTitle, customDescription, customImage }:
     };
 
     // Individual Service Schemas
-    const serviceSchemas = serviceDetails[language].map((service, index) => ({
+    const serviceSchemas = services.map((service) => ({
       "@context": "https://schema.org",
       "@type": "Service",
       "name": service.name,
@@ -337,7 +320,7 @@ const SEOHead = ({ page = "home", customTitle, customDescription, customImage }:
         "@type": "Country",
         "name": "Germany"
       },
-      "serviceType": "AI Consulting and Development",
+      "serviceType": service.name,
       "url": baseUrl
     }));
 
@@ -378,8 +361,8 @@ const SEOHead = ({ page = "home", customTitle, customDescription, customImage }:
             "url": `${baseUrl}/og-image.png`
           }
         },
-        "datePublished": "2024-12-14",
-        "dateModified": "2024-12-14",
+        // No datePublished/dateModified: the hard-coded "2024-12-14" here
+        // predated the company. Both are optional, and no date beats a false one.
         "mainEntityOfPage": {
           "@type": "WebPage",
           "@id": `${baseUrl}${currentPath}`
@@ -433,8 +416,7 @@ const SEOHead = ({ page = "home", customTitle, customDescription, customImage }:
         "@type": "Organization",
         "name": "xeda.ai"
       },
-      "datePublished": "2024-12-14",
-      "dateModified": "2024-12-14"
+      // No datePublished/dateModified -- see the article schema above.
     };
 
     addJsonLd(webPageSchema);
