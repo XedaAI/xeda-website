@@ -27,3 +27,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Output of scripts/chat-eval.mjs
+chat-eval.json
