@@ -16,7 +16,11 @@ const encoder = new TextEncoder();
 // https://ai.google.dev/gemini-api/docs/openai
 const AI_BASE_URL = Deno.env.get("AI_BASE_URL") ??
   "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
-const AI_MODEL = Deno.env.get("AI_MODEL") ?? "gemini-2.5-flash";
+// Pinned to an exact version, not an alias such as gemini-flash-latest: the
+// brief is tested against a specific model's behaviour, and an alias can move
+// underneath it without notice. gemini-2.5-flash is closed to new projects, so a
+// freshly created paid key returns 404 on it.
+const AI_MODEL = Deno.env.get("AI_MODEL") ?? "gemini-3.8-flash";
 const AI_API_KEY = Deno.env.get("GEMINI_API_KEY");
 
 // The AI path costs money per call, so it gets a tighter budget than the
