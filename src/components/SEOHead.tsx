@@ -54,29 +54,14 @@ const serviceDetails: Record<SiteLanguage, ServiceDetail[]> = {
   ],
 };
 
-interface FAQItem {
-  question: string;
-  answer: string;
-}
-
-const faqContent: Record<SiteLanguage, FAQItem[]> = {
-  en: [
-    { question: "What types of AI solutions does xeda.ai offer?", answer: "We specialize in GenAI SaaS products, AI MVPs, automation solutions, AI transformation consulting, and custom copilots for businesses. Our solutions range from customer service chatbots to complex document processing systems and predictive analytics platforms." },
-    { question: "How long does a typical AI project take?", answer: "Project timelines vary based on complexity. An AI MVP can be delivered in 4-8 weeks, while larger transformation projects typically take 3-6 months. We follow an agile approach with regular milestones so you see progress early and often." },
-    { question: "Do I need technical expertise to work with xeda.ai?", answer: "Not at all. We handle all technical aspects of the project. Our team works closely with your business stakeholders to understand your needs and translate them into effective AI solutions. We also provide training to ensure your team can use and maintain the solutions." },
-    { question: "How do you ensure data security and privacy?", answer: "Security is paramount in everything we build. We follow GDPR compliance, implement end-to-end encryption, and can deploy solutions on-premise or in your private cloud if required. All our developers follow strict security protocols and sign NDAs." },
-    { question: "What makes xeda.ai different from other AI agencies?", answer: "We combine German engineering precision with cutting-edge AI expertise. Our team consists of senior developers and AI specialists who have built production systems for enterprises. We focus on practical, deployable solutions rather than experimental prototypes." },
-    { question: "Do you offer ongoing support after project completion?", answer: "Yes, we offer flexible support and maintenance packages. This includes monitoring, updates, performance optimization, and continued development as your needs evolve. Many clients choose to work with us on a retainer basis for ongoing AI initiatives." },
-  ],
-  de: [
-    { question: "Welche Arten von KI-Lösungen bietet xeda.ai an?", answer: "Wir spezialisieren uns auf GenAI SaaS-Produkte, KI-MVPs, Automatisierungslösungen, KI-Transformationsberatung und individuelle Copiloten für Unternehmen." },
-    { question: "Wie lange dauert ein typisches KI-Projekt?", answer: "Projektzeiten variieren je nach Komplexität. Ein KI-MVP kann in 4-8 Wochen geliefert werden, während größere Transformationsprojekte 3-6 Monate dauern können." },
-    { question: "Brauche ich technisches Know-how, um mit xeda.ai zu arbeiten?", answer: "Überhaupt nicht. Wir übernehmen alle technischen Aspekte des Projekts. Unser Team arbeitet eng mit Ihren Stakeholdern zusammen." },
-    { question: "Wie stellen Sie Datensicherheit und Datenschutz sicher?", answer: "Sicherheit ist in allem, was wir bauen, oberstes Gebot. Wir folgen der DSGVO, implementieren End-to-End-Verschlüsselung und können Lösungen On-Premise deployen." },
-    { question: "Was unterscheidet xeda.ai von anderen KI-Agenturen?", answer: "Wir kombinieren deutsche Ingenieurskunst mit modernster KI-Expertise. Unser Team besteht aus Senior-Entwicklern, die Produktionssysteme für Unternehmen gebaut haben." },
-    { question: "Bieten Sie fortlaufenden Support nach Projektabschluss?", answer: "Ja, wir bieten flexible Support- und Wartungspakete. Viele Kunden arbeiten mit uns auf Retainer-Basis für laufende KI-Initiativen." },
-  ],
-};
+// The FAQ structured data is built from the FAQ visitors actually see
+// (FAQSection, keys faq.q1..q6 / faq.a1..a6). It used to be a separate
+// hand-written copy that drifted from the page and told search engines things
+// the site does not: end-to-end encryption (we do not do that -- privacy policy,
+// section 5), on-premise deployment, a team that "has built production systems
+// for enterprises", and "many clients" on retainer. Google also requires FAQ
+// markup to match the visible questions. Keep in step with FAQSection.
+const FAQ_COUNT = 6;
 
 interface SEOHeadProps {
   page?: "home" | "privacy" | "terms" | "impressum" | "careers";
@@ -91,8 +76,8 @@ const pageContent: Record<string, Record<SiteLanguage, { title: string; descript
     de: { title: "xeda.ai — KI-Integration & Automatisierung für den deutschsprachigen Raum", description: "Wir integrieren KI in Ihre Abläufe und automatisieren die wiederkehrende Arbeit — in Deutschland, Österreich und der Schweiz. Kostenloses KI-Audit.", image: "/og-image.png" },
   },
   privacy: {
-    en: { title: "Privacy Policy | xeda.ai", description: "Learn how xeda.ai protects your privacy and handles your personal data. GDPR compliant privacy practices.", image: "/og-privacy.png" },
-    de: { title: "Datenschutzerklärung | xeda.ai", description: "Erfahren Sie, wie xeda.ai Ihre Privatsphäre schützt. DSGVO-konforme Datenschutzpraktiken.", image: "/og-privacy.png" },
+    en: { title: "Privacy Policy | xeda.ai", description: "How xeda.ai handles your personal data under the GDPR: what we collect, why, how long we keep it, and your rights.", image: "/og-privacy.png" },
+    de: { title: "Datenschutzerklärung | xeda.ai", description: "Wie xeda.ai Ihre personenbezogenen Daten nach DSGVO verarbeitet: was wir erheben, wozu, wie lange und welche Rechte Sie haben.", image: "/og-privacy.png" },
   },
   terms: {
     en: { title: "Terms of Service | xeda.ai", description: "Terms and conditions for using xeda.ai services. Clear guidelines for our AI consulting partnerships.", image: "/og-terms.png" },
@@ -109,7 +94,7 @@ const pageContent: Record<string, Record<SiteLanguage, { title: string; descript
 };
 
 const SEOHead = ({ page = "home", customTitle, customDescription, customImage }: SEOHeadProps) => {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const content = seoContent[language];
   const pageData = pageContent[page]?.[language] || pageContent.home[language];
   const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://xeda.ai";
@@ -308,12 +293,12 @@ const SEOHead = ({ page = "home", customTitle, customDescription, customImage }:
     const faqSchema = {
       "@context": "https://schema.org",
       "@type": "FAQPage",
-      "mainEntity": faqContent[language].map((faq) => ({
+      "mainEntity": Array.from({ length: FAQ_COUNT }, (_, i) => ({
         "@type": "Question",
-        "name": faq.question,
+        "name": t(`faq.q${i + 1}`),
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": faq.answer
+          "text": t(`faq.a${i + 1}`)
         }
       }))
     };
@@ -470,7 +455,7 @@ const SEOHead = ({ page = "home", customTitle, customDescription, customImage }:
     
     addJsonLd(breadcrumbSchema);
 
-  }, [language, content, baseUrl, currentPath, title, description, ogImage, page]);
+  }, [language, t, content, baseUrl, currentPath, title, description, ogImage, page]);
 
   return null;
 };

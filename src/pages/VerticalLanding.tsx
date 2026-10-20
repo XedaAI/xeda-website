@@ -42,8 +42,8 @@ const steps = [
 ];
 
 const trust = [
-  { icon: ShieldCheck, label: "DSGVO-konform" },
-  { icon: FileText, label: "EU- / On-Premise-Hosting" },
+  { icon: ShieldCheck, label: "Nach DSGVO-Vorgaben gebaut" },
+  { icon: FileText, label: "Hosting in der EU" },
   { icon: Check, label: "Jeder Entwickler unter NDA" },
 ];
 
