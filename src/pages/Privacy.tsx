@@ -22,7 +22,7 @@ const Privacy = () => {
 
         <article className="prose prose-neutral dark:prose-invert max-w-3xl mx-auto">
           <h1 className="text-4xl font-bold text-foreground mb-2">Privacy Policy</h1>
-          <p className="text-muted-foreground mb-8">Last updated: August 13, 2026</p>
+          <p className="text-muted-foreground mb-8">Last updated: October 20, 2026</p>
 
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-foreground mb-4">1. Introduction</h2>
@@ -112,8 +112,10 @@ const Privacy = () => {
             <h2 className="text-2xl font-semibold text-foreground mb-4">7. Data Retention</h2>
             <p className="text-muted-foreground leading-relaxed">
               We retain your personal data only for as long as necessary to fulfill the purposes for which 
-              it was collected, including legal, accounting, or reporting requirements. Contact form 
+              it was collected, including legal, accounting, or reporting requirements. Contact form
               submissions are typically retained for 2 years unless you request earlier deletion.
+              Messages in our AI chat assistant are deleted automatically 30 days after they are sent
+              (see Section 9).
             </p>
           </section>
 
@@ -127,8 +129,8 @@ const Privacy = () => {
             </p>
             <ul className="list-disc pl-6 text-muted-foreground space-y-2">
               <li><strong className="text-foreground">Supabase:</strong> database, authentication, and backend hosting for contact submissions, newsletter subscriptions, and chat history.</li>
-              <li><strong className="text-foreground">Google Gemini (via the Lovable AI Gateway):</strong> generates AI assistant replies. Messages you send the chat assistant are transmitted to this provider for processing; please avoid sharing sensitive personal data in the chat.</li>
-              <li><strong className="text-foreground">ElevenLabs:</strong> converts AI assistant replies to spoken audio when voice playback is used.</li>
+              <li><strong className="text-foreground">Google (Gemini API, paid service):</strong> generates the AI assistant’s replies. Messages you send the chat assistant are transmitted to Google for processing; processing may take place outside the EU, including in the USA. Under Google’s terms for paid use, your prompts and the replies are not used to improve Google’s products.</li>
+              <li><strong className="text-foreground">ElevenLabs:</strong> transcribes your question when you use the microphone in the chat assistant, and converts replies to spoken audio. Processing may take place outside the EU, including in the USA.</li>
               <li><strong className="text-foreground">Resend:</strong> delivers contact-form notification and confirmation emails.</li>
               <li><strong className="text-foreground">Mailchimp:</strong> manages newsletter subscriptions and delivery.</li>
             </ul>
@@ -140,7 +142,24 @@ const Privacy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-foreground mb-4">9. Changes to This Policy</h2>
+            <h2 className="text-2xl font-semibold text-foreground mb-4">9. AI Chat Assistant and Voice Input</h2>
+            <p className="text-muted-foreground leading-relaxed mb-4">
+              The chat assistant on this website is an AI, not a person. It answers questions about Xeda and
+              our services. Its answers can be wrong, and it does not give legal, tax or financial advice.
+              Using it is optional; you can always reach us through the contact form or by email instead.
+            </p>
+            <ul className="list-disc pl-6 text-muted-foreground space-y-2">
+              <li><strong className="text-foreground">What we process:</strong> the messages you type or speak and the assistant’s replies. To let you continue a conversation, we store it under a random session ID that is kept in your browser’s local storage, together with your chosen chat language and voice. The assistant does not use cookies.</li>
+              <li><strong className="text-foreground">Voice input:</strong> when you use the microphone, your recording is sent to ElevenLabs to be turned into text. We do not store the recording; only the transcribed text is kept, like a typed message. Replies to spoken questions are read aloud using ElevenLabs.</li>
+              <li><strong className="text-foreground">Who processes it:</strong> Google generates the replies, ElevenLabs handles voice, and Supabase stores the conversation (see Section 8). Processing by Google and ElevenLabs may take place outside the EU, including in the USA.</li>
+              <li><strong className="text-foreground">Purpose and legal basis:</strong> answering your enquiry. Where it concerns a possible engagement with us, the legal basis is Art. 6(1)(b) GDPR (steps taken at your request before entering into a contract); otherwise it is Art. 6(1)(f) GDPR, our legitimate interest in answering questions from visitors to our website.</li>
+              <li><strong className="text-foreground">Retention:</strong> messages are deleted automatically 30 days after they are sent, and conversations nobody has continued for 30 days are deleted with them. You can delete a conversation at any time with the bin icon in the chat window.</li>
+              <li><strong className="text-foreground">Please do not enter</strong> personal data about yourself or others, client data, or anything confidential. The chat is a simple website assistant and is not designed for such information.</li>
+            </ul>
+          </section>
+
+          <section className="mb-8">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">10. Changes to This Policy</h2>
             <p className="text-muted-foreground leading-relaxed">
               We may update this privacy policy from time to time. Any changes will be posted on this page 
               with an updated revision date. We encourage you to review this policy periodically.
@@ -148,7 +167,7 @@ const Privacy = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-foreground mb-4">10. Contact Us</h2>
+            <h2 className="text-2xl font-semibold text-foreground mb-4">11. Contact Us</h2>
             <p className="text-muted-foreground leading-relaxed">
               If you have any questions about this privacy policy or our data practices, please contact us at:
             </p>
