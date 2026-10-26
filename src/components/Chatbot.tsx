@@ -64,6 +64,7 @@ const uiText: Record<Language, {
   micDenied: string;
   micDeniedHint: string;
   transcribeFailed: string;
+  noSpeech: string;
   deleteFailed: string;
   error: string;
   linkInChat: string;
@@ -71,7 +72,7 @@ const uiText: Record<Language, {
   en: {
     title: "xeda.ai Assistant",
     placeholder: "Type a message...",
-    listening: "Listening… tap the mic again to send",
+    listening: "Listening… sends when you pause",
     transcribing: "Transcribing…",
     // BS-71 / BS-74: the AI disclosure (AI Act Art. 50) and the retention
     // period (DSGVO Art. 5(1)(e)) belong in the first thing the visitor reads.
@@ -91,6 +92,7 @@ const uiText: Record<Language, {
     micDenied: "Microphone access denied",
     micDeniedHint: "Allow microphone access in your browser to ask by voice.",
     transcribeFailed: "Couldn't understand the recording. Please try again or type your question.",
+    noSpeech: "I didn't hear anything. Check that the right microphone is selected, then try again.",
     deleteFailed: "Couldn't delete the conversation. Please try again.",
     error: "Error",
     linkInChat: "the link in the chat",
@@ -98,7 +100,7 @@ const uiText: Record<Language, {
   de: {
     title: "xeda.ai Assistent",
     placeholder: "Nachricht eingeben...",
-    listening: "Ich höre zu … Mikrofon erneut tippen zum Senden",
+    listening: "Ich höre zu … sendet, sobald Sie eine Pause machen",
     transcribing: "Wird umgewandelt …",
     welcome:
       "Hallo, ich bin der KI-Assistent von Xeda, kein Mensch. Fragen Sie mich alles darüber, was wir bauen und wie wir arbeiten, per Text oder Mikrofon. Chats werden 30 Tage gespeichert, bitte geben Sie hier also keine personenbezogenen Daten oder Mandantendaten ein.",
@@ -116,6 +118,7 @@ const uiText: Record<Language, {
     micDenied: "Mikrofonzugriff verweigert",
     micDeniedHint: "Erlauben Sie den Mikrofonzugriff im Browser, um per Sprache zu fragen.",
     transcribeFailed: "Die Aufnahme war nicht verständlich. Bitte erneut versuchen oder die Frage tippen.",
+    noSpeech: "Ich habe nichts gehört. Bitte prüfen Sie, ob das richtige Mikrofon ausgewählt ist, und versuchen Sie es erneut.",
     deleteFailed: "Das Gespräch konnte nicht gelöscht werden. Bitte erneut versuchen.",
     error: "Fehler",
     linkInChat: "den Link im Chat",
@@ -169,6 +172,20 @@ const STT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/speech-to-tex
 const MAX_RECORDING_MS = 30_000;
 // Anything shorter is a tap, not a question.
 const MIN_RECORDING_BYTES = 1_000;
+
+// End of turn. Once the visitor has spoken, this much quiet sends the question,
+// the way a person stops and waits for an answer. The recording used to run
+// until the mic was tapped a second time, so a visitor who asked and waited got
+// nothing back for 30 seconds.
+const END_OF_SPEECH_SILENCE_MS = 1_200;
+// Nobody has said anything in this long: stop, rather than hold the mic open.
+const NO_SPEECH_TIMEOUT_MS = 8_000;
+// Microphone level (RMS of the waveform, 0 to 1) that counts as speech, held
+// for a few readings so a click or a cough does not count. Noise suppression is
+// on, so a quiet room stays well below it.
+const SPEECH_RMS = 0.015;
+const SPEECH_MIN_READINGS = 3;
+const LEVEL_CHECK_MS = 100;
 
 // First container this browser can record: Opus in WebM for Chrome, Edge and
 // Firefox, AAC in MP4 for Safari.
@@ -282,6 +299,7 @@ const Chatbot = () => {
   const micStreamRef = useRef<MediaStream | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const recordingTimerRef = useRef<number | null>(null);
+  const silenceWatchRef = useRef<{ context: AudioContext; timer: number } | null>(null);
   const transcribeRef = useRef<((recording: Blob) => Promise<void>) | null>(null);
   // Answers are read aloud only when the question was spoken. Speaking a reply
   // to a typed question is audio nobody asked for.
@@ -550,14 +568,20 @@ const Chatbot = () => {
     }
   };
 
-  const streamChat = async (userMessages: Message[], convId: string | null) => {
+  const streamChat = async (userMessages: Message[], convId: string | null, replyLanguage: Language) => {
     const resp = await fetch(CHAT_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
       },
-      body: JSON.stringify({ messages: userMessages, language }),
+      // A spoken question gets a short answer: it is read aloud, and a long one
+      // takes as long to generate as it does to listen to.
+      body: JSON.stringify({
+        messages: userMessages,
+        language: replyLanguage,
+        voice: lastInputWasVoiceRef.current,
+      }),
     });
 
     if (!resp.ok) {
@@ -627,7 +651,8 @@ const Chatbot = () => {
     }
   };
 
-  const sendMessage = async (text: string, viaVoice: boolean) => {
+  // replyLanguage: the language a spoken question was asked in, when known.
+  const sendMessage = async (text: string, viaVoice: boolean, replyLanguage: Language = language) => {
     const content = text.trim();
     if (!content || isLoading) return;
 
@@ -644,7 +669,7 @@ const Chatbot = () => {
         await saveMessage(convId, userMessage);
       }
 
-      await streamChat(newMessages, convId);
+      await streamChat(newMessages, convId, replyLanguage);
     } catch (error: any) {
       toast({
         title: "Error",
@@ -675,10 +700,15 @@ const Chatbot = () => {
       });
       if (!resp.ok) throw new Error(`Speech-to-text failed (${resp.status})`);
 
-      const { text } = await resp.json();
-      if (typeof text !== "string" || !text.trim()) throw new Error("Empty transcript");
+      const { text, language: spoken } = await resp.json();
+      // Nothing recognisable: usually silence, a muted or the wrong microphone.
+      if (typeof text !== "string" || !text.trim()) {
+        toast({ title: t.error, description: t.noSpeech, variant: "destructive" });
+        return;
+      }
 
-      await sendMessage(text, true);
+      // Answer in the language the question was asked in.
+      await sendMessage(text, true, spoken === "de" || spoken === "en" ? spoken : language);
     } catch (error) {
       console.error("Speech-to-text error:", error);
       toast({ title: t.error, description: t.transcribeFailed, variant: "destructive" });
@@ -698,6 +728,45 @@ const Chatbot = () => {
     if (recorder && recorder.state !== "inactive") recorder.stop();
   };
 
+  // Touches refs only, so it is stable across renders.
+  const stopSilenceWatch = useCallback(() => {
+    const watch = silenceWatchRef.current;
+    if (!watch) return;
+    window.clearInterval(watch.timer);
+    watch.context.close().catch(() => {});
+    silenceWatchRef.current = null;
+  }, []);
+
+  // Follow the microphone level and end the turn when the visitor pauses. If
+  // the browser cannot measure it, tapping the mic and the 30-second limit
+  // still end the recording.
+  const watchForSilence = (context: AudioContext, stream: MediaStream) => {
+    const analyser = context.createAnalyser();
+    analyser.fftSize = 2048;
+    context.createMediaStreamSource(stream).connect(analyser);
+    const samples = new Float32Array(analyser.fftSize);
+
+    const startedAt = performance.now();
+    let lastSpeechAt = 0;
+    let loudReadings = 0;
+    const timer = window.setInterval(() => {
+      analyser.getFloatTimeDomainData(samples);
+      let sum = 0;
+      for (const sample of samples) sum += sample * sample;
+      const level = Math.sqrt(sum / samples.length);
+      const now = performance.now();
+
+      loudReadings = level > SPEECH_RMS ? loudReadings + 1 : 0;
+      if (loudReadings >= SPEECH_MIN_READINGS) lastSpeechAt = now;
+
+      if (lastSpeechAt ? now - lastSpeechAt > END_OF_SPEECH_SILENCE_MS : now - startedAt > NO_SPEECH_TIMEOUT_MS) {
+        stopRecording();
+      }
+    }, LEVEL_CHECK_MS);
+
+    silenceWatchRef.current = { context, timer };
+  };
+
   const startRecording = async () => {
     if (!canRecord()) {
       toast({ title: t.error, description: t.voiceUnsupported, variant: "destructive" });
@@ -706,12 +775,21 @@ const Chatbot = () => {
 
     stopSpeaking();
 
+    // Created here, inside the tap, because browsers only let audio start from
+    // a user gesture; after the permission prompt it could start suspended and
+    // hear nothing.
+    const AudioContextClass =
+      window.AudioContext ??
+      (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    const context = AudioContextClass ? new AudioContextClass() : null;
+
     let stream: MediaStream;
     try {
       stream = await navigator.mediaDevices.getUserMedia({
         audio: { echoCancellation: true, noiseSuppression: true },
       });
     } catch (error) {
+      context?.close().catch(() => {});
       console.error("Microphone error:", error);
       const denied = error instanceof DOMException && error.name === "NotAllowedError";
       toast({
@@ -732,6 +810,7 @@ const Chatbot = () => {
     recorder.onstop = () => {
       if (recordingTimerRef.current !== null) window.clearTimeout(recordingTimerRef.current);
       recordingTimerRef.current = null;
+      stopSilenceWatch();
       // Release the microphone so the browser's recording indicator goes off.
       stream.getTracks().forEach((track) => track.stop());
       micStreamRef.current = null;
@@ -751,6 +830,18 @@ const Chatbot = () => {
     // A hard stop, so a forgotten open microphone cannot keep recording, or
     // keep running up the transcription bill.
     recordingTimerRef.current = window.setTimeout(stopRecording, MAX_RECORDING_MS);
+
+    if (context) {
+      try {
+        await context.resume();
+        // Stopped or discarded while resuming: nothing left to watch.
+        if (recorderRef.current === recorder) watchForSilence(context, stream);
+        else context.close().catch(() => {});
+      } catch (error) {
+        console.error("Silence detection unavailable:", error);
+        context.close().catch(() => {});
+      }
+    }
   };
 
   // Switch the microphone off and drop a recording in progress without sending
@@ -766,7 +857,8 @@ const Chatbot = () => {
     recordingTimerRef.current = null;
     micStreamRef.current?.getTracks().forEach((track) => track.stop());
     micStreamRef.current = null;
-  }, []);
+    stopSilenceWatch();
+  }, [stopSilenceWatch]);
 
   // Never leave the microphone on after the widget goes away.
   useEffect(() => discardRecording, [discardRecording]);

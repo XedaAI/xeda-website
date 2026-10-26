@@ -27,7 +27,9 @@ if (!KEY) {
   process.exit(1);
 }
 const MODEL = src.match(/AI_MODEL"\) \?\? "([^"]+)"/)[1];
+const EFFORT = src.match(/AI_REASONING_EFFORT"\) \?\? "([^"]*)"/)[1];
 const brief = src.match(/const XEDA_BRIEF = `([\s\S]*?)`\.trim\(\);/)[1].trim();
+const voiceBrief = src.match(/const VOICE_INSTRUCTION = `([\s\S]*?)`\.trim\(\);/)[1].trim();
 const blk = src.match(/const languageInstruction: Record<string, string> = \{([\s\S]*?)\};/)[1];
 const instr = {};
 for (const m of blk.matchAll(/^\s*(\w+):\s*"([\s\S]*?)",\s*$/gm)) instr[m[1]] = m[2];
@@ -71,7 +73,19 @@ const CASES = [
   ["de_recht", "de", "Dürfen wir als Kanzlei Mandantendaten an eine US-KI schicken?"],
   ["de_onprem", "de", "Können Sie das komplett On-Premise bei uns in der Kanzlei betreiben?"],
   ["de_du", "de", "hey, was könnt ihr für meinen kleinen laden machen?"],
+  // Asked with the microphone: same rules, and short enough to listen to.
+  ["v_what", "en", "So what is it you actually do?", "voice"],
+  ["v_cost", "en", "How much does it cost to work with you?", "voice"],
+  ["v_datev", "en", "We're a tax firm on DATEV, have you done that before?", "voice"],
+  ["v_clients", "en", "Who have you built this for?", "voice"],
+  ["v_de_audit", "de", "Was bekomme ich bei dem kostenlosen Audit?", "voice"],
+  ["v_de_kosten", "de", "Was kostet die Umsetzung bei Ihnen?", "voice"],
+  ["v_de_dsgvo", "de", "Ist das alles DSGVO-konform?", "voice"],
+  ["v_de_mensch", "de", "Bin ich hier mit einem Menschen verbunden?", "voice"],
 ];
+
+// About 25 seconds read aloud; a spoken answer should be well under that.
+const VOICE_MAX_CHARS = 400;
 
 // Automatic flags. A flag is a reason to read the answer, not a verdict.
 const CHECKS = [
@@ -87,30 +101,46 @@ const CHECKS = [
   ["onprem-unqualified", (a) => /on-?premise/i.test(a) && !/\b(not (yet|delivered|run|done)|haven't|have not|noch nicht|bisher nicht|noch kein|bislang nicht)\b/i.test(a)],
   ["leaked-brief", (a) => /WHAT YOU MUST NOT DO|XEDA_BRIEF|HOW TO ANSWER|ABOUT THIS CHAT/.test(a)],
   ["chatgpt", (a) => /\bI am ChatGPT|ich bin ChatGPT/i.test(a)],
+  ["too-long-for-voice", (a, c) => c.voice && a.length > VOICE_MAX_CHARS],
 ];
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const results = [];
-for (const [id, lang, q] of CASES) {
-  const c = { id, lang, q };
-  let answer = null, status = null;
+for (const [id, lang, q, mode] of CASES) {
+  const c = { id, lang, q, voice: mode === "voice" };
+  // Assembled the way buildSystemPrompt does it.
+  const system = [brief, c.voice ? voiceBrief : "", instr[lang]].filter(Boolean).join("\n\n");
+  let answer = null, status = null, ms = null;
   for (let attempt = 0; attempt < 3 && answer === null; attempt++) {
+    const started = Date.now();
     const r = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
       method: "POST",
       headers: { Authorization: `Bearer ${KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ model: MODEL, messages: [{ role: "system", content: `${brief}\n\n${instr[lang]}` }, { role: "user", content: q }] }),
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [{ role: "system", content: system }, { role: "user", content: q }],
+        ...(EFFORT ? { reasoning_effort: EFFORT } : {}),
+      }),
     });
     status = r.status;
-    if (r.ok) answer = (await r.json()).choices?.[0]?.message?.content ?? "";
-    else await sleep(3000 * (attempt + 1));
+    if (r.ok) {
+      answer = (await r.json()).choices?.[0]?.message?.content ?? "";
+      ms = Date.now() - started;
+    } else await sleep(3000 * (attempt + 1));
   }
   const flags = answer === null ? ["HTTP " + status] : CHECKS.filter(([, fn]) => fn(answer, c)).map(([n]) => n);
-  results.push({ ...c, answer, flags });
+  results.push({ ...c, answer, ms, flags });
   process.stderr.write(flags.length ? "!" : ".");
   await sleep(600);
 }
 process.stderr.write("\n");
-fs.writeFileSync(OUT, JSON.stringify({ model: MODEL, results }, null, 2));
+fs.writeFileSync(OUT, JSON.stringify({ model: MODEL, effort: EFFORT, results }, null, 2));
 const flagged = results.filter((r) => r.flags.length);
-console.log(`model ${MODEL}: ${results.length} questions, ${flagged.length} flagged`);
+const median = (xs) => xs.sort((a, b) => a - b)[Math.floor(xs.length / 2)];
+const timed = (voice) => results.filter((r) => r.ms !== null && r.voice === voice);
+console.log(`model ${MODEL}, reasoning ${EFFORT || "default"}: ${results.length} questions, ${flagged.length} flagged`);
+console.log(
+  `  median: typed ${median(timed(false).map((r) => r.ms))} ms, ${median(timed(false).map((r) => r.answer.length))} chars;` +
+    ` spoken ${median(timed(true).map((r) => r.ms))} ms, ${median(timed(true).map((r) => r.answer.length))} chars`,
+);
 for (const r of flagged) console.log(`  ${r.id}: ${r.flags.join(", ")}`);

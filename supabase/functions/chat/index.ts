@@ -21,6 +21,10 @@ const AI_BASE_URL = Deno.env.get("AI_BASE_URL") ??
 // underneath it without notice. gemini-2.5-flash is closed to new projects, so a
 // freshly created paid key returns 404 on it.
 const AI_MODEL = Deno.env.get("AI_MODEL") ?? "gemini-3.8-flash";
+// How long the model thinks before the first word. At the default it took over
+// five seconds; "low" answers in about two, and the brief is evaluated at this
+// setting (scripts/chat-eval.mjs reads it from here).
+const AI_REASONING_EFFORT = Deno.env.get("AI_REASONING_EFFORT") ?? "low";
 const AI_API_KEY = Deno.env.get("GEMINI_API_KEY");
 
 // The AI path costs money per call, so it gets a tighter budget than the
@@ -308,8 +312,20 @@ const languageInstruction: Record<string, string> = {
   it: "Rispondi in italiano.",
 };
 
-const buildSystemPrompt = (language: string) =>
-  `${XEDA_BRIEF}\n\n${languageInstruction[language] ?? languageInstruction.en}`;
+// Added when the question was asked with the microphone. The answer is read
+// aloud, and the voice cannot start until the whole answer has been written and
+// converted, so length is waiting time.
+const VOICE_INSTRUCTION = `
+THIS QUESTION WAS SPOKEN
+Your answer will be read aloud. Answer in one to three short sentences, the way
+you would say it on the phone. Leave out detail the visitor did not ask for; they
+can ask a follow-up. The same rules apply as for written answers.
+`.trim();
+
+const buildSystemPrompt = (language: string, voice: boolean) =>
+  [XEDA_BRIEF, voice ? VOICE_INSTRUCTION : "", languageInstruction[language] ?? languageInstruction.en]
+    .filter(Boolean)
+    .join("\n\n");
 
 async function handleHistoryAction(action: string, payload: Record<string, unknown>) {
   if (action === "init-session") {
@@ -444,7 +460,7 @@ serve(async (req) => {
 
   try {
     const body = await req.json();
-    const { messages, language = "en", action } = body;
+    const { messages, language = "en", action, voice } = body;
     const ip = clientIp(req);
 
     if (action) {
@@ -496,8 +512,11 @@ serve(async (req) => {
       return jsonResponse(req, { error: validated.error }, 400);
     }
 
-    const systemPrompt = buildSystemPrompt(String(language));
-    console.log("Processing chat request with", validated.length, "messages, language:", language);
+    const systemPrompt = buildSystemPrompt(String(language), voice === true);
+    console.log(
+      "Processing chat request with", validated.length, "messages, language:", language,
+      voice === true ? "(voice)" : "",
+    );
 
     const response = await fetch(AI_BASE_URL, {
       method: "POST",
@@ -511,6 +530,8 @@ serve(async (req) => {
           { role: "system", content: systemPrompt },
           ...validated,
         ],
+        // Set AI_REASONING_EFFORT="" for a provider that rejects the field.
+        ...(AI_REASONING_EFFORT ? { reasoning_effort: AI_REASONING_EFFORT } : {}),
         stream: true,
       }),
     });

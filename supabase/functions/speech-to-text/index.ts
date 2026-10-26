@@ -27,6 +27,16 @@ const EXTENSIONS: Record<string, string> = {
   "audio/wav": "wav",
 };
 
+// The chat's two languages, from the provider's ISO 639-3 (or -1) codes.
+const SPOKEN_LANGUAGES: Record<string, "de" | "en"> = {
+  deu: "de",
+  ger: "de",
+  de: "de",
+  eng: "en",
+  en: "en",
+};
+const MIN_LANGUAGE_PROBABILITY = 0.6;
+
 serve(async (req) => {
   const preflight = handlePreflight(req);
   if (preflight) return preflight;
@@ -99,7 +109,15 @@ serve(async (req) => {
     const result = await response.json();
     const text = typeof result?.text === "string" ? result.text.trim() : "";
 
-    return jsonResponse(req, { text: text.slice(0, LIMITS.chatTotalChars) });
+    // The language the visitor actually spoke, so the answer comes back in it
+    // even when the chat is set to the other one. Only when the provider is
+    // reasonably sure; otherwise the chat's own language stays.
+    const code = String(result?.language_code ?? "").toLowerCase();
+    const probability = result?.language_probability;
+    const sure = typeof probability !== "number" || probability >= MIN_LANGUAGE_PROBABILITY;
+    const language = sure ? SPOKEN_LANGUAGES[code] ?? null : null;
+
+    return jsonResponse(req, { text: text.slice(0, LIMITS.chatTotalChars), language });
   } catch (error: unknown) {
     console.error("Error in speech-to-text function:", error);
     return jsonResponse(req, { error: "Failed to transcribe speech" }, 500);
