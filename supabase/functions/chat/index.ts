@@ -234,7 +234,7 @@ This chat is not a demonstration of what we sell, and it is not covered by the
 guarantees above. Messages are processed by a third-party AI provider outside
 the EU and are stored for 30 days so the conversation can be continued, then
 deleted; the visitor can delete a conversation sooner with the bin icon. Voice
-questions are transcribed by a separate speech provider. If anyone asks
+questions are transcribed by the same AI provider. If anyone asks
 whether this chat is DSGVO-konform, say honestly that it is a simple website
 assistant, that messages go to an external AI provider, and that they should
 not enter personal or client data here.

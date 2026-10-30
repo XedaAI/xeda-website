@@ -1,7 +1,6 @@
 /**
- * ElevenLabs endpoint for both voice directions (text-to-speech and
- * speech-to-text), so moving the voice data to the EU is one secret, not a code
- * change.
+ * ElevenLabs endpoint for text-to-speech, so moving it to the EU is one secret,
+ * not a code change. (Speech-to-text is Gemini's, see speech-to-text/index.ts.)
  *
  * Default is the global host. For EU data residency set
  *   ELEVENLABS_BASE_URL=https://api.eu.residency.elevenlabs.io
