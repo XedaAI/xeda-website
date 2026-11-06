@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { z } from "zod";
+import { Link } from "react-router-dom";
 
 const ContactSection = () => {
   const { toast } = useToast();
@@ -193,6 +194,13 @@ const ContactSection = () => {
                 </a>
               </span>
             </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {t("contact.privacyNote")}{" "}
+              <Link to="/privacy" className="underline underline-offset-2 hover:text-foreground">
+                {t("legal.privacyPolicy")}
+              </Link>
+              .
+            </p>
           </form>
 
           <p className="text-sm text-muted-foreground mt-8 text-center">

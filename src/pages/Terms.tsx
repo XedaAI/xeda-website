@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SEOHead from "@/components/SEOHead";
+import LegalLinks from "@/components/LegalLinks";
 
 const Terms = () => {
   useEffect(() => {
@@ -160,6 +161,8 @@ const Terms = () => {
             </p>
           </section>
         </article>
+
+        <LegalLinks className="mt-12 pt-8 border-t border-border max-w-3xl mx-auto" />
       </div>
     </div>
   );

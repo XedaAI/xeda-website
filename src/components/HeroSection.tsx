@@ -58,15 +58,15 @@ const HeroSection = () => {
         />
 
         <div className="enter [--enter-delay:1.25s] inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[hsl(220_8%_96%/0.07)] border border-[hsl(220_8%_96%/0.20)] mb-8">
-          <span className="w-2 h-2 rounded-full bg-[hsl(220_8%_88%)] animate-pulse" />
+          <span className="w-2 h-2 rounded-full bg-[hsl(25_68%_58%)] animate-pulse" />
           <span className="text-sm text-[hsl(220_8%_96%/0.86)]">{t("hero.badge")}</span>
         </div>
 
         <h1 className="enter [--enter-delay:1.4s] text-[2.6rem] md:text-6xl lg:text-[4.6rem] font-semibold tracking-[-0.03em] text-[hsl(220_8%_97%)] mb-7 leading-[1.06] text-balance">
           {t("hero.title")}
-          {/* Monochrome: the highlight steps down in tone rather than changing
-              hue, so emphasis comes from contrast instead of colour. */}
-          <span className="text-[hsl(220_7%_66%)]"> {t("hero.titleHighlight")}</span>
+          {/* The page is monochrome; the second half of the headline is in the
+              sand accent so the eye lands on it first (over 10:1 on the scrim). */}
+          <span className="text-[hsl(40_45%_78%)]"> {t("hero.titleHighlight")}</span>
         </h1>
 
         <p className="enter [--enter-delay:1.55s] text-lg md:text-xl text-[hsl(220_7%_88%/0.74)] mb-12 max-w-[38rem] mx-auto leading-[1.65]">
@@ -75,11 +75,12 @@ const HeroSection = () => {
         
         <div className="enter [--enter-delay:1.7s] flex flex-col sm:flex-row items-center justify-center gap-4">
           {/* The hero is a fixed dark panel, so the CTA is fixed too: in light
-              mode --primary is near-black, which would sit dark-on-dark here. */}
+              mode --primary is a deeper orange meant for a white page. The soft
+              orange with near-black text reads 6.8:1; white text would fail. */}
           <Button
             size="lg"
             asChild
-            className="px-8 bg-[hsl(220_8%_96%)] text-[hsl(220_12%_8%)] hover:bg-[hsl(0_0%_100%)]"
+            className="px-8 bg-[hsl(25_68%_58%)] text-[hsl(220_12%_8%)] hover:bg-[hsl(25_72%_64%)]"
           >
             <a href={auditBookingUrl("hero")} target="_blank" rel="noopener noreferrer">
               {t("hero.cta")}

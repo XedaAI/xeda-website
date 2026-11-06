@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-// GDPR/TTDSG-compliant consent banner:
+// GDPR / § 25 TDDDG-compliant consent banner:
 // - explicit opt-in (no "by continuing you agree" implied consent),
 // - reject is exactly as easy as accept (same layer, one click),
 // - closing (X) counts as reject (safe default: essential cookies only),
@@ -35,14 +35,19 @@ const CookieConsent = () => {
         <div className="flex-1 text-sm text-muted-foreground text-center sm:text-left">
           <p>
             {t("cookie.text")}{" "}
-            <a href="/privacy" className="text-primary underline hover:text-primary/80">
+            <a href="/privacy" className="text-primary underline hover:decoration-2">
               {t("cookie.learnMore")}
+            </a>
+            {" · "}
+            <a href="/impressum" className="text-primary underline hover:decoration-2">
+              {t("footer.impressum")}
             </a>
           </p>
         </div>
         <div className="flex items-center gap-3">
-          {/* Reject is presented as prominently as Accept (GDPR requirement). */}
-          <Button variant="outline" size="sm" onClick={() => record("declined")}>
+          {/* Reject looks exactly like Accept: same style, same size, same
+              layer (DSK Orientierungshilfe Telemedien). */}
+          <Button size="sm" onClick={() => record("declined")}>
             {t("cookie.decline")}
           </Button>
           <Button size="sm" onClick={() => record("accepted")}>

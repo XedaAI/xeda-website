@@ -148,6 +148,13 @@ const Footer = () => {
                 )}
               </Button>
             </form>
+            <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
+              {t("footer.newsletter.consent")}{" "}
+              <Link to="/privacy" className="underline underline-offset-2 hover:text-foreground">
+                {t("legal.privacyPolicy")}
+              </Link>
+              .
+            </p>
           </div>
         </div>
 

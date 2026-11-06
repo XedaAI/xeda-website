@@ -31,7 +31,7 @@ const XEDA = {
   city: "67059 Ludwigshafen am Rhein",
   country: "Deutschland",
   phone: "+49 179 4158530",
-  email: "saad.bakhtiyar@xeda.ai",
+  email: "saad.bakhtiar@xeda.ai",
   court: "Amtsgericht Ludwigshafen am Rhein",
   hrb: "HRB 71014",
   gf: "Muhammad Saad Bakhtiar",

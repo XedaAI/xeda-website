@@ -405,7 +405,8 @@ const DeliveryCascade = () => {
           {/* What that stage hands over. Positioned from the same geometry the
               chute is drawn from, as a percentage, so it tracks the SVG at any
               width instead of needing its own measurement. */}
-          {/* The readout: a framed display mounted in the empty upper right.
+          {/* The readout: a framed display mounted in the empty upper right
+              (from xl; below that it sits under the drawing, see .dc-screen).
               It holds one position rather than chasing the cursor, so it can
               never cover what you are pointing at and needs no per-stage
               anchoring. Keyed on the active stage so React remounts the body
@@ -413,7 +414,7 @@ const DeliveryCascade = () => {
               the way back to idle, which is what gives it an exit without
               needing exit-animation machinery. */}
           <div
-            className="dc-screen hidden xl:flex"
+            className="dc-screen hidden md:flex"
             style={{ "--dc-accent": active === null ? "var(--primary)" : tint(active) } as CSSProperties}
           >
             <span className="dc-corner dc-corner--tl" aria-hidden="true" />
