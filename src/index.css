@@ -1,9 +1,5 @@
-@import url("https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap");
-/* Display face for the "What We Build" statement only: squared, technical
-   capitals that read as engineering rather than as the body text shouting. */
-@import url("https://fonts.googleapis.com/css2?family=Saira+Semi+Condensed:wght@500&display=swap");
+/* Fonts (Work Sans, Inconsolata, and Saira Semi Condensed for the "What We
+   Build" statement) are self-hosted: see the @fontsource imports in main.tsx. */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

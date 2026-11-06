@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SEOHead from "@/components/SEOHead";
+import LegalLinks from "@/components/LegalLinks";
 
 const Impressum = () => {
   useEffect(() => {
@@ -24,7 +25,7 @@ const Impressum = () => {
           <h1 className="text-4xl font-bold text-foreground mb-8">Impressum</h1>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-foreground mb-4">Angaben gemäß § 5 TMG</h2>
+            <h2 className="text-2xl font-semibold text-foreground mb-4">Angaben gemäß § 5 DDG</h2>
             <p className="text-muted-foreground leading-relaxed">
               Xeda UG (haftungsbeschränkt)<br />
               Bismarckstr. 54<br />
@@ -43,8 +44,11 @@ const Impressum = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-foreground mb-4">Kontakt</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Telefon: +49 179 4158530<br />
-              E-Mail: saad.bakhtiyar@xeda.ai
+              Telefon:{" "}
+              <a href="tel:+491794158530" className="text-primary hover:underline">+49 179 4158530</a>
+              <br />
+              E-Mail:{" "}
+              <a href="mailto:saad.bakhtiar@xeda.ai" className="text-primary hover:underline">saad.bakhtiar@xeda.ai</a>
             </p>
           </section>
 
@@ -74,23 +78,6 @@ const Impressum = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-foreground mb-4">EU-Streitschlichtung</h2>
-            <p className="text-muted-foreground leading-relaxed">
-              Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit:{" "}
-              <a 
-                href="https://ec.europa.eu/consumers/odr/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                https://ec.europa.eu/consumers/odr/
-              </a>
-              <br /><br />
-              Unsere E-Mail-Adresse finden Sie oben im Impressum.
-            </p>
-          </section>
-
-          <section className="mb-8">
             <h2 className="text-2xl font-semibold text-foreground mb-4">Verbraucherstreitbeilegung/Universalschlichtungsstelle</h2>
             <p className="text-muted-foreground leading-relaxed">
               Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer 
@@ -101,17 +88,18 @@ const Impressum = () => {
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-foreground mb-4">Haftung für Inhalte</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten 
-              nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als 
-              Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde 
-              Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige 
-              Tätigkeit hinweisen.
+              Für eigene Inhalte auf diesen Seiten sind wir nach den allgemeinen Gesetzen
+              verantwortlich. Soweit wir Informationen Dritter übermitteln oder speichern, richtet sich
+              unsere Verantwortlichkeit nach den Artikeln 4 bis 6 der Verordnung (EU) 2022/2065
+              (Digital Services Act) in Verbindung mit § 7 DDG. Eine allgemeine Verpflichtung, diese
+              Informationen zu überwachen oder aktiv nach Umständen zu forschen, die auf eine
+              rechtswidrige Tätigkeit hinweisen, besteht nach Art. 8 DSA nicht.
               <br /><br />
-              Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den 
-              allgemeinen Gesetzen bleiben hiervon unberührt. Eine diesbezügliche Haftung ist jedoch 
-              erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung möglich. Bei 
-              Bekanntwerden von entsprechenden Rechtsverletzungen werden wir diese Inhalte umgehend 
-              entfernen.
+              Verpflichtungen zur Entfernung von Informationen oder zur Sperrung ihrer Nutzung aufgrund
+              gerichtlicher oder behördlicher Anordnungen bleiben hiervon unberührt. Eine diesbezügliche
+              Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis einer konkreten Rechtsverletzung
+              möglich. Bei Bekanntwerden von entsprechenden Rechtsverletzungen werden wir diese Inhalte
+              umgehend entfernen.
             </p>
           </section>
 
@@ -148,6 +136,8 @@ const Impressum = () => {
             </p>
           </section>
         </article>
+
+        <LegalLinks className="mt-12 pt-8 border-t border-border max-w-3xl mx-auto" />
       </div>
     </div>
   );

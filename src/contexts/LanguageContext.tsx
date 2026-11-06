@@ -275,6 +275,8 @@ const translations: Record<SiteLanguage, Record<string, string>> = {
     "contact.sending": "Sending...",
     "contact.orEmail": "Or email us at",
     "contact.responseTime": "We typically respond within one business day.",
+    "contact.privacyNote": "We use your details only to answer your enquiry (Art. 6(1)(b) and (f) GDPR). More in our",
+    "legal.privacyPolicy": "privacy policy",
     "contact.success.title": "Message sent!",
     "contact.success.description": "We'll get back to you within one business day.",
     "contact.error.validation": "Validation error",
@@ -348,6 +350,7 @@ const translations: Record<SiteLanguage, Record<string, string>> = {
     "footer.newsletter.title": "Stay Updated",
     "footer.newsletter.description": "Subscribe to our newsletter for AI insights and updates.",
     "footer.newsletter.placeholder": "your@email.com",
+    "footer.newsletter.consent": "By subscribing you agree to receive our newsletter by e-mail. You can unsubscribe at any time via the link in every issue. Details in our",
     "footer.newsletter.invalidEmail": "Invalid email",
     "footer.newsletter.enterValid": "Please enter a valid email address.",
     "footer.newsletter.alreadySubscribed": "Already subscribed",
@@ -625,6 +628,8 @@ const translations: Record<SiteLanguage, Record<string, string>> = {
     "contact.sending": "Wird gesendet...",
     "contact.orEmail": "Oder mailen Sie uns an",
     "contact.responseTime": "Wir antworten in der Regel innerhalb eines Werktages.",
+    "contact.privacyNote": "Wir verwenden Ihre Angaben nur zur Bearbeitung Ihrer Anfrage (Art. 6 Abs. 1 lit. b und f DSGVO). Mehr in unserer",
+    "legal.privacyPolicy": "Datenschutzerklärung",
     "contact.success.title": "Nachricht gesendet!",
     "contact.success.description": "Wir melden uns innerhalb eines Werktages bei Ihnen.",
     "contact.error.validation": "Validierungsfehler",
@@ -697,6 +702,7 @@ const translations: Record<SiteLanguage, Record<string, string>> = {
     "footer.newsletter.title": "Bleiben Sie informiert",
     "footer.newsletter.description": "Abonnieren Sie unseren Newsletter für KI-Einblicke und Updates.",
     "footer.newsletter.placeholder": "ihre@email.de",
+    "footer.newsletter.consent": "Mit der Anmeldung willigen Sie ein, unseren Newsletter per E-Mail zu erhalten. Abmelden können Sie sich jederzeit über den Link in jeder Ausgabe. Details in unserer",
     "footer.newsletter.invalidEmail": "Ungültige E-Mail",
     "footer.newsletter.enterValid": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
     "footer.newsletter.alreadySubscribed": "Bereits abonniert",
@@ -736,12 +742,14 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   });
 
   useEffect(() => {
-    localStorage.setItem("site_language", language);
     document.documentElement.lang = language;
   }, [language]);
 
+  // The choice is stored only when the visitor switches language themselves;
+  // an auto-detected language is not written to the browser (§ 25 TDDDG).
   const setLanguage = (lang: SiteLanguage) => {
     setLanguageState(lang);
+    localStorage.setItem("site_language", lang);
   };
 
   const t = (key: string): string => {

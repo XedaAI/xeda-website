@@ -474,6 +474,13 @@ const BlogPost = () => {
                 {t("blogPost.newsletter.button")}
               </Button>
             </form>
+            <p className="mt-3 text-xs text-muted-foreground leading-relaxed max-w-md mx-auto">
+              {t("footer.newsletter.consent")}{" "}
+              <Link to="/privacy" className="underline underline-offset-2 hover:text-foreground">
+                {t("legal.privacyPolicy")}
+              </Link>
+              .
+            </p>
           </div>
 
           {/* Related Posts */}

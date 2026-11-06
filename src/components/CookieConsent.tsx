@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-// GDPR/TTDSG-compliant consent banner:
+// GDPR / § 25 TDDDG-compliant consent banner:
 // - explicit opt-in (no "by continuing you agree" implied consent),
 // - reject is exactly as easy as accept (same layer, one click),
 // - closing (X) counts as reject (safe default: essential cookies only),
