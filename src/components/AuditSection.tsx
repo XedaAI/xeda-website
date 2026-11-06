@@ -38,7 +38,7 @@ const AuditSection = () => {
                 ))}
               </ul>
 
-              <Button size="lg" asChild className="px-8">
+              <Button size="lg" asChild className="px-8 max-w-full h-auto min-h-11 py-2.5 whitespace-normal text-center sm:whitespace-nowrap">
                 <a href={auditBookingUrl("audit-section")} target="_blank" rel="noopener noreferrer">
                   {t("audit.cta")}
                   <ArrowRight className="ml-2 h-4 w-4" />

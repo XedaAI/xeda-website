@@ -5,7 +5,7 @@ import type { SiteLanguage } from "@/contexts/LanguageContext";
 import { industries, tx, type Industry, type MobileInput } from "./data";
 import { HouseArt, SitePhotoArt } from "./primitives";
 import { MobileOutput } from "./MobileOutputs";
-import { Environment } from "./Environments";
+import { industryImages } from "./images";
 import StageHead from "./StageHead";
 import type { Phase } from "./XedaNode";
 import { delay } from "./timing";
@@ -81,9 +81,6 @@ const MobileScene = ({
       data-fading={fading ? "" : undefined}
       data-industry={industry.key}
     >
-      {/* The industry's environment, as a strip across the top of the card. */}
-      <Environment industry={industry.key} className="ixm-strip" />
-
       {/* 1 · Before */}
       <StageHead
         n={1}
@@ -121,6 +118,10 @@ const MobileScene = ({
       {/* 2 · Xeda: the mark and what it reads, then the action itself. */}
       <StageHead n={2} title={t("useCases.stage2")} sub={t("useCases.stage2Sub")} />
       <div className="ixm-module">
+        {/* The industry's own picture, behind "Activate Xeda". */}
+        <div className="ixm-bg" aria-hidden="true">
+          <img key={industry.key} src={industryImages[industry.key]} alt="" loading="lazy" decoding="async" />
+        </div>
         <div className="ixm-module-top">
           <span className="ixm-tile" aria-hidden="true">
             <span className="ix-node-ring" />

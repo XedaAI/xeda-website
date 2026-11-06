@@ -35,11 +35,11 @@ const CookieConsent = () => {
         <div className="flex-1 text-sm text-muted-foreground text-center sm:text-left">
           <p>
             {t("cookie.text")}{" "}
-            <a href="/privacy" className="text-primary underline hover:text-primary/80">
+            <a href="/privacy" className="text-primary underline hover:decoration-2">
               {t("cookie.learnMore")}
             </a>
             {" · "}
-            <a href="/impressum" className="text-primary underline hover:text-primary/80">
+            <a href="/impressum" className="text-primary underline hover:decoration-2">
               {t("footer.impressum")}
             </a>
           </p>

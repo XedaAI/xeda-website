@@ -98,6 +98,10 @@ const WhatWeDoSection = () => {
                 const isActive = index === active;
                 return (
                   <li key={service.titleKey} className="enter" style={{ "--enter-delay": `${index * 0.08}s` } as React.CSSProperties}>
+                    {/* A heading may not sit inside a button, so the service
+                        name is also given as a hidden heading for screen
+                        readers' heading navigation. */}
+                    <h3 className="sr-only">{t(service.titleKey)}</h3>
                     <button
                       type="button"
                       aria-pressed={isActive}

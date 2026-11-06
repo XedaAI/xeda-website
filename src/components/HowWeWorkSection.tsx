@@ -79,7 +79,7 @@ const HowWeWorkSection = () => {
         <div className="text-center mt-14">
           <Link
             to="/process"
-            className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-medium transition-colors group"
+            className="inline-flex items-center gap-2 text-primary hover:underline underline-offset-4 font-medium transition-colors group"
           >
             {t("howWeWork.detailLink")}
             <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />

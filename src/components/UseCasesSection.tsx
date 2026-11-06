@@ -8,6 +8,7 @@ import DesktopScene from "@/components/industries/DesktopScene";
 import MobileScene from "@/components/industries/MobileScene";
 import type { Phase } from "@/components/industries/XedaNode";
 import { RUN_MS } from "@/components/industries/timing";
+import { preloadIndustryImages } from "@/components/industries/images";
 
 // Industries, as one repeated demonstration: messy work goes in, Xeda works
 // on it, structured action comes out. Nothing runs on its own — the visitor
@@ -54,6 +55,20 @@ const UseCasesSection = () => {
     const el = sectionRef.current;
     if (!el) return;
     const io = new IntersectionObserver(([e]) => setOffscreen(!e.isIntersecting));
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  // Fetch every industry's picture once the section is near, so switching
+  // industry never waits on the network.
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      preloadIndustryImages();
+      io.disconnect();
+    }, { rootMargin: "800px 0px" });
     io.observe(el);
     return () => io.disconnect();
   }, []);
@@ -155,6 +170,7 @@ const UseCasesSection = () => {
           <div className="ix-copy-stack" data-fading={fading ? "" : undefined}>
             {industries.map((ind, i) => (
               <div key={ind.key} className={`ix-copy ${i === shown ? "is-shown" : ""}`} aria-hidden={i !== shown}>
+                <h3 className="sr-only">{t(`useCases.${ind.key}.industry`)}</h3>
                 <div>
                   <span className="ix-copy-label">{t("useCases.problem")}</span>
                   <p>{t(`useCases.${ind.key}.problem`)}</p>

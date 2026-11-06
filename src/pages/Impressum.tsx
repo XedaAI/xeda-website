@@ -21,7 +21,7 @@ const Impressum = () => {
           </Button>
         </Link>
 
-        <article className="prose prose-neutral dark:prose-invert max-w-3xl mx-auto">
+        <article lang="de" className="prose prose-neutral dark:prose-invert max-w-3xl mx-auto hyphens-auto [overflow-wrap:anywhere]">
           <h1 className="text-4xl font-bold text-foreground mb-8">Impressum</h1>
 
           <section className="mb-8">
@@ -70,7 +70,7 @@ const Impressum = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-foreground mb-4">Verbraucherstreitbeilegung/Universalschlichtungsstelle</h2>
+            <h2 className="text-2xl font-semibold text-foreground mb-4">Verbraucher&shy;streit&shy;beilegung/<wbr />Universal&shy;schlichtungs&shy;stelle</h2>
             <p className="text-muted-foreground leading-relaxed">
               Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer 
               Verbraucherschlichtungsstelle teilzunehmen.

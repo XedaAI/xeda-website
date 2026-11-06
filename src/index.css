@@ -1357,6 +1357,14 @@ All colors MUST be HSL.
     height: 35rem;
   }
 }
+/* At the narrowest desktop widths the result table needs the room most: a
+   slightly narrower centre (the field list still fits) and a smaller type
+   step in the table keep vendor names and amounts from being cut off. */
+@media (min-width: 1024px) and (max-width: 1151px) {
+  .ix-stage { grid-template-columns: minmax(0, 1fr) 13.75rem minmax(0, 1.3fr); }
+  .ix-trow { gap: 0.4rem; padding-inline: 0.7rem; font-size: 11px; }
+  .ix-thead { gap: 0.4rem; padding-inline: 0.7rem; }
+}
 .ix-paths { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible; }
 
 .ix-zone-label {
@@ -1599,6 +1607,7 @@ All colors MUST be HSL.
   display: flex; align-items: center; gap: 0.5rem;
   border-radius: 0.45rem;
   border: 1px dashed hsl(var(--foreground) / 0.14);
+  background-color: hsl(var(--background) / 0.9);
   padding: 0.28rem 0.6rem;
   font-size: 11px;
   color: hsl(var(--muted-foreground) / 0.7);
@@ -1610,12 +1619,12 @@ All colors MUST be HSL.
   color: hsl(var(--foreground));
   border-style: solid;
   border-color: hsl(var(--success) / 0.35);
-  background: hsl(var(--success) / 0.06);
+  background-color: color-mix(in srgb, hsl(var(--success)) 7%, hsl(var(--background)) 93%);
   transition-delay: calc(var(--d) * 1ms);
   transition-duration: 0.35s;
 }
 .ix-scene[data-run] .ix-field .ix-field-dot { background: hsl(var(--success)); transition-delay: calc(var(--d) * 1ms); }
-.ix-scene[data-run] .ix-field--flag { border-color: hsl(var(--ix-amber) / 0.5); background: hsl(var(--ix-amber) / 0.08); }
+.ix-scene[data-run] .ix-field--flag { border-color: hsl(var(--ix-amber) / 0.5); background-color: color-mix(in srgb, hsl(var(--ix-amber)) 9%, hsl(var(--background)) 91%); }
 .ix-scene[data-run] .ix-field--flag .ix-field-dot { background: hsl(var(--ix-amber)); }
 
 .ix-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.25rem 0.75rem; min-height: 2.75rem; }
@@ -1872,7 +1881,7 @@ All colors MUST be HSL.
   /* The row runs to the screen edges, so the next pill visibly peeks in
      rather than being cut off where the content column ends. */
   .ixs-frame { margin-inline: -1.5rem; }
-  .ixs .ix-tabs { padding: 2px 1.5rem; scroll-padding-inline: 1.5rem; }
+  .ixs .ix-tabs { margin-inline: 0; padding: 2px 1.5rem; scroll-padding-inline: 1.5rem; }
   .ix-tab { min-height: 2.75rem; padding: 0.6rem 1.05rem; font-size: 0.9375rem; }
   .ixs-frame::before,
   .ixs-frame::after {
@@ -2328,17 +2337,42 @@ All colors MUST be HSL.
 }
 .ix-scene[data-run] :is(.ix-trow--traced, .ixm-row--traced) { animation: ixTrace 1.4s ease calc(var(--d) * 1ms) both; }
 
-/* Environments: pattern + ambient light + line-art scene, per industry. */
-.ix-envx {
+/* Environments: each industry's own picture (images.ts), standing behind
+   "Activate Xeda" in the middle of the scene, so switching industry changes
+   the setting while the Xeda system in front stays the same. Full stage
+   height, centred, and faded out radially so it has no edges; the two sides,
+   where the inputs and the result are read, are darkened a little more.
+   Below it, the ambient light and faint pattern per industry remain. */
+.ix-bg {
   position: absolute; inset: 0; z-index: 0;
-  width: 100%; height: 100%;
-  color: hsl(var(--foreground) / 0.085);
   pointer-events: none;
+  overflow: hidden;
   transition: opacity 0.6s ease;
 }
-.ix-envx * { vector-effect: non-scaling-stroke; }
-.ix-envx-lit { fill: hsl(var(--ix-amb) / 0.22); stroke: hsl(var(--ix-amb) / 0.35); }
-.ix-scene[data-phase="after"] .ix-envx { opacity: 0.7; }
+.ix-bg img {
+  position: absolute; left: 50%; top: 0;
+  height: 100%; width: auto;
+  aspect-ratio: 560 / 548;
+  transform: translateX(-50%);
+  opacity: 0.75;
+  -webkit-mask-image: radial-gradient(closest-side, #000 50%, transparent);
+  mask-image: radial-gradient(closest-side, #000 50%, transparent);
+  animation: ixBgIn 0.6s ease both;
+}
+.ix-bg::after {
+  content: "";
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(180deg, hsl(var(--background) / 0.9), hsl(var(--background) / 0.7) 17%, transparent 30%, transparent 70%, hsl(var(--background) / 0.6)),
+    linear-gradient(90deg, hsl(var(--background) / 0.45), transparent 30%, transparent 70%, hsl(var(--background) / 0.45));
+}
+.ix-scene[data-phase="after"] .ix-bg { opacity: 0.7; }
+@keyframes ixBgIn { from { opacity: 0; } }
+/* Over a bright part of the picture the centre's text and field list keep a
+   dark backing of their own. */
+.ix-core :is(.ix-stagehead, .ix-hint) {
+  text-shadow: 0 1px 2px hsl(var(--background)), 0 0 14px hsl(var(--background) / 0.95);
+}
 .ix-stage, .ixm {
   --ix-amb: 40 45% 78%;
   --ix-pat: none;
@@ -2390,16 +2424,39 @@ All colors MUST be HSL.
 
 /* --- Phones: the same three stages ----------------------------------------- */
 .ixm { overflow: hidden; }
-.ixm > :not(.ixm-strip) { position: relative; z-index: 1; }
-.ixm-strip {
-  position: absolute; left: 0; right: 0; top: 0; z-index: 0;
-  width: 100%; height: 7rem;
-  color: hsl(var(--foreground) / 0.11);
+.ixm > * { position: relative; z-index: 1; }
+/* On a phone the picture fills the "Activate Xeda" module itself, the one
+   part of the card that is not covered by cards of its own. Darker on the
+   left, behind the mark and the fields, and at the foot, behind the action. */
+.ixm-module { position: relative; overflow: hidden; isolation: isolate; }
+.ixm-module > :not(.ixm-bg) { position: relative; z-index: 1; }
+.ixm-bg {
+  position: absolute; inset: 0; z-index: 0;
   pointer-events: none;
-  -webkit-mask-image: linear-gradient(to bottom, #000 30%, transparent);
-  mask-image: linear-gradient(to bottom, #000 30%, transparent);
 }
-.ixm-strip * { vector-effect: non-scaling-stroke; }
+.ixm-bg img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: 50% 55%;
+  opacity: 0.8;
+  animation: ixBgIn 0.6s ease both;
+}
+.ixm-bg::after {
+  content: "";
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(0deg, hsl(var(--background) / 0.88), hsl(var(--background) / 0.6) 18%, transparent 45%),
+    linear-gradient(90deg, hsl(var(--background) / 0.5), hsl(var(--background) / 0.1) 60%, transparent);
+}
+/* As on desktop, the picture steps back once the result is in. */
+.ixm-bg { transition: opacity 0.6s ease; }
+.ixm[data-phase="after"] .ixm-bg { opacity: 0.55; }
+.ixm-module :is(.ixm-helper, .ixm-done-line) {
+  text-shadow: 0 1px 2px hsl(var(--background)), 0 0 12px hsl(var(--background) / 0.95);
+}
+@media (prefers-reduced-motion: reduce) {
+  .ix-bg img, .ixm-bg img { animation: none; }
+}
 .ixm .ix-stagehead { margin-bottom: 0.5rem; }
 .ixm .ix-stagehead-sub { font-size: 0.8125rem; }
 .ixm-read { margin-left: auto; align-self: center; white-space: nowrap; }

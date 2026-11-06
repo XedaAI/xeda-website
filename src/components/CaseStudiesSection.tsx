@@ -64,7 +64,7 @@ const CaseStudiesSection = () => {
             href={auditBookingUrl("case-studies")}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-medium transition-colors group"
+            className="inline-flex items-center gap-2 text-primary hover:underline underline-offset-4 font-medium transition-colors group"
           >
             {t("caseStudies.cta")}
             <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />

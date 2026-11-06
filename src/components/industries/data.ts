@@ -140,7 +140,7 @@ export const industries: Industry[] = [
       app: "DATEV",
       title: l("Import · posting batch", "Import · Buchungsstapel"),
       cols: [l("Vendor", "Lieferant"), l("Invoice", "Beleg"), l("Date", "Datum"), l("Amount", "Betrag"), l("VAT", "USt."), l("", "")],
-      grid: "minmax(0,1.3fr) minmax(0,0.95fr) minmax(0,0.95fr) minmax(0,1.05fr) minmax(0,0.5fr) 1.5rem",
+      grid: "minmax(0,1.3fr) minmax(0,0.95fr) minmax(4.6rem,0.95fr) minmax(0,1.05fr) minmax(0,0.5fr) 1.5rem",
       rows: [
         { cells: ["Acme GmbH", "RE-1201", "24.04.2025", l("€1,190.00", "1.190,00 €"), "19%"], sub: l("24.04.2025 · €1,190.00 · VAT 19% · RE-1201", "24.04.2025 · 1.190,00 € · USt. 19 % · RE-1201"), status: "ok", traced: true },
         { cells: ["Microsoft", "RE-0423", "23.04.2025", l("€299.00", "299,00 €"), "19%"], sub: l("€299.00 · VAT 19% · RE-0423", "299,00 € · USt. 19 % · RE-0423"), status: "ok" },
@@ -185,12 +185,12 @@ export const industries: Industry[] = [
       app: "SAP",
       title: l("Sales order 4500-1123 · draft", "Kundenauftrag 4500-1123 · Entwurf"),
       cols: [l("Material", "Material"), l("Qty", "Menge"), l("Price", "Preis"), l("Delivery", "Termin"), l("", "")],
-      grid: "minmax(0,1.5fr) minmax(0,0.7fr) minmax(0,0.95fr) minmax(0,0.8fr) 1.5rem",
+      grid: "minmax(0,1.75fr) minmax(0,0.6fr) minmax(0,0.9fr) minmax(0,0.7fr) 1.5rem",
       rows: [
         { cells: [l("100-240 Housing", "100-240 Gehäuse"), "250", l("€12.50", "12,50 €"), "28.04."], sub: l("250 pcs · €12.50 · due 28.04.", "250 Stk. · 12,50 € · bis 28.04."), status: "ok" },
         { cells: [l("100-318 Shaft", "100-318 Welle"), "100", l("€8.90", "8,90 €"), "30.04."], sub: l("100 pcs · €8.90 · due 30.04.", "100 Stk. · 8,90 € · bis 30.04."), status: "ok" },
         { cells: [l("200-051 Flange", "200-051 Flansch"), "50", l("€199.00", "199,00 €"), "02.05."], sub: l("50 pcs · €199.00 · due 02.05.", "50 Stk. · 199,00 € · bis 02.05."), status: "warn", traced: true, note: l("Price 16× the usual rate", "Preis 16× über dem Üblichen") },
-        { cells: [l("300-112 Bolt set", "300-112 Schraubensatz"), "1,000", l("€3.40", "3,40 €"), "28.04."], sub: l("1,000 pcs · €3.40 · due 28.04.", "1.000 Stk. · 3,40 € · bis 28.04."), status: "ok" },
+        { cells: [l("300-112 Bolt set", "300-112 Schraubensatz"), l("1,000", "1.000"), l("€3.40", "3,40 €"), "28.04."], sub: l("1,000 pcs · €3.40 · due 28.04.", "1.000 Stk. · 3,40 € · bis 28.04."), status: "ok" },
       ],
       footer: { text: l("Order confirmation drafted and sent", "Auftragsbestätigung erstellt und versendet"), icon: "send" },
     },

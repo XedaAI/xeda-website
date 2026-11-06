@@ -39,9 +39,11 @@ export const OutPanel = ({
   app, title, right, lang, children,
 }: { app: string; title: string; right?: ReactNode; lang: SiteLanguage; children: ReactNode }) => (
   <div className="ix-panel">
-    <div className="flex items-center gap-2.5 border-b border-border/70 px-3.5 py-2.5">
+    {/* Wraps when narrow: the status drops under the title rather than
+        squeezing it down to a few letters. */}
+    <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 border-b border-border/70 px-3.5 py-2.5">
       <span className="ix-app">{app}</span>
-      <span className="truncate text-xs text-muted-foreground">{title}</span>
+      <span className="min-w-[9rem] flex-1 text-xs leading-snug text-muted-foreground">{title}</span>
       <span className="ml-auto flex shrink-0 items-center gap-1.5 text-[10px] font-medium uppercase tracking-[0.08em]">
         {right}
         <span className="ix-sync">
