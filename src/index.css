@@ -2338,10 +2338,11 @@ All colors MUST be HSL.
 .ix-scene[data-run] :is(.ix-trow--traced, .ixm-row--traced) { animation: ixTrace 1.4s ease calc(var(--d) * 1ms) both; }
 
 /* Environments: each industry's own picture (images.ts), standing behind
-   "Activate Xeda" in the middle of the scene, so switching industry changes
-   the setting while the Xeda system in front stays the same. Full stage
-   height, centred, and faded out radially so it has no edges; the two sides,
-   where the inputs and the result are read, are darkened a little more.
+   "Activate Xeda", so switching industry changes the setting while the Xeda
+   system in front stays the same. Full stage height, faded out radially so
+   it has no edges, and centred a little left of the Xeda module (32%) so
+   the module does not hide the picture's subject; the two sides, where the
+   inputs and the result are read, are darkened a little more.
    Below it, the ambient light and faint pattern per industry remain. */
 .ix-bg {
   position: absolute; inset: 0; z-index: 0;
@@ -2350,7 +2351,7 @@ All colors MUST be HSL.
   transition: opacity 0.6s ease;
 }
 .ix-bg img {
-  position: absolute; left: 50%; top: 0;
+  position: absolute; left: 32%; top: 0;
   height: 100%; width: auto;
   aspect-ratio: 560 / 548;
   transform: translateX(-50%);
