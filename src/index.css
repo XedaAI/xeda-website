@@ -15,76 +15,72 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* --- Light -----------------------------------------------------------
-       Warm charcoal / green / orange. Green is taken from the service
-       illustrations' glow — mint #69D3C2 for text accents, #0CAB92 for fills
-       — and a softened orange, #DD884B, marks the buttons: warm enough to be
-       found first, calmer than a pure #FF7A00. The ground is a near-black
-       with a warm undertone (#1F1C1A) rather than navy: navy sits next to the
-       green on the wheel and the two blurred together, while a warm neutral
-       makes the green the one cool colour on the page and shares the orange's
-       warmth. Dark is the default.
-
-       On white, neither the orange nor the mint carries text, and a light
-       orange button blurs into the page. So here buttons are a deeper burnt
-       orange, #B25824, with white text (4.9:1), and the green darkens to
-       #0C7967 for text (5.1:1). */
-    --background: 40 20% 98%;
-    --foreground: 30 9% 11%;
+       Monochrome by design: neutrals carry a whisper of blue (hue 220 at
+       3-6% sat) so they read as chosen rather than as flat system grey, and
+       emphasis comes from weight, scale and space. A few colours are kept
+       for the things a visitor should find first:
+         orange  — buttons and links (--primary). On white a burnt orange,
+                   #A0461C, with white text (5.9:1).
+         bronze  — eyebrows and labels (--brand-accent, 6.4:1 on white); the
+                   dark theme's sand, darkened to stay readable on white.
+         green   — "done" states (--success).
+         red     — the one Xeda action in the industries demo (--xeda). */
+    --background: 0 0% 100%;
+    --foreground: 220 12% 8%;
 
     --card: 0 0% 100%;
-    --card-foreground: 30 9% 11%;
+    --card-foreground: 220 12% 8%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 30 9% 11%;
+    --popover-foreground: 220 12% 8%;
 
-    /* Buttons are near-black with white text — the OpenAI move. */
     --primary: 22 70% 37%;
     --primary-foreground: 0 0% 100%;
 
-    /* Eyebrows, headlines and labels in the primary green (#1F6B51, 6.1:1). */
-    --brand-accent: 160 55% 27%;
+    --brand-accent: 33 45% 33%;
 
     --success: 160 60% 30%;
     --xeda: 3 64% 46%;
     --xeda-foreground: 0 0% 100%;
 
-    --section-alt: 40 20% 94%;
+    --section-alt: 220 14% 97%;
 
-    --secondary: 170 82% 26%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 220 8% 24%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 35 6% 55%;
-    --muted-foreground: 30 8% 36%;
+    --muted: 220 6% 62%;
+    --muted-foreground: 220 6% 40%;
 
-    --accent: 40 20% 94%;
-    --accent-foreground: 30 9% 11%;
+    --accent: 220 14% 96%;
+    --accent-foreground: 220 12% 14%;
 
     --destructive: 0 65% 44%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 35 14% 87%;
-    --input: 35 12% 81%;
-    --ring: 160 55% 27%;
+    --border: 220 12% 90%;
+    --input: 220 12% 88%;
+    --ring: 220 12% 30%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 40 20% 98%;
-    --sidebar-foreground: 30 9% 11%;
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 220 12% 8%;
     --sidebar-primary: 22 70% 37%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 40 20% 94%;
-    --sidebar-accent-foreground: 30 9% 11%;
-    --sidebar-border: 35 14% 87%;
-    --sidebar-ring: 170 82% 26%;
+    --sidebar-accent: 220 14% 96%;
+    --sidebar-accent-foreground: 220 12% 14%;
+    --sidebar-border: 220 12% 90%;
+    --sidebar-ring: 220 12% 30%;
 
-    /* Charts: green and orange first, then the charcoal's warm greys. */
-    --chart-1: 170 82% 26%;
-    --chart-2: 22 70% 37%;
-    --chart-3: 170 60% 40%;
-    --chart-4: 30 10% 35%;
-    --chart-5: 35 8% 65%;
+    /* Charts are the one place categorical separation is unavoidable, so they
+       step through lightness rather than hue. */
+    --chart-1: 220 10% 18%;
+    --chart-2: 220 8% 34%;
+    --chart-3: 220 7% 50%;
+    --chart-4: 220 6% 64%;
+    --chart-5: 220 6% 78%;
 
-    --sidebar: 40 20% 98%;
+    --sidebar: 0 0% 100%;
 
     --font-sans: 'Work Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
 
@@ -115,62 +111,59 @@ All colors MUST be HSL.
 
   .dark {
     /* --- Dark ------------------------------------------------------------
-       The default theme. Green is the primary colour: a deep green ground
-       (#0F241E) and a lighter green for raised surfaces. Orange (#DD884B)
-       stays the colour of buttons and accents, with dark-green text on it
-       (6.0:1). Sand (#E0CFAE) is the third colour — headlines, eyebrows and
-       the hero highlight (10.6:1) — so large type is neither more orange nor
-       green on green. Mint (#5EC9AF, 8.1:1) means "done"; red (#C2322A,
-       white text 5.0:1) is kept for the one Xeda action. */
-    --background: 162 43% 10%;
-    --foreground: 40 20% 94%;
+       The same monochrome system inverted. Buttons are a soft orange,
+       #DD884B, with near-black text (6.8:1); sand, #E0CFAE, marks eyebrows,
+       labels and the hero highlight (12.8:1); mint means "done"; red, with
+       white text (5.6:1), is kept for the one Xeda action. */
+    --background: 220 12% 5%;
+    --foreground: 220 8% 96%;
 
-    --card: 161 40% 14%;
-    --card-foreground: 40 20% 94%;
+    --card: 220 11% 9%;
+    --card-foreground: 220 8% 96%;
 
-    --popover: 161 38% 16%;
-    --popover-foreground: 40 20% 94%;
+    --popover: 220 11% 10%;
+    --popover-foreground: 220 8% 96%;
 
     --primary: 25 68% 58%;
-    --primary-foreground: 162 43% 10%;
+    --primary-foreground: 220 12% 8%;
 
     --brand-accent: 40 45% 78%;
-
-    --section-alt: 162 45% 7%;
-
-    --secondary: 158 45% 28%;
-    --secondary-foreground: 40 20% 94%;
-
-    --muted: 160 24% 20%;
-    --muted-foreground: 150 14% 74%;
-
-    --accent: 160 30% 18%;
-    --accent-foreground: 40 20% 94%;
 
     --success: 165 50% 58%;
     --xeda: 3 64% 46%;
     --xeda-foreground: 0 0% 100%;
 
+    --section-alt: 220 11% 8%;
+
+    --secondary: 220 8% 32%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 220 8% 28%;
+    --muted-foreground: 220 7% 66%;
+
+    --accent: 220 11% 14%;
+    --accent-foreground: 220 8% 92%;
+
     --destructive: 0 62% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 160 24% 21%;
-    --input: 160 22% 26%;
-    --ring: 40 45% 78%;
-    --sidebar-background: 162 45% 7%;
-    --sidebar-foreground: 40 20% 94%;
+    --border: 220 10% 17%;
+    --input: 220 10% 19%;
+    --ring: 220 8% 72%;
+    --sidebar-background: 220 12% 6%;
+    --sidebar-foreground: 220 8% 96%;
     --sidebar-primary: 25 68% 58%;
-    --sidebar-primary-foreground: 162 43% 10%;
-    --sidebar-accent: 160 30% 18%;
-    --sidebar-accent-foreground: 40 20% 94%;
-    --sidebar-border: 160 24% 21%;
-    --sidebar-ring: 40 45% 78%;
-    --chart-1: 165 50% 58%;
-    --chart-2: 25 68% 58%;
-    --chart-3: 40 45% 78%;
-    --chart-4: 158 45% 36%;
-    --chart-5: 150 10% 55%;
-    --sidebar: 161 40% 14%;
+    --sidebar-primary-foreground: 220 12% 8%;
+    --sidebar-accent: 220 11% 14%;
+    --sidebar-accent-foreground: 220 8% 92%;
+    --sidebar-border: 220 10% 17%;
+    --sidebar-ring: 220 8% 72%;
+    --chart-1: 220 8% 92%;
+    --chart-2: 220 7% 76%;
+    --chart-3: 220 7% 60%;
+    --chart-4: 220 7% 46%;
+    --chart-5: 220 8% 34%;
+    --sidebar: 220 11% 9%;
     --shadow-2xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
     --shadow-xs: 0 1px 3px 0px hsl(0 0% 0% / 0.05);
     --shadow-sm: 0 1px 3px 0px hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
@@ -200,25 +193,25 @@ All colors MUST be HSL.
    In light mode this is a full inversion; in dark mode the page is already dark,
    so it only drops a step deeper to keep the rhythm readable. */
 .section-ink {
-  --background: 162 45% 8%;
-  --foreground: 40 20% 94%;
-  --card: 161 40% 13%;
-  --card-foreground: 40 20% 94%;
-  --popover: 161 38% 16%;
-  --popover-foreground: 40 20% 94%;
-  --muted: 160 24% 20%;
-  --muted-foreground: 150 14% 74%;
-  --border: 160 24% 20%;
-  --input: 160 22% 25%;
+  --background: 220 12% 5%;
+  --foreground: 220 8% 96%;
+  --card: 220 11% 9%;
+  --card-foreground: 220 8% 96%;
+  --popover: 220 11% 10%;
+  --popover-foreground: 220 8% 96%;
+  --muted: 220 8% 28%;
+  --muted-foreground: 220 7% 68%;
+  --border: 220 10% 17%;
+  --input: 220 10% 19%;
   --primary: 25 68% 58%;
-  --primary-foreground: 162 43% 10%;
+  --primary-foreground: 220 12% 8%;
   --brand-accent: 40 45% 78%;
   --success: 165 50% 58%;
-  --accent: 160 30% 17%;
-  --accent-foreground: 40 20% 94%;
-  --ring: 40 45% 78%;
-  --secondary: 158 45% 28%;
-  --secondary-foreground: 40 20% 94%;
+  --accent: 220 11% 14%;
+  --accent-foreground: 220 8% 92%;
+  --ring: 220 8% 72%;
+  --secondary: 220 8% 32%;
+  --secondary-foreground: 0 0% 98%;
 
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
@@ -227,8 +220,8 @@ All colors MUST be HSL.
 /* In dark mode the page is already ink, so these drop a step deeper instead
    of inverting — otherwise the rhythm disappears entirely. */
 .dark .section-ink {
-  --background: 162 48% 6%;
-  --card: 161 40% 11%;
+  --background: 220 14% 3%;
+  --card: 220 11% 8%;
 }
 
 /* Hairline rule that fades at both ends — separates ink sections without a
@@ -523,7 +516,7 @@ All colors MUST be HSL.
   position: absolute; left: var(--al-x0); right: calc(100% - var(--al-x1));
   top: calc(var(--core-y, 240px) - var(--al-pipe-h) * .404); height: var(--al-pipe-h);
   clip-path: polygon(0% 7.7%, 100% 1.9%, 100% 63.5%, 0% 88.5%);
-  background: linear-gradient(90deg, hsl(40 20% 96% / .62), hsl(40 20% 96% / .34) 56%, hsl(40 20% 96% / .24));
+  background: linear-gradient(90deg, hsl(220 8% 96% / .62), hsl(220 8% 96% / .34) 56%, hsl(220 8% 96% / .24));
 }
 /* Two pixels smaller on the long edges, so the outer box reads as a lit rim.
    The opaque base matters: without it the hero photo shows through the tube. */
@@ -532,9 +525,9 @@ All colors MUST be HSL.
   clip-path: polygon(0% 9.6%, 100% 3.8%, 100% 61.6%, 0% 86.6%);
   background:
     linear-gradient(180deg,
-      hsl(40 20% 96% / .17) 0%, hsl(40 20% 96% / .06) 34%,
-      hsl(162 45% 3% / .44) 72%, hsl(162 45% 3% / .7) 100%),
-    hsl(162 40% 7%);
+      hsl(220 8% 96% / .17) 0%, hsl(220 8% 96% / .06) 34%,
+      hsl(220 14% 2% / .44) 72%, hsl(220 14% 2% / .7) 100%),
+    hsl(220 12% 5%);
 }
 
 /* ---- the surface, as dust ----
@@ -570,24 +563,24 @@ All colors MUST be HSL.
   position: absolute; left: var(--al-x0); top: calc(var(--core-y, 240px) + var(--al-pipe-h) * .077);
   width: 28px; height: calc(var(--al-pipe-h) * .808); margin: 0;
   transform: translate(-50%, -50%); border-radius: 50%;
-  background: hsl(162 42% 5%); border: 2.5px solid hsl(40 20% 96% / .88);
+  background: hsl(220 14% 3%); border: 2.5px solid hsl(220 8% 96% / .88);
 }
 .al-mouth-bore {
   position: absolute; left: 50%; top: 50%; width: 16px; height: 46%;
   transform: translate(-50%, -50%); border-radius: 50%;
-  border: 1px solid hsl(40 20% 96% / .3);
+  border: 1px solid hsl(220 8% 96% / .3);
 }
 /* The outlet is smaller because it sits further away. */
 .al-outlet {
   position: absolute; left: var(--al-x1); top: calc(var(--core-y, 240px) - var(--al-pipe-h) * .077);
   width: 20px; height: calc(var(--al-pipe-h) * .615);
   transform: translate(-50%, -50%); border-radius: 50%;
-  border: 2px solid hsl(40 20% 96% / .62);
+  border: 2px solid hsl(220 8% 96% / .62);
 }
 .al-glow {
   position: absolute; left: var(--al-x0); top: calc(var(--core-y, 240px) + var(--al-pipe-h) * .077);
   width: 240px; height: 170px; transform: translate(-50%, -50%);
-  background: radial-gradient(closest-side, hsl(40 20% 96% / .15), transparent);
+  background: radial-gradient(closest-side, hsl(220 8% 96% / .15), transparent);
 }
 
 /* ---- the collar: the mark, as a ring the pipe runs through ----
@@ -632,13 +625,13 @@ All colors MUST be HSL.
    circle, where it sits on the silhouette and is neither in front nor behind. */
 .al-ball {
   position: absolute; left: 0; top: 0; width: 30px; height: 30px; border-radius: 50%;
-  background: radial-gradient(circle at 34% 30%, hsl(0 0% 100%) 0%, hsl(40 20% 96%) 42%, hsl(35 8% 64%) 100%);
+  background: radial-gradient(circle at 34% 30%, hsl(0 0% 100%) 0%, hsl(220 8% 96%) 42%, hsl(220 6% 64%) 100%);
   transform: rotateZ(2.2deg) rotateY(-58deg);
   offset-path: path('M 122 19 A 103 103 0 0 1 122 225 A 103 103 0 0 1 122 19');
   offset-rotate: 0deg;
 }
 .al-ball--far  { filter: blur(.5px); animation: alRide 10s linear infinite, alBallFar 10s step-end infinite; }
-.al-ball--near { box-shadow: 0 0 18px hsl(40 20% 96% / .55); animation: alRide 10s linear infinite, alBallNear 10s step-end infinite; }
+.al-ball--near { box-shadow: 0 0 18px hsl(220 8% 96% / .55); animation: alRide 10s linear infinite, alBallNear 10s step-end infinite; }
 @keyframes alRide { from { offset-distance: 0%; } to { offset-distance: 100%; } }
 @keyframes alBallFar  { 0% { opacity: .5; } 50% { opacity: 0; } 100% { opacity: 0; } }
 @keyframes alBallNear { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 1; } }
@@ -655,14 +648,14 @@ All colors MUST be HSL.
 .al-fray {
   position: absolute; right: 16px; top: 0; width: 132%; height: 1px;
   transform-origin: right center; transform: rotate(var(--deg));
-  background: linear-gradient(90deg, hsl(40 20% 96% / 0), hsl(40 20% 96% / .18));
+  background: linear-gradient(90deg, hsl(220 8% 96% / 0), hsl(220 8% 96% / .18));
 }
 /* The aperture itself, breathing. Small and slow: it marks the point, it does
    not compete with the collar for attention. */
 .al-spark {
   position: absolute; left: var(--al-x0); top: calc(var(--core-y, 240px) + var(--al-pipe-h) * .077);
   width: 86px; height: 86px; margin: -43px 0 0 -43px; border-radius: 50%;
-  background: radial-gradient(closest-side, hsl(40 20% 96% / .4), transparent);
+  background: radial-gradient(closest-side, hsl(220 8% 96% / .4), transparent);
   animation: alSpark 3.4s ease-in-out infinite;
 }
 @keyframes alSpark {
@@ -683,10 +676,10 @@ All colors MUST be HSL.
 .al-ray {
   position: absolute; left: 22px; top: calc(var(--al-pipe-h) * .48 + var(--y0) * var(--al-y));
   width: var(--rw); height: var(--rh); border-radius: 9999px; opacity: 0;
-  background: linear-gradient(90deg, hsl(40 20% 96% / 0), hsl(40 20% 96%) 58%, hsl(40 20% 96% / 0));
+  background: linear-gradient(90deg, hsl(220 8% 96% / 0), hsl(220 8% 96%) 58%, hsl(220 8% 96% / 0));
   /* Static halo, animated opacity: a shadow that only fades composites, one
      recomputed per frame does not. */
-  box-shadow: 0 0 7px hsl(40 20% 96% / .45);
+  box-shadow: 0 0 7px hsl(220 8% 96% / .45);
   animation: alRay var(--d) linear infinite; animation-delay: var(--dl);
 }
 @keyframes alRay {
@@ -703,7 +696,7 @@ All colors MUST be HSL.
 .al-lane {
   position: absolute; left: 12px; top: 0; width: 130%; height: 1px;
   transform-origin: left center; transform: rotate(var(--deg));
-  background: linear-gradient(90deg, hsl(40 20% 96% / .04), hsl(40 20% 96% / .24) 34%, hsl(40 20% 96% / .3));
+  background: linear-gradient(90deg, hsl(220 8% 96% / .04), hsl(220 8% 96% / .24) 34%, hsl(220 8% 96% / .3));
 }
 
 /* ---- inside the bore ----
@@ -721,7 +714,7 @@ All colors MUST be HSL.
   position: absolute; left: 18px; top: calc(var(--al-pipe-h) * .48 + var(--y0) * var(--al-y)); opacity: 0;
   will-change: transform, opacity;
   font-family: Inconsolata, ui-monospace, monospace; font-size: 9px; letter-spacing: .04em;
-  color: hsl(40 20% 96%); white-space: nowrap;
+  color: hsl(220 8% 96%); white-space: nowrap;
   animation: alBore var(--d) linear infinite; animation-delay: var(--dl);
 }
 @keyframes alBore {
@@ -763,34 +756,34 @@ All colors MUST be HSL.
 /* ---- inbound: raw data, no paper, no box ---- */
 .al-raw {
   font-family: Inconsolata, ui-monospace, monospace; font-size: 13px; letter-spacing: .06em;
-  color: hsl(40 20% 96% / .62); white-space: nowrap;
+  color: hsl(220 8% 96% / .62); white-space: nowrap;
 }
 /* Machine noise sits a touch dimmer and wider than anything a person typed. */
-.al-raw--bin { letter-spacing: .18em; color: hsl(40 20% 96% / .5); }
+.al-raw--bin { letter-spacing: .18em; color: hsl(220 8% 96% / .5); }
 
 /* ---- outbound: structured output, every item contained ---- */
 .al-card {
   box-sizing: border-box; display: flex; flex-direction: column; gap: 6px; padding: 10px 12px;
-  background: hsl(40 20% 96%); border-radius: 4px; box-shadow: 0 8px 26px hsl(162 45% 3% / .5);
+  background: hsl(220 8% 96%); border-radius: 4px; box-shadow: 0 8px 26px hsl(220 14% 2% / .5);
   min-width: 128px;
 }
 .al-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
 .al-key {
   font-family: Inconsolata, ui-monospace, monospace; font-size: 8.5px; font-weight: 700;
-  letter-spacing: .1em; text-transform: uppercase; color: hsl(35 6% 46%);
+  letter-spacing: .1em; text-transform: uppercase; color: hsl(220 10% 44%);
 }
 .al-val {
   font-family: Inconsolata, ui-monospace, monospace; font-size: 10px; font-weight: 700;
-  color: hsl(162 43% 10%);
+  color: hsl(220 12% 16%);
 }
 .al-chip {
   display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 9999px;
-  background: hsl(40 20% 96%); box-shadow: 0 8px 22px hsl(162 45% 3% / .5);
+  background: hsl(220 8% 96%); box-shadow: 0 8px 22px hsl(220 14% 2% / .5);
   font-family: Inconsolata, ui-monospace, monospace; font-size: 10px; font-weight: 700;
-  letter-spacing: .12em; text-transform: uppercase; color: hsl(162 43% 10%); white-space: nowrap;
+  letter-spacing: .12em; text-transform: uppercase; color: hsl(220 12% 16%); white-space: nowrap;
 }
 .al-badge {
-  width: 18px; height: 18px; border-radius: 50%; background: hsl(162 43% 10%);
+  width: 18px; height: 18px; border-radius: 50%; background: hsl(220 12% 16%);
   display: flex; align-items: center; justify-content: center; flex: none;
 }
 
@@ -800,19 +793,19 @@ All colors MUST be HSL.
    everything else now, so the line rides the belt like any other result. */
 .al-note {
   box-sizing: border-box; display: flex; align-items: center; gap: 8px;
-  width: 168px; padding: 8px 11px; background: hsl(40 20% 96%); border-radius: 4px;
-  box-shadow: 0 8px 26px hsl(162 45% 3% / .5);
+  width: 168px; padding: 8px 11px; background: hsl(220 8% 96%); border-radius: 4px;
+  box-shadow: 0 8px 26px hsl(220 14% 2% / .5);
 }
 .al-quote {
   font-family: 'Work Sans', system-ui, sans-serif; font-weight: 600; font-size: 10px;
-  line-height: 1.3; letter-spacing: -0.01em; color: hsl(162 43% 10%); text-wrap: balance;
+  line-height: 1.3; letter-spacing: -0.01em; color: hsl(220 12% 16%); text-wrap: balance;
 }
 
 /* ---- the captions that name the three stages ---- */
 .al-caption {
   position: absolute;
   font-family: Inconsolata, ui-monospace, monospace; font-size: 10px; font-weight: 700;
-  letter-spacing: .16em; text-transform: uppercase; color: hsl(40 20% 96% / .4);
+  letter-spacing: .16em; text-transform: uppercase; color: hsl(220 8% 96% / .4);
   white-space: nowrap;
 }
 .al-caption--in  { left: calc(var(--al-x0) - 28px); top: calc(var(--core-y, 240px) + var(--al-pipe-h) * .98); }
@@ -887,57 +880,53 @@ All colors MUST be HSL.
   position: fixed; inset: 0; z-index: 40; pointer-events: none;
 
   /* The palette SectionDust.tsx paints with, read from here so it has a light
-     and a dark set and stays legible in both. --dust-5 is the foreground and
-     carries most of the grains; the four tints are the mint, the green, the
-     orange and a pale warm grey, held well down in saturation — dust catching the
-     light, not confetti. Deleting the four tints leaves the whole thing
+     and a dark set and stays legible in both. The site is monochrome by design,
+     so --dust-5 is the foreground and carries most of the grains; the four
+     tints are held well down in saturation and are a minority — dust catching
+     the light, not confetti. Deleting the four tints leaves the whole thing
      monochrome again with nothing else to change. */
-  --dust-1: hsl(170 55% 34%);
-  --dust-2: hsl(25 55% 44%);
-  --dust-3: hsl(170 70% 28%);
-  --dust-4: hsl(35 8% 45%);
+  --dust-1: hsl(212 48% 42%);
+  --dust-2: hsl(32 55% 44%);
+  --dust-3: hsl(266 38% 48%);
+  --dust-4: hsl(172 40% 34%);
   --dust-5: hsl(var(--foreground));
 }
 /* Dark sections need the tints lifted, or they vanish into the panel. */
 .dark .section-dust {
-  --dust-1: hsl(165 50% 58%);
-  --dust-2: hsl(25 62% 62%);
-  --dust-3: hsl(40 45% 78%);
-  --dust-4: hsl(150 12% 70%);
+  --dust-1: hsl(210 62% 70%);
+  --dust-2: hsl(36 70% 66%);
+  --dust-3: hsl(268 50% 74%);
+  --dust-4: hsl(168 46% 62%);
   --dust-5: hsl(var(--foreground));
 }
 /* --- Delivery cascade -------------------------------------------------------
    Palette for the seven-step water-wheel illustration (DeliveryCascade.tsx).
-   Every colour here is taken from the theme's own tokens, so the drawing sits
-   in whatever colour scheme is active and has nothing fixed underneath it:
-   stone and wood are the scheme's neutral, and the water and the seven stages
-   are its text accent. --brand-accent is the one accent every scheme keeps
-   readable as text on the page background, which matters because a stage's
-   label is drawn in its colour when it lights up. The tokens already switch
-   between light and dark, so one definition serves both themes. */
+   Stone and wood take their tone from the page's own tokens so the drawing sits
+   in whatever theme is active; the water is the one place a hue enters, because
+   the metaphor needs water to look like water. Both sets are defined here, so
+   dropping the --dc-water pair back onto a foreground token makes the whole
+   illustration monochrome again. */
 .dc-flow {
-  --dc-wood: hsl(var(--muted-foreground));
-  --dc-wood-lit: hsl(var(--foreground) / 0.72);
-  --dc-stone: hsl(var(--muted-foreground) / 0.32);
-  --dc-stone-lit: hsl(var(--muted-foreground) / 0.52);
-  --dc-water: hsl(var(--success));
-  --dc-water-soft: hsl(var(--success) / 0.22);
-  --dc-water-deep: hsl(var(--success) / 0.18);
-  --dc-on-water: hsl(var(--background));
+  --dc-wood: hsl(28 34% 44%);
+  --dc-wood-lit: hsl(30 42% 58%);
+  --dc-stone: hsl(36 22% 60%);
+  --dc-stone-lit: hsl(38 30% 75%);
+  --dc-water: hsl(204 84% 44%);
+  --dc-water-soft: hsl(204 84% 44% / 0.22);
+  --dc-water-deep: hsl(206 72% 30% / 0.2);
+  --dc-on-water: hsl(0 0% 100%);
   --dc-label: hsl(var(--foreground) / 0.82);
   --dc-label-soft: hsl(var(--muted-foreground));
 
-  /* The stages share the accent rather than each taking a fixed hue: they are
-     told apart by their number, label and position, and the one that is live
-     is already singled out. HSL triples, so one value serves the solid fill
-     and every washed-back form of it. */
-  --dc-s1: var(--success);
-  --dc-s2: var(--success);
-  --dc-s3: var(--success);
-  --dc-s4: var(--success);
-  --dc-s5: var(--success);
-  --dc-s6: var(--success);
-  --dc-s7: var(--success);
+  /* One hue per stage, as HSL triples so a single value serves both the solid
+     fill and every washed-back form of it. */
+  --dc-s1: 210 68% 40%;
+  --dc-s2: 152 60% 30%;
+  --dc-s3: 38 76% 38%;
+  --dc-s4: 6 66% 46%;
+  --dc-s5: 282 44% 45%;
+  --dc-s6: 187 74% 29%;
+  --dc-s7: 245 48% 50%;
 }
 /* A hovered or focused stage reads as the live one. The cursor is a pointer so
    it announces itself as something to hover, though nothing navigates. */
@@ -974,7 +963,7 @@ All colors MUST be HSL.
   box-shadow:
     inset 0 0 0 1px hsl(var(--card)),
     inset 0 0 0 2px hsl(var(--foreground) / 0.1),
-    0 22px 48px hsl(162 45% 3% / 0.5);
+    0 22px 48px hsl(220 14% 2% / 0.5);
   pointer-events: none;
   overflow: hidden;
 }
@@ -1053,6 +1042,24 @@ All colors MUST be HSL.
   .dc-line { opacity: 1; animation: none; }
 }
 
+.dark .dc-flow {
+  --dc-wood: hsl(28 28% 40%);
+  --dc-wood-lit: hsl(30 36% 54%);
+  --dc-stone: hsl(36 16% 47%);
+  --dc-stone-lit: hsl(38 24% 63%);
+  --dc-water: hsl(200 88% 60%);
+  --dc-water-soft: hsl(200 88% 60% / 0.2);
+  --dc-water-deep: hsl(202 72% 58% / 0.15);
+  --dc-on-water: hsl(206 40% 12%);
+
+  --dc-s1: 207 80% 63%;
+  --dc-s2: 152 52% 53%;
+  --dc-s3: 38 86% 59%;
+  --dc-s4: 6 76% 65%;
+  --dc-s5: 282 58% 70%;
+  --dc-s6: 187 66% 53%;
+  --dc-s7: 245 68% 70%;
+}
 
 /* Anything that should carry the current stage's hue. One variable, set on the
    readout and on each card, so a colour change is one line in the palette. */
