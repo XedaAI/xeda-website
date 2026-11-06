@@ -937,15 +937,16 @@ All colors MUST be HSL.
    free region is x ~696..1194, y 3..201 — expressed as percentages of the
    wrapper that IS the drawing, so it tracks the SVG at any width.
 
-   Only from xl up. Measured at lg the panel is 141px tall against the 176px a
-   four-item stage needs, so it clipped on every stage; the cards underneath
-   carry the same content in full, so it simply is not drawn there. */
+   That corner is only big enough from xl up: measured at lg it is 141px tall
+   against the 176px a four-item stage needs. Below xl the panel therefore
+   sits under the drawing, in the flow, at a fixed height that fits the
+   longest stage, so hovering never moves the page. It used to be hidden
+   below xl altogether, which made it vanish on a narrower or zoomed-in
+   window. Phones (below md) still rely on the cards underneath. */
 .dc-screen {
-  position: absolute;
-  left: 58%;
-  right: 0.5%;
-  top: 0.5%;
-  height: 33%;
+  position: relative;
+  margin-top: 1.25rem;
+  min-height: 11.5rem;
   flex-direction: column;
   padding: 0.875rem 1rem;
   border-radius: 0.5rem;
@@ -962,6 +963,17 @@ All colors MUST be HSL.
     0 22px 48px hsl(220 14% 2% / 0.5);
   pointer-events: none;
   overflow: hidden;
+}
+@media (min-width: 1280px) {
+  .dc-screen {
+    position: absolute;
+    left: 58%;
+    right: 0.5%;
+    top: 0.5%;
+    height: 33%;
+    min-height: 0;
+    margin-top: 0;
+  }
 }
 /* Its own type scale: the panel is short, and the shared card sizes would push
    a four-item list past it. */
