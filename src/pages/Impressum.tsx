@@ -62,14 +62,6 @@ const Impressum = () => {
           </section>
 
           <section className="mb-8">
-            <h2 className="text-2xl font-semibold text-foreground mb-4">Umsatzsteuer-ID</h2>
-            <p className="text-muted-foreground leading-relaxed">
-              Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz:<br />
-              Wird nach Erteilung durch das Bundeszentralamt für Steuern ergänzt.
-            </p>
-          </section>
-
-          <section className="mb-8">
             <h2 className="text-2xl font-semibold text-foreground mb-4">Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h2>
             <p className="text-muted-foreground leading-relaxed">
               Muhammad Saad Bakhtiar<br />

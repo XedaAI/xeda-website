@@ -38,11 +38,16 @@ const CookieConsent = () => {
             <a href="/privacy" className="text-primary underline hover:text-primary/80">
               {t("cookie.learnMore")}
             </a>
+            {" · "}
+            <a href="/impressum" className="text-primary underline hover:text-primary/80">
+              {t("footer.impressum")}
+            </a>
           </p>
         </div>
         <div className="flex items-center gap-3">
-          {/* Reject is presented as prominently as Accept (GDPR requirement). */}
-          <Button variant="outline" size="sm" onClick={() => record("declined")}>
+          {/* Reject looks exactly like Accept: same style, same size, same
+              layer (DSK Orientierungshilfe Telemedien). */}
+          <Button size="sm" onClick={() => record("declined")}>
             {t("cookie.decline")}
           </Button>
           <Button size="sm" onClick={() => record("accepted")}>
