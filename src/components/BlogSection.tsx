@@ -112,7 +112,7 @@ const BlogSection = () => {
         <div className="text-center mt-12">
           <Link
             to="/blog"
-            className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-medium transition-colors group"
+            className="inline-flex items-center gap-2 text-primary hover:underline underline-offset-4 font-medium transition-colors group"
           >
             {t("blog.viewAll")}
             <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />

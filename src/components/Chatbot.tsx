@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,6 +52,8 @@ const uiText: Record<Language, {
   viewHistory: string;
   autoSpeak: string;
   disableAutoSpeak: string;
+  aiNotice: string;
+  privacy: string;
 }> = {
   en: {
     title: "xeda.ai Assistant",
@@ -63,6 +66,8 @@ const uiText: Record<Language, {
     viewHistory: "View history",
     autoSpeak: "Enable auto-speak",
     disableAutoSpeak: "Disable auto-speak",
+    aiNotice: "You're chatting with an AI assistant. Answers can be wrong. Please don't share sensitive personal data; chats are stored.",
+    privacy: "Privacy policy",
   },
   de: {
     title: "xeda.ai Assistent",
@@ -75,6 +80,8 @@ const uiText: Record<Language, {
     viewHistory: "Verlauf anzeigen",
     autoSpeak: "Sprachausgabe aktivieren",
     disableAutoSpeak: "Sprachausgabe deaktivieren",
+    aiNotice: "Sie chatten mit einem KI-Assistenten. Antworten können fehlerhaft sein. Bitte keine sensiblen personenbezogenen Daten eingeben; Chats werden gespeichert.",
+    privacy: "Datenschutz",
   },
 };
 
@@ -97,6 +104,12 @@ interface ChatSession {
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 const TTS_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-tts`;
+
+// The `chat` function does not implement "delete-conversation" yet, so a
+// delete button would fail silently while telling the visitor their chat is
+// gone. Keep the controls hidden until the backend handler and a retention
+// period land (#78), then switch this on.
+const CAN_DELETE_CONVERSATIONS = false;
 
 const callChatBackend = async <T,>(payload: Record<string, unknown>): Promise<T> => {
   const resp = await fetch(CHAT_URL, {
@@ -144,7 +157,7 @@ const CopyButton = ({ text }: { text: string }) => {
       className="h-5 w-5"
       onClick={handleCopy}
     >
-      {copied ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
+      {copied ? <Check className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
     </Button>
   );
 };
@@ -160,7 +173,9 @@ const Chatbot = () => {
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [autoSpeak, setAutoSpeak] = useState(true);
+  // Off by default: speaking a reply sends its text to the TTS provider, and
+  // the privacy policy says that only happens when voice playback is used.
+  const [autoSpeak, setAutoSpeak] = useState(false);
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [language, setLanguage] = useState<Language>(() => {
@@ -207,14 +222,16 @@ const Chatbot = () => {
     });
   }, [getChatSession]);
 
-  // Save preferences
-  useEffect(() => {
-    localStorage.setItem("chatbot_language", language);
-  }, [language]);
-
-  useEffect(() => {
-    localStorage.setItem("chatbot_voice", selectedVoice);
-  }, [selectedVoice]);
+  // Preferences are stored only when the visitor actually picks one, never
+  // on page load (§ 25 TDDDG).
+  const chooseLanguage = (lang: Language) => {
+    setLanguage(lang);
+    localStorage.setItem("chatbot_language", lang);
+  };
+  const chooseVoice = (voiceId: string) => {
+    setSelectedVoice(voiceId);
+    localStorage.setItem("chatbot_voice", voiceId);
+  };
 
   // Load conversation history
   const loadConversationHistory = useCallback(async () => {
@@ -246,8 +263,14 @@ const Chatbot = () => {
     }
   }, []);
 
-  // Load existing conversation on mount
+  // Restore the visitor's last conversation the first time the chat is
+  // opened, not on page load: until someone actually uses the chat, nothing
+  // is stored in their browser and nothing is sent to the chat backend
+  // (§ 25 TDDDG, GDPR data minimisation).
+  const restoredRef = useRef(false);
   useEffect(() => {
+    if (!isOpen || restoredRef.current) return;
+    restoredRef.current = true;
     const initConversation = async () => {
       try {
         const conversation = await callSignedChatBackend<{ id: string } | null>({
@@ -263,7 +286,7 @@ const Chatbot = () => {
     };
 
     initConversation();
-  }, [loadConversation]);
+  }, [isOpen, loadConversation]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -625,10 +648,10 @@ const Chatbot = () => {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => setLanguage("en")}>
+                        <DropdownMenuItem onClick={() => chooseLanguage("en")}>
                           <span className="mr-2">🇬🇧</span> English
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setLanguage("de")}>
+                        <DropdownMenuItem onClick={() => chooseLanguage("de")}>
                           <span className="mr-2">🇩🇪</span> Deutsch
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -651,7 +674,7 @@ const Chatbot = () => {
                     >
                       <Plus className="h-4 w-4" />
                     </Button>
-                    {messages.length > 0 && (
+                    {CAN_DELETE_CONVERSATIONS && messages.length > 0 && (
                       <Button
                         variant="ghost"
                         size="icon"
@@ -679,7 +702,7 @@ const Chatbot = () => {
                         {voices.map((voice) => (
                           <DropdownMenuItem
                             key={voice.id}
-                            onClick={() => setSelectedVoice(voice.id)}
+                            onClick={() => chooseVoice(voice.id)}
                             className={selectedVoice === voice.id ? "bg-muted" : ""}
                           >
                             <div className="flex flex-col">
@@ -735,14 +758,16 @@ const Chatbot = () => {
                               {format(new Date(conv.updated_at), "MMM d, yyyy h:mm a")}
                             </p>
                           </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 shrink-0"
-                            onClick={(e) => deleteConversation(conv.id, e)}
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
+                          {CAN_DELETE_CONVERSATIONS && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 shrink-0"
+                              onClick={(e) => deleteConversation(conv.id, e)}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -799,7 +824,14 @@ const Chatbot = () => {
                   </div>
                 )}
               </ScrollArea>
-              <div className="p-3 border-t flex gap-2 shrink-0">
+              {/* EU AI Act Art. 50(1): say plainly that this is an AI. */}
+              <p className="px-3 pt-2 text-[11px] leading-snug text-muted-foreground border-t shrink-0">
+                {t.aiNotice}{" "}
+                <Link to="/privacy" className="underline underline-offset-2 hover:text-foreground">
+                  {t.privacy}
+                </Link>
+              </p>
+              <div className="p-3 flex gap-2 shrink-0">
                 <Button
                   variant={isRecording ? "destructive" : "outline"}
                   size="icon"

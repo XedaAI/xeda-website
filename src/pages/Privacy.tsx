@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SEOHead from "@/components/SEOHead";
+import LegalLinks from "@/components/LegalLinks";
 
 const Privacy = () => {
   useEffect(() => {
@@ -155,10 +156,12 @@ const Privacy = () => {
             <p className="text-muted-foreground mt-4">
               <strong className="text-foreground">Xeda UG (haftungsbeschränkt)</strong><br />
               Bismarckstr. 54, 67059 Ludwigshafen am Rhein, Deutschland<br />
-              E-Mail: saad.bakhtiyar@xeda.ai
+              E-Mail: saad.bakhtiar@xeda.ai
             </p>
           </section>
         </article>
+
+        <LegalLinks className="mt-12 pt-8 border-t border-border max-w-3xl mx-auto" />
       </div>
     </div>
   );

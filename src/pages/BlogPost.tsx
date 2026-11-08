@@ -234,7 +234,7 @@ const BlogPost = () => {
             </p>
             <Link
               to="/blog"
-              className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-medium transition-colors"
+              className="inline-flex items-center gap-2 text-primary hover:underline underline-offset-4 font-medium transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
               {t("blogPost.backToBlog")}
@@ -474,6 +474,13 @@ const BlogPost = () => {
                 {t("blogPost.newsletter.button")}
               </Button>
             </form>
+            <p className="mt-3 text-xs text-muted-foreground leading-relaxed max-w-md mx-auto">
+              {t("footer.newsletter.consent")}{" "}
+              <Link to="/privacy" className="underline underline-offset-2 hover:text-foreground">
+                {t("legal.privacyPolicy")}
+              </Link>
+              .
+            </p>
           </div>
 
           {/* Related Posts */}
