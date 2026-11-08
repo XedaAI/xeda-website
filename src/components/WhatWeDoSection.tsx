@@ -31,18 +31,30 @@ const WhatWeDoSection = () => {
   ];
 
   const [active, setActive] = useState(0);
-  // Auto-advance until someone points at the list, and stop for good once they
-  // pick one — a panel that changes under a reader's cursor fights them.
+  // Auto-advance on desktop until someone points at or tabs into the list, and
+  // stop for good once they pick one: a panel that changes under a reader's
+  // cursor or focus fights them.
+  //
+  // Never on phones. There each illustration opens inline under its service,
+  // so cycling would move the text being read by the height of an
+  // illustration every few seconds (layout shift, and no way to pause it).
   const [hovering, setHovering] = useState(false);
+  const [focused, setFocused] = useState(false);
   const [chosen, setChosen] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
 
   useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const sync = () => setReducedMotion(mq.matches);
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const sync = () => { setReducedMotion(motion.matches); setIsDesktop(desktop.matches); };
     sync();
-    mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
+    motion.addEventListener("change", sync);
+    desktop.addEventListener("change", sync);
+    return () => {
+      motion.removeEventListener("change", sync);
+      desktop.removeEventListener("change", sync);
+    };
   }, []);
 
   // Only cycle while the section is on screen, so a visitor arriving at it
@@ -57,7 +69,7 @@ const WhatWeDoSection = () => {
     return () => io.disconnect();
   }, []);
 
-  const autoplay = inView && !hovering && !chosen && !reducedMotion;
+  const autoplay = isDesktop && inView && !hovering && !focused && !chosen && !reducedMotion;
   useEffect(() => {
     if (!autoplay) return;
     const id = window.setTimeout(() => setActive((i) => (i + 1) % services.length), CYCLE_MS);
@@ -93,7 +105,13 @@ const WhatWeDoSection = () => {
               {t("whatWeDo.subtitle")}
             </p>
 
-            <ul className="space-y-2" onMouseEnter={() => setHovering(true)} onMouseLeave={() => setHovering(false)}>
+            <ul
+              className="space-y-2"
+              onMouseEnter={() => setHovering(true)}
+              onMouseLeave={() => setHovering(false)}
+              onFocus={() => setFocused(true)}
+              onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setFocused(false); }}
+            >
               {services.map((service, index) => {
                 const isActive = index === active;
                 return (

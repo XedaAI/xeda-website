@@ -1,4 +1,5 @@
 import type React from "react";
+import { useEffect, useRef } from "react";
 import { ArrowLeft, ArrowRight, Check, ClipboardList, FileText, Mail, MessageCircle, MessageSquare, PhoneIncoming, Pill, RotateCcw } from "lucide-react";
 import XedaMark from "@/components/XedaMark";
 import type { SiteLanguage } from "@/contexts/LanguageContext";
@@ -66,6 +67,22 @@ const MobileScene = ({
   const prev = (index + industries.length - 1) % industries.length;
   const next = (index + 1) % industries.length;
   const done = phase === "after";
+
+  // "Activate Xeda" unmounts when the result appears. If it had focus, focus
+  // would fall back to <body>, so hand it to "Replay", which takes its place.
+  const ctaRef = useRef<HTMLButtonElement>(null);
+  const replayRef = useRef<HTMLButtonElement>(null);
+  const ctaHadFocus = useRef(false);
+  useEffect(() => {
+    if (phase !== "after" || !ctaHadFocus.current) return;
+    ctaHadFocus.current = false;
+    const active = document.activeElement;
+    if (!active || active === document.body) replayRef.current?.focus({ preventScroll: true });
+  }, [phase]);
+  const activate = () => {
+    ctaHadFocus.current = document.activeElement === ctaRef.current;
+    onActivate();
+  };
 
   const flagged = industry.fields.filter((f) => f.flag).length;
   const summary = fill(t("useCases.mFieldsRead"), industry.fields.length) + (flagged ? ` · ${fill(t("useCases.mFlagged"), flagged)}` : "");
@@ -146,7 +163,7 @@ const MobileScene = ({
               <span className="sr-only"> · {summary}</span>
             </p>
             <div className="ixm-done-actions">
-              <button type="button" className="ixm-again" onClick={onReplay}>
+              <button ref={replayRef} type="button" className="ixm-again" onClick={onReplay}>
                 <RotateCcw className="h-3.5 w-3.5" />
                 {t("useCases.replay")}
               </button>
@@ -155,7 +172,7 @@ const MobileScene = ({
           </div>
         ) : (
           <>
-            <button type="button" className="ixm-cta" onClick={phase === "before" ? onActivate : undefined} aria-disabled={phase === "processing"}>
+            <button ref={ctaRef} type="button" className="ixm-cta" onClick={phase === "before" ? activate : undefined} aria-disabled={phase === "processing"}>
               {phase === "processing" ? t("useCases.processing") : t("useCases.activate")}
               {phase === "before" && <ArrowRight className="h-4 w-4" />}
             </button>
@@ -181,6 +198,7 @@ const MobileScene = ({
           <MobileOutput output={industry.output} lang={lang} />
         </div>
       </div>
+      {industry.caveat && <p className="ix-caveat ixm-caveat">{tx(industry.caveat, lang)}</p>}
 
       {/* The other five, one tap away. */}
       <nav className="ixm-nav" aria-label={t("useCases.industries")}>

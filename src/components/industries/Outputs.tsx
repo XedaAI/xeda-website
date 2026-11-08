@@ -10,11 +10,14 @@ import { delay, rowAt } from "./timing";
 
 const statusAt = (i: number, warn = false) => rowAt(i) + 280 + (warn ? 180 : 0);
 
-const TableOut = ({ o, lang }: { o: TableOutput; lang: SiteLanguage }) => {
+type Props<O> = { o: O; lang: SiteLanguage; hidden: boolean };
+
+const TableOut = ({ o, lang, hidden }: Props<TableOutput>) => {
   const done = rowAt(o.rows.length) + 200;
   const FootIcon = o.footer.icon === "send" ? Send : FileSpreadsheet;
+  const footStatus = o.footer.status ?? "ok";
   return (
-    <OutPanel app={o.app} title={tx(o.title, lang)} lang={lang}>
+    <OutPanel app={tx(o.app, lang)} title={tx(o.title, lang)} lang={lang} hidden={hidden}>
       <div className="ix-thead" style={{ gridTemplateColumns: o.grid }}>
         {o.cols.map((c, i) => <span key={i}>{tx(c, lang)}</span>)}
       </div>
@@ -32,21 +35,22 @@ const TableOut = ({ o, lang }: { o: TableOutput; lang: SiteLanguage }) => {
         </OutRow>
       ))}
       <div className="ix-foot" style={delay(done)}>
-        <FootIcon className="h-3.5 w-3.5 text-success" />
+        <FootIcon className={`h-3.5 w-3.5 ${footStatus === "ok" ? "text-success" : "text-muted-foreground"}`} />
         <span>{tx(o.footer.text, lang)}</span>
-        <StatusMark status="ok" d={done + 120} lang={lang} />
+        <StatusMark status={footStatus} d={done + 120} lang={lang} />
       </div>
     </OutPanel>
   );
 };
 
-const ListOut = ({ o, lang }: { o: ListOutput; lang: SiteLanguage }) => {
+const ListOut = ({ o, lang, hidden }: Props<ListOutput>) => {
   const done = rowAt(o.rows.length) + 150;
   return (
     <OutPanel
       app={tx(o.app, lang)}
       title={tx(o.title, lang)}
       lang={lang}
+      hidden={hidden}
       right={o.tally && <span className="ix-fill-inline text-success" style={delay(done)}>{tx(o.tally, lang)} ·</span>}
     >
       {o.rows.map((row, i) => (
@@ -79,11 +83,11 @@ const ListOut = ({ o, lang }: { o: ListOutput; lang: SiteLanguage }) => {
   );
 };
 
-const LeadOut = ({ o, lang }: { o: LeadOutput; lang: SiteLanguage }) => {
+const LeadOut = ({ o, lang, hidden }: Props<LeadOutput>) => {
   const cal = rowAt(3);
   const times = ["10:00", "15:00", "17:30"];
   return (
-    <OutPanel app="CRM" title={lang === "de" ? "Neuer Lead · Website" : "New lead · website"} lang={lang}>
+    <OutPanel app="CRM" title={lang === "de" ? "Neuer Lead · Website" : "New lead · website"} lang={lang} hidden={hidden}>
       <OutRow d={rowAt(0)} className="flex items-center gap-3 px-3.5 py-3">
         <span className="ix-avatar">{o.initials}</span>
         <span className="min-w-0">
@@ -131,8 +135,8 @@ const LeadOut = ({ o, lang }: { o: LeadOutput; lang: SiteLanguage }) => {
   );
 };
 
-const ReportOut = ({ o, lang }: { o: ReportOutput; lang: SiteLanguage }) => (
-  <OutPanel app={lang === "de" ? "Projekt" : "Project"} title={tx(o.site, lang)} lang={lang}>
+const ReportOut = ({ o, lang, hidden }: Props<ReportOutput>) => (
+  <OutPanel app={lang === "de" ? "Projekt" : "Project"} title={tx(o.site, lang)} lang={lang} hidden={hidden}>
     <OutRow d={rowAt(0)} className="flex items-center gap-3 px-3.5 py-3">
       <span className="h-12 w-[4.6rem] shrink-0 overflow-hidden rounded-md"><SitePhotoArt /></span>
       <span className="min-w-0 flex-1">
@@ -153,11 +157,14 @@ const ReportOut = ({ o, lang }: { o: ReportOutput; lang: SiteLanguage }) => (
   </OutPanel>
 );
 
-export const OutputView = ({ output, lang }: { output: Output; lang: SiteLanguage }) => {
+/** `hidden`: the result before Xeda has made it. It is only faded out, so it
+ *  is also made inert, or screen readers would read the finished result
+ *  before the demo runs. */
+export const OutputView = ({ output, lang, hidden = false }: { output: Output; lang: SiteLanguage; hidden?: boolean }) => {
   switch (output.kind) {
-    case "table": return <TableOut o={output} lang={lang} />;
-    case "list": return <ListOut o={output} lang={lang} />;
-    case "lead": return <LeadOut o={output} lang={lang} />;
-    case "report": return <ReportOut o={output} lang={lang} />;
+    case "table": return <TableOut o={output} lang={lang} hidden={hidden} />;
+    case "list": return <ListOut o={output} lang={lang} hidden={hidden} />;
+    case "lead": return <LeadOut o={output} lang={lang} hidden={hidden} />;
+    case "report": return <ReportOut o={output} lang={lang} hidden={hidden} />;
   }
 };

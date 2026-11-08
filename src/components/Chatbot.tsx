@@ -105,6 +105,12 @@ interface ChatSession {
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 const TTS_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/elevenlabs-tts`;
 
+// The `chat` function does not implement "delete-conversation" yet, so a
+// delete button would fail silently while telling the visitor their chat is
+// gone. Keep the controls hidden until the backend handler and a retention
+// period land (#78), then switch this on.
+const CAN_DELETE_CONVERSATIONS = false;
+
 const callChatBackend = async <T,>(payload: Record<string, unknown>): Promise<T> => {
   const resp = await fetch(CHAT_URL, {
     method: "POST",
@@ -167,7 +173,9 @@ const Chatbot = () => {
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [autoSpeak, setAutoSpeak] = useState(true);
+  // Off by default: speaking a reply sends its text to the TTS provider, and
+  // the privacy policy says that only happens when voice playback is used.
+  const [autoSpeak, setAutoSpeak] = useState(false);
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [language, setLanguage] = useState<Language>(() => {
@@ -666,7 +674,7 @@ const Chatbot = () => {
                     >
                       <Plus className="h-4 w-4" />
                     </Button>
-                    {messages.length > 0 && (
+                    {CAN_DELETE_CONVERSATIONS && messages.length > 0 && (
                       <Button
                         variant="ghost"
                         size="icon"
@@ -750,14 +758,16 @@ const Chatbot = () => {
                               {format(new Date(conv.updated_at), "MMM d, yyyy h:mm a")}
                             </p>
                           </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 shrink-0"
-                            onClick={(e) => deleteConversation(conv.id, e)}
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
+                          {CAN_DELETE_CONVERSATIONS && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 shrink-0"
+                              onClick={(e) => deleteConversation(conv.id, e)}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          )}
                         </div>
                       </div>
                     ))}

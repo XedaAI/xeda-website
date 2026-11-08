@@ -1300,7 +1300,7 @@ All colors MUST be HSL.
   --ix-amber: 42 88% 60%;
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
-.ix-scene[data-fading] { opacity: 0; transform: translateY(4px); }
+.ix-scene[data-fading] { opacity: 0; transform: translateY(4px); pointer-events: none; }
 
 /* Selector */
 .ix-tabs {
@@ -1764,6 +1764,16 @@ All colors MUST be HSL.
   transition: opacity 0.2s ease;
 }
 .ix-scene[data-run] .ix-note-line { opacity: 1; transition: opacity 0.4s ease calc(var(--d) * 1ms); }
+
+/* A standing caveat under a sensitive industry's result (medical). Always
+   shown, not part of the run: it qualifies the whole scene. */
+.ix-caveat {
+  position: relative; z-index: 2;
+  margin-top: 0.75rem;
+  font-size: 12px; line-height: 1.45;
+  color: hsl(var(--muted-foreground));
+}
+.ixm-caveat { margin-top: 0.875rem; padding-inline: 0.25rem; }
 
 .ix-status {
   display: inline-grid; place-items: center; flex-shrink: 0;

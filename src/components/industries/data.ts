@@ -13,7 +13,8 @@ import type { SiteLanguage } from "@/contexts/LanguageContext";
 // interface the result lands in.
 //
 // Illustrative only: names, numbers and dates are invented examples, not
-// client data.
+// client data. Vendors are fictional, and no output claims an integration
+// with a named third-party product.
 
 export type Lx = { en: string; de: string };
 const l = (en: string, de: string = en): Lx => ({ en, de });
@@ -51,7 +52,9 @@ export type Field = { label: Lx; flag?: boolean };
 
 export type TableOutput = {
   kind: "table";
-  app: string;
+  /** A generic system name, never a third-party product: we show what Xeda
+   *  does, not integrations we have not built. */
+  app: Lx | string;
   title: Lx;
   cols: Lx[];
   /** Grid template for the columns, so each interface keeps its own shape. */
@@ -60,7 +63,7 @@ export type TableOutput = {
   /** `traced` marks the row built from the very fragments shown on the
    *  left, so it is highlighted as it lands. */
   rows: { cells: (Lx | string)[]; sub: Lx; status: Status; note?: Lx; traced?: boolean }[];
-  footer: { text: Lx; icon: "file" | "send" };
+  footer: { text: Lx; icon: "file" | "send"; status?: Status };
 };
 export type ListOutput = {
   kind: "list";
@@ -106,6 +109,8 @@ export type Industry = {
   chips: Lx[];
   /** Read out to screen readers when the run completes. */
   summary: Lx;
+  /** A one-line caveat shown under the result, for sensitive industries. */
+  caveat?: Lx;
 };
 
 export const industries: Industry[] = [
@@ -118,12 +123,12 @@ export const industries: Industry[] = [
       { kind: "doc", tag: "PDF", title: l("Invoice (scan)", "Rechnung (Scan)"), icon: "invoice", x: 33, y: 30, r: 5, unresolved: true },
       { kind: "field", value: "Acme GmbH", x: 58, y: 9, r: 4 },
       { kind: "field", value: l("€1,190.00", "1.190,00 €"), x: 63, y: 50, r: -4 },
-      { kind: "field", value: "24.04.2025", x: 3, y: 60, r: 3 },
+      { kind: "field", value: "24.04.2026", x: 3, y: 60, r: 3 },
       { kind: "field", value: l("VAT 19%", "USt. 19 %"), x: 42, y: 72, r: -3 },
       { kind: "field", value: "RE-1201", x: 12, y: 84, r: 4 },
     ],
     mobileInputs: [
-      { kind: "pdf", title: l("Invoice · Acme GmbH", "Rechnung · Acme GmbH"), meta: "PDF · 24.04.2025" },
+      { kind: "pdf", title: l("Invoice · Acme GmbH", "Rechnung · Acme GmbH"), meta: "PDF · 24.04.2026" },
       { kind: "pdf", title: l("Invoice (scan)", "Rechnung (Scan)"), meta: l("PDF · VAT unreadable", "PDF · USt. unleserlich"), unresolved: true },
       { kind: "bits", title: l("Copied from emails", "Aus E-Mails kopiert"), bits: [l("€1,190.00", "1.190,00 €"), l("VAT 19%", "USt. 19 %"), "RE-1201"] },
     ],
@@ -137,22 +142,22 @@ export const industries: Industry[] = [
     ],
     output: {
       kind: "table",
-      app: "DATEV",
+      app: l("Accounting", "Buchhaltung"),
       title: l("Import · posting batch", "Import · Buchungsstapel"),
       cols: [l("Vendor", "Lieferant"), l("Invoice", "Beleg"), l("Date", "Datum"), l("Amount", "Betrag"), l("VAT", "USt."), l("", "")],
       grid: "minmax(0,1.3fr) minmax(0,0.95fr) minmax(4.6rem,0.95fr) minmax(0,1.05fr) minmax(0,0.5fr) 1.5rem",
       rows: [
-        { cells: ["Acme GmbH", "RE-1201", "24.04.2025", l("€1,190.00", "1.190,00 €"), "19%"], sub: l("24.04.2025 · €1,190.00 · VAT 19% · RE-1201", "24.04.2025 · 1.190,00 € · USt. 19 % · RE-1201"), status: "ok", traced: true },
-        { cells: ["Microsoft", "RE-0423", "23.04.2025", l("€299.00", "299,00 €"), "19%"], sub: l("€299.00 · VAT 19% · RE-0423", "299,00 € · USt. 19 % · RE-0423"), status: "ok" },
-        { cells: ["Telekom", "RE-7781", "22.04.2025", l("€84.99", "84,99 €"), "7%"], sub: l("€84.99 · VAT 7% · RE-7781", "84,99 € · USt. 7 % · RE-7781"), status: "warn", note: l("VAT rate doesn't match", "USt.-Satz passt nicht") },
-        { cells: ["Office Depot", "RE-5567", "22.04.2025", l("€125.50", "125,50 €"), "19%"], sub: l("€125.50 · VAT 19% · RE-5567", "125,50 € · USt. 19 % · RE-5567"), status: "ok" },
+        { cells: ["Acme GmbH", "RE-1201", "24.04.2026", l("€1,190.00", "1.190,00 €"), "19%"], sub: l("24.04.2026 · €1,190.00 · VAT 19% · RE-1201", "24.04.2026 · 1.190,00 € · USt. 19 % · RE-1201"), status: "ok", traced: true },
+        { cells: ["Kranz Software", "RE-0423", "23.04.2026", l("€299.00", "299,00 €"), "19%"], sub: l("€299.00 · VAT 19% · RE-0423", "299,00 € · USt. 19 % · RE-0423"), status: "ok" },
+        { cells: ["Netzwerk Süd", "RE-7781", "22.04.2026", l("€84.99", "84,99 €"), "7%"], sub: l("€84.99 · VAT 7% · RE-7781", "84,99 € · USt. 7 % · RE-7781"), status: "warn", note: l("VAT rate doesn't match", "USt.-Satz passt nicht") },
+        { cells: ["Bürowelt Meyer", "RE-5567", "22.04.2026", l("€125.50", "125,50 €"), "19%"], sub: l("€125.50 · VAT 19% · RE-5567", "125,50 € · USt. 19 % · RE-5567"), status: "ok" },
       ],
-      footer: { text: l("DATEV import file ready", "DATEV-Importdatei bereit"), icon: "file" },
+      footer: { text: l("Import file ready (e.g. DATEV format)", "Importdatei bereit (z. B. DATEV-Format)"), icon: "file" },
     },
-    chips: [l("Vendor extracted", "Lieferant erfasst"), l("VAT checked", "USt. geprüft"), l("Invoices validated", "Rechnungen geprüft"), l("DATEV import prepared", "DATEV-Import vorbereitet")],
+    chips: [l("Vendor extracted", "Lieferant erfasst"), l("VAT checked", "USt. geprüft"), l("Invoices validated", "Rechnungen geprüft"), l("Import prepared", "Import vorbereitet")],
     summary: l(
-      "Xeda read the invoices into a DATEV import: three validated, one VAT exception flagged for review.",
-      "Xeda hat die Rechnungen in einen DATEV-Import übertragen: drei geprüft, eine USt.-Abweichung zur Prüfung markiert.",
+      "Xeda read the invoices into an accounting import file: three validated, one VAT exception flagged for review.",
+      "Xeda hat die Rechnungen in eine Importdatei für die Buchhaltung übertragen: drei geprüft, eine USt.-Abweichung zur Prüfung markiert.",
     ),
   },
   {
@@ -163,14 +168,14 @@ export const industries: Industry[] = [
       { kind: "mail", from: "einkauf@kunde-ag.de", subject: l("PO 4500-1123 — urgent", "Bestellung 4500-1123 — eilig"), x: 3, y: 6, r: -4 },
       { kind: "doc", tag: "PDF", title: l("Purchase order", "Bestellung"), x: 38, y: 24, r: 5 },
       { kind: "field", value: l("Mat. 200-051", "Mat. 200-051"), x: 64, y: 6, r: 4 },
-      { kind: "field", value: l("Qty 250", "Menge 250"), x: 5, y: 44, r: -3 },
+      { kind: "field", value: l("Qty 50", "Menge 50"), x: 5, y: 44, r: -3 },
       { kind: "field", value: l("€199.00 / pc", "199,00 € / Stk."), x: 60, y: 57, r: 3, unresolved: true },
       { kind: "field", value: l("Deliver by 02.05.", "Liefern bis 02.05."), x: 14, y: 67, r: 2 },
     ],
     mobileInputs: [
       { kind: "mail", title: l("PO 4500-1123 — urgent", "Bestellung 4500-1123 — eilig"), meta: "einkauf@kunde-ag.de" },
       { kind: "pdf", title: l("Purchase order", "Bestellung"), meta: l("PDF · 4 line items", "PDF · 4 Positionen") },
-      { kind: "bits", title: l("Waiting for manual entry", "Wartet auf Erfassung"), bits: [l("Qty 250", "Menge 250"), l("€199.00 / pc", "199,00 € / Stk."), l("by 02.05.", "bis 02.05.")], unresolved: true },
+      { kind: "bits", title: l("Waiting for manual entry", "Wartet auf Erfassung"), bits: [l("Qty 50", "Menge 50"), l("€199.00 / pc", "199,00 € / Stk."), l("by 02.05.", "bis 02.05.")], unresolved: true },
     ],
     sources: [l("Email from Kunde AG", "E-Mail von Kunde AG"), l("PO_4500-1123.pdf"), l("4 line items", "4 Positionen")],
     fields: [
@@ -182,7 +187,7 @@ export const industries: Industry[] = [
     ],
     output: {
       kind: "table",
-      app: "SAP",
+      app: "ERP",
       title: l("Sales order 4500-1123 · draft", "Kundenauftrag 4500-1123 · Entwurf"),
       cols: [l("Material", "Material"), l("Qty", "Menge"), l("Price", "Preis"), l("Delivery", "Termin"), l("", "")],
       grid: "minmax(0,1.75fr) minmax(0,0.6fr) minmax(0,0.9fr) minmax(0,0.7fr) 1.5rem",
@@ -192,12 +197,12 @@ export const industries: Industry[] = [
         { cells: [l("200-051 Flange", "200-051 Flansch"), "50", l("€199.00", "199,00 €"), "02.05."], sub: l("50 pcs · €199.00 · due 02.05.", "50 Stk. · 199,00 € · bis 02.05."), status: "warn", traced: true, note: l("Price 16× the usual rate", "Preis 16× über dem Üblichen") },
         { cells: [l("300-112 Bolt set", "300-112 Schraubensatz"), l("1,000", "1.000"), l("€3.40", "3,40 €"), "28.04."], sub: l("1,000 pcs · €3.40 · due 28.04.", "1.000 Stk. · 3,40 € · bis 28.04."), status: "ok" },
       ],
-      footer: { text: l("Order confirmation drafted and sent", "Auftragsbestätigung erstellt und versendet"), icon: "send" },
+      footer: { text: l("Order confirmation drafted · awaiting approval", "Auftragsbestätigung entworfen · wartet auf Freigabe"), icon: "send", status: "draft" },
     },
-    chips: [l("PO extracted", "Bestellung erfasst"), l("Pricing checked", "Preise geprüft"), l("ERP order drafted", "ERP-Auftrag erstellt"), l("Confirmation prepared", "Bestätigung vorbereitet")],
+    chips: [l("PO extracted", "Bestellung erfasst"), l("Pricing checked", "Preise geprüft"), l("ERP order drafted", "ERP-Auftrag entworfen"), l("Confirmation drafted", "Bestätigung entworfen")],
     summary: l(
-      "Xeda turned the email and PO into an SAP order draft: three lines confirmed, one unusual price flagged, confirmation sent.",
-      "Xeda hat E-Mail und Bestellung in einen SAP-Auftragsentwurf übertragen: drei Positionen bestätigt, ein ungewöhnlicher Preis markiert, Bestätigung versendet.",
+      "Xeda turned the email and PO into an ERP order draft: three lines confirmed, one unusual price flagged, confirmation drafted for approval.",
+      "Xeda hat E-Mail und Bestellung in einen ERP-Auftragsentwurf übertragen: drei Positionen bestätigt, ein ungewöhnlicher Preis markiert, Bestätigung zur Freigabe entworfen.",
     ),
   },
   {
@@ -237,7 +242,7 @@ export const industries: Industry[] = [
       ],
       tracking: {
         steps: [l("Ordered", "Bestellt"), l("Shipped", "Versandt"), l("Out for delivery", "In Zustellung")],
-        store: l("Shopify · order #1042 updated", "Shopify · Bestellung #1042 aktualisiert"),
+        store: l("Shop · order #1042 updated", "Shop · Bestellung #1042 aktualisiert"),
       },
     },
     chips: [l("Intent identified", "Anliegen erkannt"), l("Order found", "Bestellung gefunden"), l("Responses prepared", "Antworten vorbereitet"), l("Store updated", "Shop aktualisiert")],
@@ -288,7 +293,7 @@ export const industries: Industry[] = [
     chips: [l("Lead qualified", "Lead qualifiziert"), l("Budget identified", "Budget erkannt"), l("Property matched", "Objekt zugeordnet"), l("Viewing booked", "Besichtigung gebucht")],
     summary: l(
       "Xeda qualified the visitor as a buyer and booked a viewing for Thursday at 15:00.",
-      "Xeda hat den Besucher als Käuferin qualifiziert und eine Besichtigung für Donnerstag, 15:00 gebucht.",
+      "Xeda hat die Besucherin als Käuferin qualifiziert und eine Besichtigung für Donnerstag, 15:00 gebucht.",
     ),
   },
   {
@@ -314,7 +319,7 @@ export const industries: Industry[] = [
       { label: l("Appointment", "Termin") },
       { label: l("Question", "Frage") },
       { label: l("Prescription", "Rezept") },
-      { label: l("Needs staff", "Braucht Team"), flag: true },
+      { label: l("Needs staff", "Fürs Team"), flag: true },
     ],
     output: {
       kind: "list",
@@ -324,14 +329,18 @@ export const industries: Industry[] = [
       rows: [
         { req: l("Appointment request", "Terminwunsch"), res: l("Booked · Tue 09:30", "Gebucht · Di 09:30"), status: "ok" },
         { req: l("Are you open on Saturday?", "Haben Sie samstags geöffnet?"), res: l("Answered with opening hours", "Mit Öffnungszeiten beantwortet"), status: "ok" },
-        { req: l("Repeat prescription", "Folgerezept"), res: l("Prepared for the doctor to sign", "Zur Unterschrift vorbereitet"), status: "ok" },
+        { req: l("Repeat prescription", "Folgerezept"), res: l("Drafted for the doctor to review and sign", "Entwurf · Prüfung und Unterschrift durch die Ärztin/den Arzt"), status: "draft" },
         { req: l("Question about lab results", "Frage zu Laborwerten"), res: l("Escalated to practice staff", "An das Praxisteam weitergeleitet"), status: "staff" },
       ],
     },
     chips: [l("Requests classified", "Anliegen zugeordnet"), l("Appointment booked", "Termin gebucht"), l("Question answered", "Frage beantwortet"), l("Complex case escalated", "Komplexer Fall weitergeleitet")],
     summary: l(
-      "Xeda booked an appointment, answered a question and prepared a prescription request; the question about results went to practice staff.",
-      "Xeda hat einen Termin gebucht, eine Frage beantwortet und ein Rezept vorbereitet; die Frage zu Befunden ging an das Praxisteam.",
+      "Xeda booked an appointment, answered a question and drafted a prescription for the doctor to review; the question about lab results went to practice staff.",
+      "Xeda hat einen Termin gebucht, eine Frage beantwortet und ein Rezept zur ärztlichen Prüfung entworfen; die Frage zu Laborwerten ging an das Praxisteam.",
+    ),
+    caveat: l(
+      "Patient data only under a data processing agreement and with approval by the practice team. No medical advice.",
+      "Patientendaten nur mit AV-Vertrag und Freigabe durch das Praxisteam; keine medizinische Auskunft.",
     ),
   },
   {

@@ -43,6 +43,8 @@ const UseCasesSection = () => {
   const [phase, setPhase] = useState<Phase>("before");
   const [fading, setFading] = useState(false);
   const [offscreen, setOffscreen] = useState(true);
+  // The selected tab, for handlers that outlive the render they were made in.
+  const activeRef = useRef(0);
 
   const sectionRef = useRef<HTMLElement>(null);
   const selectorRef = useRef<HTMLDivElement>(null);
@@ -74,9 +76,16 @@ const UseCasesSection = () => {
   }, []);
 
   // A layout change mid-run (a tablet turned sideways) starts the scene over.
+  // It also cancels a fade in progress, so finish that switch here or the
+  // stage would be left blank on the old industry.
   useEffect(() => {
     const mq = window.matchMedia(DESKTOP);
-    const restart = () => { clearTimers(); setPhase("before"); };
+    const restart = () => {
+      clearTimers();
+      setShown(activeRef.current);
+      setFading(false);
+      setPhase("before");
+    };
     mq.addEventListener("change", restart);
     return () => mq.removeEventListener("change", restart);
   }, []);
@@ -87,6 +96,7 @@ const UseCasesSection = () => {
     if (i === active) return;
     clearTimers();
     setActive(i);
+    activeRef.current = i;
     setFading(true);
     timers.current.push(window.setTimeout(() => {
       setShown(i);
@@ -107,7 +117,8 @@ const UseCasesSection = () => {
   };
 
   const run = () => {
-    if (phase !== "before") return;
+    // Not while fading to another industry: the run would land on that one.
+    if (phase !== "before" || fading) return;
     if (reducedMotion) { setPhase("after"); return; }
     setPhase("processing");
     timers.current.push(window.setTimeout(() => setPhase("after"), isDesktop ? RUN_MS.desktop : RUN_MS.phone));

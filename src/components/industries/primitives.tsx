@@ -36,9 +36,9 @@ export const StatusMark = ({ status, d, lang }: { status: Status; d: number; lan
 /** The interface a result lands in: an app chip, a title, and a sync state
  *  that reads "waiting" before the run and "updated" after it. */
 export const OutPanel = ({
-  app, title, right, lang, children,
-}: { app: string; title: string; right?: ReactNode; lang: SiteLanguage; children: ReactNode }) => (
-  <div className="ix-panel">
+  app, title, right, lang, hidden = false, children,
+}: { app: string; title: string; right?: ReactNode; lang: SiteLanguage; hidden?: boolean; children: ReactNode }) => (
+  <div className="ix-panel" {...(hidden ? { inert: "" } : {})}>
     {/* Wraps when narrow: the status drops under the title rather than
         squeezing it down to a few letters. */}
     <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 border-b border-border/70 px-3.5 py-2.5">
@@ -47,7 +47,7 @@ export const OutPanel = ({
       <span className="ml-auto flex shrink-0 items-center gap-1.5 text-[10px] font-medium uppercase tracking-[0.08em]">
         {right}
         <span className="ix-sync">
-          <span className="ix-sync-wait">{lang === "de" ? "Wartet" : "Waiting"}</span>
+          <span className="ix-sync-wait" aria-hidden="true">{lang === "de" ? "Wartet" : "Waiting"}</span>
           <span className="ix-sync-done" style={delay(2050)}>{lang === "de" ? "Aktualisiert" : "Updated"}</span>
         </span>
       </span>

@@ -211,9 +211,10 @@ const DesktopScene = ({
           ))}
         </ul>
         <div className="ix-out-inner">
-          <OutputView output={industry.output} lang={lang} />
+          <OutputView output={industry.output} lang={lang} hidden={phase !== "after"} />
           <p className="ix-waiting" aria-hidden={phase !== "before"}>{t("useCases.waiting")}</p>
         </div>
+        {industry.caveat && <p className="ix-caveat">{tx(industry.caveat, lang)}</p>}
       </div>
     </div>
   );

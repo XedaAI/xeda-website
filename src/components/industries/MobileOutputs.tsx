@@ -48,12 +48,12 @@ const TableM = ({ o, lang }: { o: TableOutput; lang: SiteLanguage }) => {
   const FootIcon = o.footer.icon === "send" ? Send : FileSpreadsheet;
   const n = o.rows.length;
   return (
-    <Panel app={o.app} title={tx(o.title, lang)} meta={counts(o.rows, lang)}>
+    <Panel app={tx(o.app, lang)} title={tx(o.title, lang)} meta={counts(o.rows, lang)}>
       {o.rows.map((r, i) => (
         <Row key={i} i={i} status={r.status} lang={lang} traced={r.traced}
           title={tx(r.cells[0], lang)} sub={tx(r.sub, lang)} note={r.note && tx(r.note, lang)} />
       ))}
-      <Row i={n} status="ok" lang={lang}
+      <Row i={n} status={o.footer.status ?? "ok"} lang={lang}
         lead={<FootIcon className="ixm-row-icon" />}
         title={tx(o.footer.text, lang)} />
     </Panel>
