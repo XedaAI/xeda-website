@@ -13,7 +13,9 @@ import type { SiteLanguage } from "@/contexts/LanguageContext";
 // interface the result lands in.
 //
 // Illustrative only: names, numbers and dates are invented examples, not
-// client data. Vendors are fictional, and no output claims an integration
+// client data. Company names follow the German placeholder convention
+// (Muster / Beispiel) and the email uses the reserved .example domain, so
+// none can match a real firm. No output claims an integration
 // with a named third-party product.
 
 export type Lx = { en: string; de: string };
@@ -121,18 +123,18 @@ export const industries: Industry[] = [
     inputs: [
       { kind: "doc", tag: "PDF", title: l("Invoice", "Rechnung"), icon: "invoice", x: 4, y: 7, r: -6 },
       { kind: "doc", tag: "PDF", title: l("Invoice (scan)", "Rechnung (Scan)"), icon: "invoice", x: 33, y: 30, r: 5, unresolved: true },
-      { kind: "field", value: "Acme GmbH", x: 58, y: 9, r: 4 },
+      { kind: "field", value: "Muster GmbH", x: 58, y: 9, r: 4 },
       { kind: "field", value: l("€1,190.00", "1.190,00 €"), x: 63, y: 50, r: -4 },
       { kind: "field", value: "24.04.2026", x: 3, y: 60, r: 3 },
       { kind: "field", value: l("VAT 19%", "USt. 19 %"), x: 42, y: 72, r: -3 },
       { kind: "field", value: "RE-1201", x: 12, y: 84, r: 4 },
     ],
     mobileInputs: [
-      { kind: "pdf", title: l("Invoice · Acme GmbH", "Rechnung · Acme GmbH"), meta: "PDF · 24.04.2026" },
+      { kind: "pdf", title: l("Invoice · Muster GmbH", "Rechnung · Muster GmbH"), meta: "PDF · 24.04.2026" },
       { kind: "pdf", title: l("Invoice (scan)", "Rechnung (Scan)"), meta: l("PDF · VAT unreadable", "PDF · USt. unleserlich"), unresolved: true },
       { kind: "bits", title: l("Copied from emails", "Aus E-Mails kopiert"), bits: [l("€1,190.00", "1.190,00 €"), l("VAT 19%", "USt. 19 %"), "RE-1201"] },
     ],
-    sources: [l("Invoice_Acme.pdf"), l("Scan_0424.pdf"), l("4 more invoices", "4 weitere Rechnungen")],
+    sources: [l("Rechnung_Muster.pdf"), l("Scan_0424.pdf"), l("4 more invoices", "4 weitere Rechnungen")],
     fields: [
       { label: l("Vendor", "Lieferant") },
       { label: l("Invoice date", "Rechnungsdatum") },
@@ -147,10 +149,10 @@ export const industries: Industry[] = [
       cols: [l("Vendor", "Lieferant"), l("Invoice", "Beleg"), l("Date", "Datum"), l("Amount", "Betrag"), l("VAT", "USt."), l("", "")],
       grid: "minmax(0,1.3fr) minmax(0,0.95fr) minmax(4.6rem,0.95fr) minmax(0,1.05fr) minmax(0,0.5fr) 1.5rem",
       rows: [
-        { cells: ["Acme GmbH", "RE-1201", "24.04.2026", l("€1,190.00", "1.190,00 €"), "19%"], sub: l("24.04.2026 · €1,190.00 · VAT 19% · RE-1201", "24.04.2026 · 1.190,00 € · USt. 19 % · RE-1201"), status: "ok", traced: true },
-        { cells: ["Kranz Software", "RE-0423", "23.04.2026", l("€299.00", "299,00 €"), "19%"], sub: l("€299.00 · VAT 19% · RE-0423", "299,00 € · USt. 19 % · RE-0423"), status: "ok" },
-        { cells: ["Netzwerk Süd", "RE-7781", "22.04.2026", l("€84.99", "84,99 €"), "7%"], sub: l("€84.99 · VAT 7% · RE-7781", "84,99 € · USt. 7 % · RE-7781"), status: "warn", note: l("VAT rate doesn't match", "USt.-Satz passt nicht") },
-        { cells: ["Bürowelt Meyer", "RE-5567", "22.04.2026", l("€125.50", "125,50 €"), "19%"], sub: l("€125.50 · VAT 19% · RE-5567", "125,50 € · USt. 19 % · RE-5567"), status: "ok" },
+        { cells: ["Muster GmbH", "RE-1201", "24.04.2026", l("€1,190.00", "1.190,00 €"), "19%"], sub: l("24.04.2026 · €1,190.00 · VAT 19% · RE-1201", "24.04.2026 · 1.190,00 € · USt. 19 % · RE-1201"), status: "ok", traced: true },
+        { cells: ["Beispiel Software", "RE-0423", "23.04.2026", l("€299.00", "299,00 €"), "19%"], sub: l("€299.00 · VAT 19% · RE-0423", "299,00 € · USt. 19 % · RE-0423"), status: "ok" },
+        { cells: ["Musternetz", "RE-7781", "22.04.2026", l("€84.99", "84,99 €"), "7%"], sub: l("€84.99 · VAT 7% · RE-7781", "84,99 € · USt. 7 % · RE-7781"), status: "warn", note: l("VAT rate doesn't match", "USt.-Satz passt nicht") },
+        { cells: ["Bürobedarf Muster", "RE-5567", "22.04.2026", l("€125.50", "125,50 €"), "19%"], sub: l("€125.50 · VAT 19% · RE-5567", "125,50 € · USt. 19 % · RE-5567"), status: "ok" },
       ],
       footer: { text: l("Import file ready (e.g. DATEV format)", "Importdatei bereit (z. B. DATEV-Format)"), icon: "file" },
     },
@@ -165,7 +167,7 @@ export const industries: Industry[] = [
     slug: "fertigung",
     icon: Factory,
     inputs: [
-      { kind: "mail", from: "einkauf@kunde-ag.de", subject: l("PO 4500-1123 — urgent", "Bestellung 4500-1123 — eilig"), x: 3, y: 6, r: -4 },
+      { kind: "mail", from: "einkauf@muster-ag.example", subject: l("PO 4500-1123 — urgent", "Bestellung 4500-1123 — eilig"), x: 3, y: 6, r: -4 },
       { kind: "doc", tag: "PDF", title: l("Purchase order", "Bestellung"), x: 38, y: 24, r: 5 },
       { kind: "field", value: l("Mat. 200-051", "Mat. 200-051"), x: 64, y: 6, r: 4 },
       { kind: "field", value: l("Qty 50", "Menge 50"), x: 5, y: 44, r: -3 },
@@ -173,11 +175,11 @@ export const industries: Industry[] = [
       { kind: "field", value: l("Deliver by 02.05.", "Liefern bis 02.05."), x: 14, y: 67, r: 2 },
     ],
     mobileInputs: [
-      { kind: "mail", title: l("PO 4500-1123 — urgent", "Bestellung 4500-1123 — eilig"), meta: "einkauf@kunde-ag.de" },
+      { kind: "mail", title: l("PO 4500-1123 — urgent", "Bestellung 4500-1123 — eilig"), meta: "einkauf@muster-ag.example" },
       { kind: "pdf", title: l("Purchase order", "Bestellung"), meta: l("PDF · 4 line items", "PDF · 4 Positionen") },
       { kind: "bits", title: l("Waiting for manual entry", "Wartet auf Erfassung"), bits: [l("Qty 50", "Menge 50"), l("€199.00 / pc", "199,00 € / Stk."), l("by 02.05.", "bis 02.05.")], unresolved: true },
     ],
-    sources: [l("Email from Kunde AG", "E-Mail von Kunde AG"), l("PO_4500-1123.pdf"), l("4 line items", "4 Positionen")],
+    sources: [l("Email from Muster AG", "E-Mail von Muster AG"), l("PO_4500-1123.pdf"), l("4 line items", "4 Positionen")],
     fields: [
       { label: l("Material", "Material") },
       { label: l("Quantity", "Menge") },
