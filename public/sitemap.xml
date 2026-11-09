@@ -7,8 +7,7 @@
     <loc>https://xeda.ai/</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://xeda.ai/?lang=en"/>
     <xhtml:link rel="alternate" hreflang="de" href="https://xeda.ai/?lang=de"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://xeda.ai/"/>
-    <lastmod>2024-12-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xeda.ai/"/>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -127,8 +126,7 @@
     <loc>https://xeda.ai/privacy</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://xeda.ai/privacy?lang=en"/>
     <xhtml:link rel="alternate" hreflang="de" href="https://xeda.ai/privacy?lang=de"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://xeda.ai/privacy"/>
-    <lastmod>2024-12-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xeda.ai/privacy"/>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
@@ -138,8 +136,7 @@
     <loc>https://xeda.ai/terms</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://xeda.ai/terms?lang=en"/>
     <xhtml:link rel="alternate" hreflang="de" href="https://xeda.ai/terms?lang=de"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://xeda.ai/terms"/>
-    <lastmod>2024-12-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xeda.ai/terms"/>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
@@ -149,8 +146,7 @@
     <loc>https://xeda.ai/impressum</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://xeda.ai/impressum?lang=en"/>
     <xhtml:link rel="alternate" hreflang="de" href="https://xeda.ai/impressum?lang=de"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://xeda.ai/impressum"/>
-    <lastmod>2024-12-14</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://xeda.ai/impressum"/>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
