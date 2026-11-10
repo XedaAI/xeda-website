@@ -26,7 +26,7 @@ const WhyUsSection = () => {
   return (
     <section className="py-28 md:py-36 bg-background">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
+        <div className="text-center mb-16" data-drift="0.06" data-drift-max="40">
           <span className="text-sm font-semibold tracking-wide text-brand-accent mb-4 block">{t("whyUs.label")}</span>
           <h2 className="text-3xl md:text-5xl font-semibold tracking-[-0.022em] text-foreground mb-5 text-balance">
             {t("whyUs.title")}

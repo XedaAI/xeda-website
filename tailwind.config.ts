@@ -110,6 +110,11 @@ export default {
   			xl: 'var(--shadow-xl)',
   			'2xl': 'var(--shadow-2xl)'
   		},
+  		// One step up from Tailwind's 12px: small labels and notes stay easy
+  		// to read. Everything set in text-xs gets it.
+  		fontSize: {
+  			xs: ['0.8125rem', { lineHeight: '1.15rem' }]
+  		},
   		fontFamily: {
   			display: [
   				'Saira Semi Condensed',

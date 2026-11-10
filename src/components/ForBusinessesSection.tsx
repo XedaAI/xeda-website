@@ -33,7 +33,7 @@ const ForBusinessesSection = () => {
     <section id="for-businesses" className="py-28 md:py-36 bg-background">
       <div className="container mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-          <div>
+          <div data-drift="0.06" data-drift-max="40">
             <span className="text-sm font-semibold tracking-wide text-brand-accent mb-4 block">{t("forBusinesses.label")}</span>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
               {t("forBusinesses.title")}

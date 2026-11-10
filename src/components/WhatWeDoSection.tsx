@@ -2,6 +2,7 @@ import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import XedaWordmark from "@/components/XedaWordmark";
+import Parallax from "@/components/Parallax";
 import integrationArt from "@/assets/services/interlocking-modules.webp";
 import automationArt from "@/assets/services/document-pipeline.webp";
 import copilotsArt from "@/assets/services/assistant-mesh.webp";
@@ -15,8 +16,14 @@ const STREAMS = [
   { left: "87%", bits: "1100101011010011", dur: "15s", delay: "-10s" },
 ];
 
-/** How long each service's illustration stays up before the next one. */
+/** How long each service stays up before the next one, when cycling. */
 const CYCLE_MS = 6000;
+/** Scroll distance per service while the section is held, in viewport heights. */
+const STEP_VH = 60;
+/** Desktop windows tall enough to hold the whole section on screen. */
+const PIN_QUERY = "(min-width: 1024px) and (min-height: 600px)";
+
+const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
 const WhatWeDoSection = () => {
   const { t } = useLanguage();
@@ -29,37 +36,83 @@ const WhatWeDoSection = () => {
     { art: automationArt, titleKey: "whatWeDo.mvp.title", descKey: "whatWeDo.mvp.desc" },
     { art: copilotsArt, titleKey: "whatWeDo.automation.title", descKey: "whatWeDo.automation.desc" },
   ];
+  const n = services.length;
 
   const [active, setActive] = useState(0);
-  // Auto-advance on desktop until someone points at or tabs into the list, and
-  // stop for good once they pick one: a panel that changes under a reader's
-  // cursor or focus fights them.
-  //
-  // Never on phones. There each illustration opens inline under its service,
-  // so cycling would move the text being read by the height of an
-  // illustration every few seconds (layout shift, and no way to pause it).
-  const [hovering, setHovering] = useState(false);
-  const [focused, setFocused] = useState(false);
-  const [chosen, setChosen] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
+  // Desktop: the section holds still while you scroll, and the scroll walks
+  // through the three services, so nobody passes it having seen only one.
+  const [pinned, setPinned] = useState(false);
 
   useEffect(() => {
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const desktop = window.matchMedia("(min-width: 1024px)");
-    const sync = () => { setReducedMotion(motion.matches); setIsDesktop(desktop.matches); };
-    sync();
-    motion.addEventListener("change", sync);
-    desktop.addEventListener("change", sync);
-    return () => {
-      motion.removeEventListener("change", sync);
-      desktop.removeEventListener("change", sync);
+    const tall = window.matchMedia(PIN_QUERY);
+    const sync = () => {
+      setReducedMotion(motion.matches);
+      setIsDesktop(desktop.matches);
+      setPinned(tall.matches && !motion.matches);
     };
+    sync();
+    [motion, desktop, tall].forEach((m) => m.addEventListener("change", sync));
+    return () => [motion, desktop, tall].forEach((m) => m.removeEventListener("change", sync));
   }, []);
 
-  // Only cycle while the section is on screen, so a visitor arriving at it
-  // starts from the first service rather than wherever the timer had got to.
   const sectionRef = useRef<HTMLElement>(null);
+  const stickyRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+
+  // --- Held section: scroll position → active service -----------------------
+  // Progress runs 0 → 1 over the scroll the section is held for; each service
+  // owns a third of it. The bars and the drift read it as CSS variables, so
+  // scrolling never re-renders; only crossing into the next service does.
+  useEffect(() => {
+    if (!pinned) return;
+    const section = sectionRef.current;
+    const sticky = stickyRef.current;
+    if (!section || !sticky) return;
+    let raf = 0;
+    const measure = () => {
+      raf = 0;
+      const headerH = document.querySelector("header")?.getBoundingClientRect().height ?? 72;
+      section.style.setProperty("--wwd-header", `${headerH}px`);
+      const r = section.getBoundingClientRect();
+      const span = r.height - (window.innerHeight - headerH);
+      const p = span > 0 ? clamp01((headerH - r.top) / span) : 0;
+      sticky.style.setProperty("--wwd-p", p.toFixed(4));
+      for (let k = 0; k < n; k++) sticky.style.setProperty(`--wwd-s${k}`, clamp01(p * n - k).toFixed(4));
+      const idx = Math.min(n - 1, Math.floor(p * n));
+      setActive((a) => (a === idx ? a : idx));
+    };
+    const onScroll = () => { if (!raf) raf = window.requestAnimationFrame(measure); };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (raf) window.cancelAnimationFrame(raf);
+    };
+  }, [pinned, n]);
+
+  // Picking a service while held scrolls to its part of the section.
+  const goTo = (k: number) => {
+    const section = sectionRef.current;
+    if (!pinned || !section) { setActive(k); setChosen(true); return; }
+    const headerH = document.querySelector("header")?.getBoundingClientRect().height ?? 72;
+    const r = section.getBoundingClientRect();
+    const span = r.height - (window.innerHeight - headerH);
+    const target = window.scrollY + r.top - headerH + span * ((k + 0.12) / n);
+    window.scrollTo({ top: target, behavior: "smooth" });
+  };
+
+  // --- Desktop without holding (short window or reduced motion) -------------
+  // The panel cycles until someone points at or tabs into the list, and stops
+  // for good once they pick one.
+  const [hovering, setHovering] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const [chosen, setChosen] = useState(false);
   const [inView, setInView] = useState(false);
   useEffect(() => {
     const el = sectionRef.current;
@@ -68,16 +121,55 @@ const WhatWeDoSection = () => {
     io.observe(el);
     return () => io.disconnect();
   }, []);
-
-  const autoplay = isDesktop && inView && !hovering && !focused && !chosen && !reducedMotion;
+  const autoplay = isDesktop && !pinned && inView && !hovering && !focused && !chosen && !reducedMotion;
   useEffect(() => {
     if (!autoplay) return;
-    const id = window.setTimeout(() => setActive((i) => (i + 1) % services.length), CYCLE_MS);
+    const id = window.setTimeout(() => setActive((i) => (i + 1) % n), CYCLE_MS);
     return () => window.clearTimeout(id);
-  }, [active, autoplay, services.length]);
+  }, [active, autoplay, n]);
+
+  // --- Phones: every service with its picture, revealed as it arrives -------
+  // The service crossing the middle of the screen is the highlighted one.
+  useEffect(() => {
+    if (isDesktop) return;
+    const list = listRef.current;
+    if (!list) return;
+    const items = [...list.querySelectorAll<HTMLElement>("[data-wwd-item]")];
+    const reveal = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        // An attribute React does not manage, so re-renders keep it.
+        if (e.isIntersecting) { (e.target as HTMLElement).dataset.in = ""; reveal.unobserve(e.target); }
+      });
+    }, { threshold: 0.15 });
+    const centre = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) setActive(Number((e.target as HTMLElement).dataset.wwdItem));
+      });
+    }, { rootMargin: "-45% 0px -50% 0px" });
+    items.forEach((el) => { reveal.observe(el); centre.observe(el); });
+    return () => { reveal.disconnect(); centre.disconnect(); };
+  }, [isDesktop]);
+
+  const heading = (
+    <>
+      <span className="text-sm font-semibold tracking-wide text-muted-foreground mb-5 block">{t("whatWeDo.label")}</span>
+      <h2 className="wwd-h2 font-display font-medium uppercase text-[2.35rem] sm:text-5xl xl:text-[3.6rem] leading-[1.02] tracking-[-0.005em] text-brand-accent mb-8 text-balance">
+        {t("whatWeDo.title")}
+      </h2>
+      <p className="wwd-sub text-lg md:text-xl leading-relaxed text-foreground/90 max-w-xl mb-10">
+        {t("whatWeDo.subtitle")}
+      </p>
+    </>
+  );
 
   return (
-    <section ref={sectionRef} id="what-we-do" className="relative py-28 md:py-36 bg-background">
+    <section
+      ref={sectionRef}
+      id="what-we-do"
+      className={pinned ? "wwd-held relative bg-background" : "relative py-28 md:py-36 bg-background"}
+      style={pinned ? ({ "--wwd-steps": n, "--wwd-step-vh": STEP_VH } as React.CSSProperties) : undefined}
+      data-active={active}
+    >
       {/* Moves each illustration's black point up to its own navy ground, so
           that ground turns true black and the screen blend drops it completely
           — otherwise a faint, lighter rectangle shows under every scheme.
@@ -93,103 +185,132 @@ const WhatWeDoSection = () => {
           </feComponentTransfer>
         </filter>
       </svg>
-      <div className="container mx-auto px-6">
-        {/* Statement on the left, a framed visual on the right. */}
-        <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] gap-14 lg:gap-20 items-stretch">
-          <div>
-            <span className="text-sm font-semibold tracking-wide text-muted-foreground mb-5 block">{t("whatWeDo.label")}</span>
-            <h2 className="font-display font-medium uppercase text-[2.35rem] sm:text-5xl xl:text-[3.6rem] leading-[1.02] tracking-[-0.005em] text-brand-accent mb-8 text-balance">
-              {t("whatWeDo.title")}
-            </h2>
-            <p className="text-lg md:text-xl leading-relaxed text-foreground/90 max-w-xl mb-10">
-              {t("whatWeDo.subtitle")}
-            </p>
+      <div ref={stickyRef} className={pinned ? "wwd-sticky" : undefined}>
+        <div className="container mx-auto px-6">
+          {/* Statement on the left, a framed visual on the right. */}
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] gap-14 lg:gap-20 items-stretch">
+            <div className="min-w-0">
+              {heading}
 
-            <ul
-              className="space-y-2"
-              onMouseEnter={() => setHovering(true)}
-              onMouseLeave={() => setHovering(false)}
-              onFocus={() => setFocused(true)}
-              onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setFocused(false); }}
-            >
-              {services.map((service, index) => {
-                const isActive = index === active;
-                return (
-                  <li key={service.titleKey} className="enter" style={{ "--enter-delay": `${index * 0.08}s` } as React.CSSProperties}>
-                    {/* A heading may not sit inside a button, so the service
-                        name is also given as a hidden heading for screen
-                        readers' heading navigation. */}
-                    <h3 className="sr-only">{t(service.titleKey)}</h3>
-                    <button
-                      type="button"
-                      aria-pressed={isActive}
-                      onClick={() => { setActive(index); setChosen(true); }}
-                      onMouseEnter={() => setActive(index)}
-                      onFocus={() => setActive(index)}
-                      className={`wwd-item group relative w-full text-left flex gap-5 rounded-xl px-5 py-5 transition-colors ${isActive ? "bg-accent/60" : "hover:bg-accent/30"}`}
+              <ul
+                ref={listRef}
+                className={pinned ? "space-y-1.5" : "space-y-2 max-lg:space-y-10"}
+                onMouseEnter={() => setHovering(true)}
+                onMouseLeave={() => setHovering(false)}
+                onFocus={() => setFocused(true)}
+                onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setFocused(false); }}
+              >
+                {services.map((service, index) => {
+                  const isActive = index === active;
+                  return (
+                    <li
+                      key={service.titleKey}
+                      data-wwd-item={index}
+                      className={`wwd-li ${isActive ? "is-active" : ""} ${index < active ? "is-done" : ""}`}
+                      style={{ "--i": index } as React.CSSProperties}
                     >
-                      <span className={`font-mono text-sm pt-1 tabular-nums transition-colors ${isActive ? "text-brand-accent" : "text-muted-foreground"}`}>
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-                      <span className="block">
-                        <span className={`block text-lg font-semibold mb-1.5 transition-colors ${isActive ? "text-foreground" : "text-foreground/75"}`}>
-                          {t(service.titleKey)}
+                      {/* A heading may not sit inside a button, so the service
+                          name is also given as a hidden heading for screen
+                          readers' heading navigation. */}
+                      <h3 className="sr-only">{t(service.titleKey)}</h3>
+                      <button
+                        type="button"
+                        aria-pressed={isActive}
+                        onClick={() => goTo(index)}
+                        onMouseEnter={pinned || !isDesktop ? undefined : () => setActive(index)}
+                        onFocus={pinned || !isDesktop ? undefined : () => setActive(index)}
+                        className={`wwd-item group relative w-full text-left flex gap-5 rounded-xl px-5 transition-colors ${pinned ? "py-3.5" : "py-5"} ${
+                          isActive ? "bg-accent/60" : "hover:bg-accent/30"
+                        }`}
+                      >
+                        {/* While held: how far through this service the scroll is. */}
+                        {pinned && <span className="wwd-rail" aria-hidden="true"><span style={{ transform: `scaleY(var(--wwd-s${index}))` }} /></span>}
+                        <span className={`font-mono text-sm pt-1 tabular-nums transition-colors ${isActive ? "text-brand-accent" : "text-muted-foreground"}`}>
+                          {String(index + 1).padStart(2, "0")}
                         </span>
-                        <span className="block text-muted-foreground leading-relaxed">{t(service.descKey)}</span>
-                        {/* Phones: the illustration opens under its own service
-                            instead of in a panel below the whole list, where it
-                            would be out of sight. Every fold is the same height
-                            and exactly one is open, so the page length holds
-                            steady while it cycles. Spans throughout, since a
-                            button may only hold phrasing content. */}
-                        <span className={`wwd-fold lg:hidden ${isActive ? "is-open" : ""}`} aria-hidden="true">
-                          <span className="wwd-fold-inner">
-                            <span className="section-ink wwd-panel wwd-panel--mini">
-                              <img src={service.art} alt="" decoding="async" className="wwd-art-inline" />
+                        <span className="block">
+                          <span className={`block text-lg font-semibold mb-1.5 transition-colors ${isActive ? "text-foreground" : "text-foreground/80"}`}>
+                            {t(service.titleKey)}
+                          </span>
+                          {/* While held, only the service in view shows its
+                              description, so the list fits a laptop screen. */}
+                          <span className="wwd-desc">
+                            <span className={`block leading-relaxed transition-colors ${isActive || !isDesktop ? "text-foreground/80" : "text-muted-foreground"}`}>
+                              {t(service.descKey)}
                             </span>
                           </span>
                         </span>
-                      </span>
-                      {/* How long until the next service, while it is cycling. */}
-                      {isActive && autoplay && (
-                        <span key={active} className="wwd-progress" style={{ "--wwd-cycle": `${CYCLE_MS}ms` } as React.CSSProperties} />
-                      )}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+                        {/* How long until the next service, while it is cycling. */}
+                        {isActive && autoplay && (
+                          <span key={active} className="wwd-progress" style={{ "--wwd-cycle": `${CYCLE_MS}ms` } as React.CSSProperties} />
+                        )}
+                      </button>
 
-          {/* Desktop only (phones get the folds above). Decorative: the list
-              carries the content, so the panel is hidden from assistive tech
-              and its images have empty alt text.
-              section-ink keeps it a dark panel in both themes, the way a
-              photograph would stay dark. */}
-          <div aria-hidden="true" className="section-ink wwd-panel relative hidden lg:block lg:min-h-[560px]">
-            <div className="wwd-streams">
-              {STREAMS.map((s) => (
-                <span
-                  key={s.left}
-                  className="wwd-stream"
-                  style={{ left: s.left, "--dur": s.dur, "--delay": s.delay } as React.CSSProperties}
-                >
-                  {s.bits}
+                      {/* Phones: every service shows its picture, always — no
+                          fold to open — and it drifts a little in its frame as
+                          you scroll past. Decorative; the text carries it. */}
+                      <div className="wwd-mini lg:hidden" aria-hidden="true">
+                        <div className="section-ink wwd-panel wwd-panel--mini">
+                          <Parallax className="wwd-mini-art" speed={0} phoneSpeed={0.07} max={22}>
+                            <img src={service.art} alt="" decoding="async" loading="lazy" className="wwd-art-inline" />
+                          </Parallax>
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              {pinned && (
+                <p className="wwd-scrollhint" aria-hidden="true">
+                  <span className="wwd-scrollhint-mouse" />
+                  {t("whatWeDo.scrollHint")}
+                </p>
+              )}
+            </div>
+
+            {/* Desktop only. Decorative: the list carries the content, so the
+                panel is hidden from assistive tech and its images have empty
+                alt text. section-ink keeps it a dark panel in both themes. */}
+            <div aria-hidden="true" className="section-ink wwd-panel wwd-stage relative hidden lg:block">
+              <div className="wwd-streams">
+                {STREAMS.map((s) => (
+                  <span
+                    key={s.left}
+                    className="wwd-stream"
+                    style={{ left: s.left, "--dur": s.dur, "--delay": s.delay } as React.CSSProperties}
+                  >
+                    {s.bits}
+                  </span>
+                ))}
+              </div>
+              {/* Which service, and how far through the three. */}
+              <div className="wwd-steps">
+                <span key={active} className="wwd-steps-n">{String(active + 1).padStart(2, "0")}</span>
+                <span className="wwd-steps-of">/ {String(n).padStart(2, "0")}</span>
+                <span className="wwd-steps-bars">
+                  {services.map((s, k) => (
+                    <span key={s.titleKey} className={k <= active ? "is-on" : undefined}>
+                      <span style={pinned ? { transform: `scaleX(var(--wwd-s${k}))` } : undefined} />
+                    </span>
+                  ))}
                 </span>
-              ))}
+              </div>
+              <div className="wwd-art-wrap absolute inset-x-0 top-0 bottom-20 sm:bottom-24 flex items-center justify-center">
+                {services.map((service, index) => (
+                  <img
+                    key={service.titleKey}
+                    src={service.art}
+                    alt=""
+                    decoding="async"
+                    className={`wwd-art ${index === active ? "is-active" : index < active ? "is-past" : ""}`}
+                  />
+                ))}
+              </div>
+              {/* A scan line across the panel each time the service changes. */}
+              <span key={`scan-${active}`} className="wwd-scan" />
+              <XedaWordmark className="absolute left-1/2 -translate-x-1/2 bottom-9 sm:bottom-11 h-5 sm:h-6 w-auto text-foreground" />
             </div>
-            <div className="absolute inset-x-0 top-0 bottom-20 sm:bottom-24 flex items-center justify-center">
-              {services.map((service, index) => (
-                <img
-                  key={service.titleKey}
-                  src={service.art}
-                  alt=""
-                  decoding="async"
-                  className={`wwd-art ${index === active ? "is-active" : ""}`}
-                />
-              ))}
-            </div>
-            <XedaWordmark className="absolute left-1/2 -translate-x-1/2 bottom-9 sm:bottom-11 h-5 sm:h-6 w-auto text-foreground" />
           </div>
         </div>
       </div>

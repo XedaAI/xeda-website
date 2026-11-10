@@ -918,8 +918,8 @@ All colors MUST be HSL.
      fill and every washed-back form of it. */
   --dc-s1: 210 68% 40%;
   --dc-s2: 152 60% 30%;
-  --dc-s3: 38 76% 38%;
-  --dc-s4: 6 66% 46%;
+  --dc-s3: 38 80% 33%;
+  --dc-s4: 6 70% 42%;
   --dc-s5: 282 44% 45%;
   --dc-s6: 187 74% 29%;
   --dc-s7: 245 48% 50%;
@@ -1220,24 +1220,122 @@ All colors MUST be HSL.
 }
 .wwd-art.is-active { opacity: 1; transform: none; }
 
-/* Phones: the active service's illustration opens in place under it. The
-   grid-row trick animates to the content's real height without measuring it;
-   each mini panel has a fixed height, so one fold closing and the next opening
-   leave the page the same length. */
-.wwd-fold {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.5s ease;
+/* Desktop picture: the next one waits just below, the previous one leaves
+   upwards, so stepping through the services reads as moving down a list. */
+.wwd-art.is-past { transform: translateY(-14px) scale(0.98); }
+@media (min-width: 1024px) {
+  .wwd-stage { min-height: 560px; }
 }
-.wwd-fold.is-open { grid-template-rows: 1fr; }
-.wwd-fold-inner { display: block; min-height: 0; overflow: hidden; }
-.wwd-panel--mini {
-  --cut: 26px;
+
+/* --- Held on scroll (desktop) ---------------------------------------------
+   WhatWeDoSection.tsx. The section is as tall as one screen plus a stretch of
+   scroll per service; its content sticks under the header for that stretch,
+   and the scroll position picks the service. Progress arrives as --wwd-p
+   (0-1 overall) and --wwd-s0..2 (0-1 within each service). */
+.wwd-held { height: calc(100vh + var(--wwd-steps, 3) * var(--wwd-step-vh, 60) * 1vh); }
+.wwd-sticky {
+  position: sticky;
+  top: var(--wwd-header, 4.5rem);
+  height: calc(100vh - var(--wwd-header, 4.5rem));
   display: flex;
   align-items: center;
-  justify-content: center;
-  height: 13.5rem;
-  margin-top: 1.1rem;
+}
+.wwd-sticky > .container { width: 100%; }
+.wwd-held .wwd-stage {
+  min-height: 0;
+  height: min(560px, calc(100vh - var(--wwd-header, 4.5rem) - 4rem));
+  align-self: center;
+}
+/* Compact while held, so heading, text and list fit a laptop screen: the
+   heading scales with the window's height, and only the service in view
+   shows its description (the others fold to their titles). */
+.wwd-held .wwd-h2 { font-size: clamp(2rem, 5.2vh, 3.2rem); margin-bottom: 1.25rem; }
+.wwd-held .wwd-sub { font-size: 1.125rem; margin-bottom: 1.5rem; }
+.wwd-held .wwd-desc { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.45s ease; }
+.wwd-held .wwd-desc > span { min-height: 0; overflow: hidden; }
+.wwd-held .wwd-li.is-active .wwd-desc { grid-template-rows: 1fr; }
+/* The picture drifts a little against the scroll while the section is held. */
+.wwd-held .wwd-art-wrap { translate: 0 calc((0.5 - var(--wwd-p, 0.5)) * 36px); }
+
+/* Each service's own rail fills as you scroll through it. */
+.wwd-rail {
+  position: absolute; left: 0.45rem; top: 1rem; bottom: 1rem;
+  width: 2px; border-radius: 2px;
+  background: hsl(var(--foreground) / 0.12);
+  overflow: hidden;
+}
+.wwd-rail > span {
+  position: absolute; inset: 0;
+  background: hsl(var(--primary));
+  transform-origin: top;
+}
+
+/* Counter and three bars in the panel's corner: which service, how far. */
+.wwd-steps {
+  position: absolute; top: 1.4rem; right: 1.6rem; z-index: 2;
+  display: flex; align-items: baseline; gap: 0.4rem;
+  font-family: var(--font-mono);
+  color: hsl(var(--foreground));
+}
+.wwd-steps-n { font-size: 1.35rem; font-weight: 700; display: inline-block; animation: wwdCount 0.45s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.wwd-steps-of { font-size: 0.95rem; color: hsl(var(--foreground) / 0.7); }
+.wwd-steps-bars { display: inline-flex; gap: 5px; margin-left: 0.6rem; align-self: center; }
+.wwd-steps-bars > span { position: relative; width: 26px; height: 3px; border-radius: 3px; background: hsl(var(--foreground) / 0.2); overflow: hidden; }
+.wwd-steps-bars > span > span { position: absolute; inset: 0; background: hsl(var(--primary)); transform-origin: left; transform: scaleX(0); }
+.wwd-steps-bars > span.is-on > span:not([style]) { transform: none; }
+@keyframes wwdCount { from { opacity: 0; transform: translateY(8px); } }
+
+/* A scan line crossing the panel each time the service changes. */
+.wwd-scan {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: linear-gradient(90deg, transparent, hsl(var(--success) / 0.9), transparent) top / 100% 2px no-repeat;
+  opacity: 0;
+  animation: wwdScan 0.9s cubic-bezier(0.3, 0, 0.2, 1) 1;
+}
+@keyframes wwdScan {
+  0% { transform: translateY(0); opacity: 0; }
+  12% { opacity: 1; }
+  85% { opacity: 0.7; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
+/* Under the list while held: scroll to see the rest. Fades as you start. */
+.wwd-scrollhint {
+  display: flex; align-items: center; gap: 0.6rem;
+  margin-top: 1.4rem; padding-left: 1.25rem;
+  font-size: 0.875rem; font-weight: 500;
+  color: hsl(var(--foreground) / 0.75);
+  opacity: calc(1 - var(--wwd-p, 0) * 8);
+}
+.wwd-scrollhint-mouse {
+  position: relative; width: 16px; height: 24px; flex: none;
+  border: 1.5px solid hsl(var(--foreground) / 0.6); border-radius: 9px;
+}
+.wwd-scrollhint-mouse::after {
+  content: ""; position: absolute; left: 50%; top: 4px; width: 2px; height: 5px; margin-left: -1px;
+  border-radius: 2px; background: hsl(var(--primary));
+  animation: wwdWheel 1.4s ease-in-out infinite;
+}
+@keyframes wwdWheel { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(7px); opacity: 0; } 100% { opacity: 0; } }
+
+/* --- Phones: every service with its picture ---------------------------------
+   No folds: each service's picture is always shown under its text, so a quick
+   scroll still passes all three. They rise into place as they arrive, and the
+   picture drifts a little in its frame (Parallax). */
+.wwd-mini { margin-top: 1rem; }
+.wwd-panel--mini {
+  --cut: 26px;
+  position: relative;
+  height: 15rem;
+}
+.wwd-mini-art {
+  position: absolute; inset: -24px 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.wwd-mini-art .wwd-art-inline { max-height: 78%; }
+@media (max-width: 1023px) {
+  .wwd-li { opacity: 0; transform: translateY(28px); transition: opacity 0.6s ease, transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .wwd-li[data-in] { opacity: 1; transform: none; }
 }
 
 /* Time left on the active service while the panel is cycling. */
@@ -1284,7 +1382,10 @@ All colors MUST be HSL.
 @media (prefers-reduced-motion: reduce) {
   .wwd-stream { animation: none; top: 12%; }
   .wwd-art { transition: none; }
-  .wwd-fold { transition: none; }
+  .wwd-li { opacity: 1; transform: none; transition: none; }
+  .wwd-held .wwd-desc { transition: none; }
+  .wwd-scan, .wwd-scrollhint-mouse::after { animation: none; display: none; }
+  .wwd-steps-n { animation: none; }
 }
 
 
@@ -2545,3 +2646,231 @@ All colors MUST be HSL.
 @media (max-width: 359px) {
   .ixm .ixm-chips { display: none; }
 }
+
+/* --- Industries on phones: one window ---------------------------------------
+   MobileScene.tsx. The bar says which stage is on screen and holds the one
+   button; the scattered inputs and the organised result share one frame, so
+   the window keeps its height from stage to stage. Pressing the button sends
+   a scan line down the frame (--scan); each input straightens and is ticked
+   as the line reaches it (--t, ms), the fields Xeda reads light up in step,
+   and once the scan is done the inputs drop away and the result builds up
+   (data-run is set at that point, see MobileOutputs). */
+.ixw { padding: 0.85rem 0.85rem 0.25rem; }
+.ixw-bar { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+.ixw-stage { display: flex; align-items: center; gap: 0.55rem; min-width: 0; }
+.ixw-step {
+  display: grid; place-items: center; flex: none;
+  width: 1.65rem; height: 1.65rem; margin-top: 1px;
+  border-radius: 50%;
+  border: 1px solid hsl(var(--foreground) / 0.35);
+  font-family: var(--font-mono); font-size: 13px; font-weight: 700;
+  color: hsl(var(--foreground));
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+.ixw-step[data-n="2"] { background: hsl(var(--primary)); border-color: transparent; color: hsl(var(--primary-foreground)); }
+.ixw-step[data-n="3"] { background: hsl(var(--success) / 0.18); border-color: hsl(var(--success) / 0.6); color: hsl(var(--success)); }
+.ixw-stage-title { font-size: 1.0625rem; font-weight: 600; line-height: 1.25; color: hsl(var(--foreground)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ixw-stage-sub { margin: 0.3rem 0 0 2.2rem; min-height: 1.35em; font-size: 0.875rem; line-height: 1.35; color: hsl(var(--foreground) / 0.75); }
+
+/* The button: red like on desktop, pulsing until it is pressed. */
+.ixw-go {
+  position: relative; flex: none;
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  min-height: 2.75rem; padding: 0.55rem 0.9rem;
+  border-radius: 9999px;
+  background: hsl(var(--xeda));
+  color: hsl(var(--xeda-foreground));
+  font-size: 0.9375rem; font-weight: 600; white-space: nowrap;
+  box-shadow: 0 10px 24px -12px hsl(var(--xeda) / 0.95);
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+.ixw-go::after {
+  content: ""; position: absolute; inset: -3px; border-radius: inherit;
+  border: 2px solid hsl(var(--xeda));
+  opacity: 0; pointer-events: none;
+}
+.ixw[data-phase="before"] .ixw-go::after { animation: ixwPulse 1.7s ease-out infinite; }
+@keyframes ixwPulse {
+  0% { opacity: 0.8; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.18, 1.45); }
+}
+.ixw-go:active { transform: scale(0.97); }
+/* The narrowest phones: no arrow, so the stage title beside it never clips. */
+@media (max-width: 379px) {
+  .ixw-go svg { display: none; }
+  .ixw-stage-title { font-size: 1rem; }
+}
+/* Below 340px the title may take two lines; every stage keeps two lines'
+   room, so the window still does not change height. */
+@media (max-width: 339px) {
+  .ixw-stage { min-height: 2.6rem; }
+  .ixw-stage-title { white-space: normal; line-height: 1.2; }
+  .ixw-stage-sub { margin-left: 0; min-height: 2.7em; }
+}
+.ixw-go:focus-visible { outline: none; box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--ring)); }
+.ixw-go[aria-disabled="true"] { background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); cursor: progress; }
+.ixw-replay {
+  flex: none; display: inline-flex; align-items: center; gap: 0.4rem;
+  min-height: 2.75rem; padding: 0.5rem 0.95rem;
+  border-radius: 9999px;
+  border: 1px solid hsl(var(--success) / 0.55);
+  background: hsl(var(--success) / 0.1);
+  color: hsl(var(--foreground));
+  font-size: 0.9375rem; font-weight: 600; white-space: nowrap;
+}
+.ixw-replay:focus-visible { outline: none; box-shadow: 0 0 0 2px hsl(var(--ring)); }
+
+/* The pointer to the button. It keeps its space after the press (only fades),
+   so the window does not jump. */
+.ixw-hint {
+  display: flex; justify-content: flex-end; align-items: flex-end; gap: 0.2rem;
+  margin: 0.1rem 2.2rem 0 0;
+  font-size: 0.875rem; font-weight: 600;
+  color: hsl(3 85% 72%);
+  transition: opacity 0.25s ease, visibility 0.25s;
+}
+.ixw:not([data-phase="before"]) .ixw-hint { opacity: 0; visibility: hidden; }
+.ixw-hint-arrow { width: 1.5rem; height: 1.5rem; flex: none; margin-bottom: 0.45rem; animation: ixwNudge 1.3s ease-in-out infinite; }
+@keyframes ixwNudge { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(3px, -4px); } }
+
+/* The frame. The industry's picture sits behind the inputs, dimmed. */
+.ixw-view {
+  position: relative;
+  display: grid;
+  margin-top: 0.3rem;
+  min-height: 15rem;
+  border-radius: 1rem;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--background) / 0.4);
+  overflow: hidden;
+}
+.ixw-view > .ixw-layer { grid-area: 1 / 1; position: relative; z-index: 1; align-self: start; }
+.ixw-view .ixm-bg img { opacity: 0.55; }
+.ixw-view .ixm-bg::after { background: linear-gradient(180deg, hsl(var(--background) / 0.25), hsl(var(--background) / 0.7)); }
+.ixw[data-phase="after"] .ixw-view .ixm-bg { opacity: 0.45; }
+.ixw-inputs { padding: 0.85rem 0.55rem 1rem; }
+
+/* As the scan line reaches an input it straightens and gets a tick. */
+.ixw .ixm-in { transition: transform 0.35s var(--ix-ease), opacity 0.3s ease, border-color 0.25s ease, box-shadow 0.25s ease; }
+.ixw[data-phase="processing"] .ixm-in {
+  transform: none;
+  border-color: hsl(var(--primary) / 0.75);
+  box-shadow: 0 0 0 1px hsl(var(--primary) / 0.35), 0 8px 20px -14px rgb(0 0 0 / 0.8);
+  transition-delay: calc(var(--t) * 1ms);
+}
+.ixw-read {
+  position: absolute; top: -7px; right: -7px;
+  display: grid; place-items: center;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: hsl(var(--success)); color: hsl(var(--background));
+  transform: scale(0);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.ixw[data-phase="processing"] .ixw-read { transform: scale(1); transition-delay: calc(var(--t) * 1ms + 120ms); }
+
+/* The result builds up in the same frame once the scan is done. */
+.ixw-result { padding: 0.85rem 0.55rem 1rem; opacity: 0; transition: opacity 0.25s ease; }
+.ixw[data-phase="after"] .ixw-result { opacity: 1; transition: opacity 0.35s ease 0.12s; }
+.ixw-done-line { display: flex; align-items: center; flex-wrap: wrap; gap: 0.15rem 0.4rem; margin-bottom: 0.6rem; font-size: 0.875rem; line-height: 1.4; }
+.ixw-done-line strong { color: hsl(var(--foreground)); font-weight: 600; }
+
+/* The scan line: a bright edge with a glow trailing above it. */
+.ixw-beam {
+  position: absolute; left: 0; right: 0; top: -3.5rem; z-index: 2;
+  height: 3.5rem;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    linear-gradient(90deg, transparent, hsl(var(--primary)) 18%, hsl(var(--primary)) 82%, transparent) bottom / 100% 2px no-repeat,
+    linear-gradient(180deg, transparent, hsl(var(--primary) / 0.16));
+  filter: drop-shadow(0 0 6px hsl(var(--primary) / 0.7));
+}
+.ixw[data-phase="processing"] .ixw-beam { animation: ixwBeam var(--scan, 1750ms) cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards; }
+@keyframes ixwBeam {
+  0% { top: -3.5rem; opacity: 0; }
+  8% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: calc(100% - 1rem); opacity: 0; }
+}
+
+/* What Xeda reads: lit as the scan finds it. */
+.ixw-fields { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.7rem; padding: 0 0.1rem; }
+.ixw .ix-field { font-size: 0.875rem; padding: 0.3rem 0.65rem; overflow: visible; }
+.ixw[data-phase="processing"] .ix-field {
+  color: hsl(var(--foreground));
+  border-style: solid;
+  border-color: hsl(var(--success) / 0.4);
+  background-color: color-mix(in srgb, hsl(var(--success)) 8%, hsl(var(--background)) 92%);
+  transition-delay: calc(var(--t) * 1ms);
+  transition-duration: 0.3s;
+}
+.ixw[data-phase="processing"] .ix-field .ix-field-dot { background: hsl(var(--success)); transition-delay: calc(var(--t) * 1ms); }
+.ixw[data-phase="processing"] .ix-field--flag { border-color: hsl(var(--ix-amber) / 0.55); }
+.ixw[data-phase="processing"] .ix-field--flag .ix-field-dot { background: hsl(var(--ix-amber)); }
+.ixw-after { margin-top: 0.35rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ixw[data-phase="before"] .ixw-go::after, .ixw-hint-arrow, .ixw[data-phase="processing"] .ixw-beam { animation: none; }
+  .ixw .ixm-in, .ixw-read, .ixw-result { transition: none; }
+}
+
+/* --- Readability ------------------------------------------------------------
+   A size up wherever text was small. The desktop industries demo carried the
+   smallest type on the site (9-12px); it moves up a step throughout, and the
+   scene gets a little more height to hold it. */
+@media (min-width: 1024px) {
+  .ix-stage { height: 38rem; }
+  .ix-stage .ix-zone-label { font-size: 12px; }
+  .ix-stage .ix-tag { font-size: 10.5px; }
+  .ix-stage .ix-chip { font-size: 13px; }
+  .ix-stage .ix-note { font-size: 12.5px; }
+  .ix-stage .ix-sources-head { font-size: 11.5px; }
+  .ix-stage .ix-src { font-size: 13.5px; }
+  .ix-stage .ix-fields { width: 13rem; }
+  .ix-stage .ix-field { font-size: 13px; padding: 0.32rem 0.65rem; }
+  .ix-stage .ix-app { font-size: 11.5px; }
+  .ix-stage .ix-thead { font-size: 11px; color: hsl(var(--foreground) / 0.75); }
+  .ix-stage .ix-trow { font-size: 13px; }
+  .ix-stage .ix-note-line { font-size: 12.5px; }
+  .ix-stage .ix-foot { font-size: 13px; }
+  .ix-stage .ix-track li { font-size: 12px; }
+  .ix-stage .ix-cal-head, .ix-stage .ix-cal-slot { font-size: 11px; }
+  .ix-stage .ix-avatar { font-size: 13px; }
+  .ix-stage .ix-stagehead-title { font-size: 1.0625rem; }
+  .ix-stage .ix-stagehead-sub { font-size: 0.875rem; }
+  .ix-stage .ix-step { width: 1.65rem; height: 1.65rem; font-size: 13px; }
+  .ix-stage .ix-hint, .ix-stage .ix-waiting { font-size: 0.9375rem; }
+  .ix-stage .ix-link-btn { font-size: 0.875rem; }
+  .ix-stage .ix-action { font-size: 0.9375rem; }
+  .ix-copy p { font-size: 0.9375rem; }
+}
+@media (min-width: 1024px) and (max-width: 1151px) {
+  .ix-stage .ix-trow { font-size: 12px; }
+  .ix-stage .ix-fields { width: 12.25rem; }
+}
+/* Fields read "waiting" before a run, but stay fully legible. */
+.ix-field { color: hsl(var(--muted-foreground)); }
+.ix-copy-label { font-size: 12.5px; }
+.ix-caveat { font-size: 13px; }
+.ix-chips > li { font-size: 0.8125rem; }
+/* Light theme: the stage numbers' washed badge is lighter, so the number on
+   it keeps 4.5:1. */
+html:not(.dark) .dc-card-n { background: hsl(var(--dc-accent) / 0.1); }
+
+/* --- Parallax layers ----------------------------------------------------------
+   useScrollDrift moves these with the CSS translate property. The far layer:
+   soft light behind the dark sections, clipped to the section, with the
+   section's own content kept above it. */
+.drift-host { position: relative; overflow: hidden; }
+.drift-host > :not(.drift-glow) { position: relative; z-index: 1; }
+.drift-glow {
+  position: absolute; z-index: 0; pointer-events: none;
+  width: min(70vw, 900px); aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(closest-side, hsl(var(--brand-accent) / 0.09), transparent 72%);
+}
+.drift-glow--a { top: -12%; left: -22%; }
+.drift-glow--b { bottom: -18%; right: -18%; background: radial-gradient(closest-side, hsl(var(--primary) / 0.08), transparent 72%); }
+/* The industry picture drifts inside its window, so give it room to move
+   without showing an edge. */
+.ixw-view .ixm-bg { inset: -22px 0; }
+

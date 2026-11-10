@@ -63,7 +63,7 @@ const Process = () => {
                     <div className="w-12 h-12 rounded-full bg-background border-2 border-primary flex items-center justify-center">
                       <Icon className="w-5 h-5 text-primary" />
                     </div>
-                    <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
+                    <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-primary text-primary-foreground text-[11.5px] font-bold flex items-center justify-center">
                       {letter}
                     </span>
                   </div>

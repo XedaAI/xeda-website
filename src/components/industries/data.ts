@@ -308,7 +308,7 @@ export const industries: Industry[] = [
       { kind: "chat", text: l("Are you open on Saturday?", "Haben Sie samstags geöffnet?"), from: l("Online form", "Online-Formular"), x: 7, y: 35, r: 2 },
       { kind: "note", text: l("Appointment request · next week", "Terminwunsch · nächste Woche"), x: 50, y: 49, r: -4 },
       { kind: "chat", text: l("Question about my lab results", "Frage zu meinen Laborwerten"), from: l("Voicemail", "Mailbox"), x: 4, y: 64, r: 3 },
-      { kind: "call", title: l("3 missed calls", "3 verpasste Anrufe"), sub: l("Reception busy", "Empfang besetzt"), missed: true, x: 50, y: 80, r: -2, unresolved: true },
+      { kind: "call", title: l("3 missed calls", "3 verpasste Anrufe"), sub: l("Reception busy", "Empfang besetzt"), missed: true, x: 46, y: 77, r: -2, unresolved: true },
     ],
     mobileInputs: [
       { kind: "call", title: l("Patient call", "Patientenanruf"), meta: l("Wants an appointment", "Möchte einen Termin") },

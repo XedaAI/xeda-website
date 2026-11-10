@@ -59,7 +59,7 @@ const PricingSection = () => {
   return (
     <section id="pricing" className="py-20 bg-section-alt">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-12">
+        <div className="text-center mb-12" data-drift="0.06" data-drift-max="40">
           <h2 className="text-3xl md:text-5xl font-semibold tracking-[-0.022em] text-foreground mb-5 text-balance">
             {t("pricing.title")}
           </h2>

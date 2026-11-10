@@ -84,10 +84,14 @@ const ContactSection = () => {
   };
 
   return (
-    <section id="contact" className="py-28 md:py-36 section-ink">
+    <section id="contact" className="drift-host py-28 md:py-36 section-ink">
+      {/* Soft light behind the section, drifting slowest of all: the far
+          layer of the page's parallax. */}
+      <div aria-hidden="true" className="drift-glow drift-glow--a" data-drift="0.22" data-drift-max="140" />
+      <div aria-hidden="true" className="drift-glow drift-glow--b" data-drift="0.18" data-drift-max="120" />
       <div className="container mx-auto px-6">
         <div className="max-w-2xl mx-auto">
-          <div className="text-center mb-12">
+          <div className="text-center mb-12" data-drift="0.06" data-drift-max="40">
             <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-8">
               <Mail className="w-8 h-8 text-primary" />
             </div>

@@ -6,6 +6,7 @@ import { tx, type Industry } from "./data";
 import { InputCard } from "./primitives";
 import { OutputView } from "./Outputs";
 import { industryImages } from "./images";
+import Parallax from "@/components/Parallax";
 import StageHead from "./StageHead";
 import XedaNode, { type Phase } from "./XedaNode";
 import { delay } from "./timing";
@@ -127,9 +128,9 @@ const DesktopScene = ({
       {/* Where the work happens: this industry's own picture, behind it all.
           Keyed so a switch swaps the element rather than its src, letting
           the new picture fade in with the scene. */}
-      <div className="ix-bg" aria-hidden="true">
+      <Parallax className="ix-bg" speed={0.06} max={26}>
         <img key={industry.key} src={industryImages[industry.key]} alt="" loading="lazy" decoding="async" />
-      </div>
+      </Parallax>
 
       <svg className="ix-paths" aria-hidden="true">
         {paths.inb.map((d, i) => (

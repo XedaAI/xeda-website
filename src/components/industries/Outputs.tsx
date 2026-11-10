@@ -24,7 +24,7 @@ const TableOut = ({ o, lang, hidden }: Props<TableOutput>) => {
       {o.rows.map((row, i) => (
         <OutRow key={i} d={rowAt(i)} className={`ix-trow ${row.traced ? "ix-trow--traced" : ""}`} style={{ gridTemplateColumns: o.grid }}>
           {row.cells.map((c, j) => (
-            <span key={j} className={j === 0 ? "truncate font-medium text-foreground" : "truncate font-mono tabular-nums"}>
+            <span key={j} className={j === 0 ? "line-clamp-2 leading-snug font-medium text-foreground" : "truncate font-mono tabular-nums"}>
               {tx(c, lang)}
             </span>
           ))}
@@ -56,8 +56,8 @@ const ListOut = ({ o, lang, hidden }: Props<ListOutput>) => {
       {o.rows.map((row, i) => (
         <OutRow key={i} d={rowAt(i)} className={`ix-lrow ${row.status === "staff" ? "ix-lrow--staff" : ""}`}>
           <span className="min-w-0">
-            <span className="block truncate text-[11px] text-muted-foreground">“{tx(row.req, lang)}”</span>
-            <span className="block truncate text-[12.5px] font-medium text-foreground">{tx(row.res, lang)}</span>
+            <span className="block line-clamp-2 leading-snug text-[12.5px] text-muted-foreground">“{tx(row.req, lang)}”</span>
+            <span className="block line-clamp-2 leading-snug text-[14px] font-medium text-foreground">{tx(row.res, lang)}</span>
           </span>
           <StatusMark status={row.status} d={statusAt(i, row.status !== "ok")} lang={lang} />
         </OutRow>
@@ -92,15 +92,15 @@ const LeadOut = ({ o, lang, hidden }: Props<LeadOutput>) => {
         <span className="ix-avatar">{o.initials}</span>
         <span className="min-w-0">
           <span className="block text-sm font-semibold text-foreground">{o.name}</span>
-          <span className="block text-[11px] text-muted-foreground">{lang === "de" ? "Qualifizierte Käuferin" : "Qualified buyer"}</span>
+          <span className="block text-[12.5px] text-muted-foreground">{lang === "de" ? "Qualifizierte Käuferin" : "Qualified buyer"}</span>
         </span>
         <span className="ml-auto"><StatusMark status="ok" d={statusAt(0)} lang={lang} /></span>
       </OutRow>
       <div className="grid grid-cols-2 border-t border-border/60">
         {o.facts.map((f, i) => (
           <OutRow key={i} d={rowAt(1) + i * 70} className="px-3.5 py-2">
-            <span className="block text-[10px] uppercase tracking-[0.08em] text-muted-foreground">{tx(f.label, lang)}</span>
-            <span className="block truncate text-[12px] font-medium text-foreground">{tx(f.value, lang)}</span>
+            <span className="block text-[11.5px] uppercase tracking-[0.08em] text-muted-foreground">{tx(f.label, lang)}</span>
+            <span className="block line-clamp-2 leading-snug text-[13.5px] font-medium text-foreground">{tx(f.value, lang)}</span>
           </OutRow>
         ))}
       </div>
@@ -140,8 +140,8 @@ const ReportOut = ({ o, lang, hidden }: Props<ReportOutput>) => (
     <OutRow d={rowAt(0)} className="flex items-center gap-3 px-3.5 py-3">
       <span className="h-12 w-[4.6rem] shrink-0 overflow-hidden rounded-md"><SitePhotoArt /></span>
       <span className="min-w-0 flex-1">
-        <span className="block text-[13px] font-semibold text-foreground">{tx(o.title, lang)}</span>
-        <span className="mt-1 flex items-center justify-between text-[10.5px] text-muted-foreground">
+        <span className="block text-[14.5px] font-semibold text-foreground">{tx(o.title, lang)}</span>
+        <span className="mt-1 flex items-center justify-between text-[12px] text-muted-foreground">
           <span>{tx(o.progress.label, lang)}</span>
           <span className="font-mono tabular-nums text-foreground">{o.progress.pct}%</span>
         </span>
@@ -150,7 +150,7 @@ const ReportOut = ({ o, lang, hidden }: Props<ReportOutput>) => (
     </OutRow>
     {o.rows.map((row, i) => (
       <OutRow key={i} d={rowAt(i + 1)} className="ix-lrow">
-        <span className="truncate text-[12px] text-foreground">{tx(row.text, lang)}</span>
+        <span className="line-clamp-2 leading-snug text-[13.5px] text-foreground">{tx(row.text, lang)}</span>
         <StatusMark status={row.status} d={statusAt(i + 1, row.status === "warn")} lang={lang} />
       </OutRow>
     ))}

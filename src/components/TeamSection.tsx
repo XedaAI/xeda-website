@@ -84,7 +84,7 @@ const TeamSection = () => {
   return (
     <section id="team" className="py-20 bg-section-alt">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-12">
+        <div className="text-center mb-12" data-drift="0.06" data-drift-max="40">
           <Badge variant="outline" className="mb-4">
             {t("team.label")}
           </Badge>

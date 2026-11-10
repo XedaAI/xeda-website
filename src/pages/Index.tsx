@@ -25,12 +25,16 @@ import { AnimatedSection } from "@/components/AnimatedSection";
 import SEOHead from "@/components/SEOHead";
 import SectionDust from "@/components/SectionDust";
 import { lazy, Suspense } from "react";
+import { useDriftAttributes } from "@/hooks/useScrollDrift";
 
 // Chatbot is a heavy floating widget (voice, markdown, date-fns) that isn't needed
 // for first paint — load it lazily so it stays out of the initial bundle.
 const Chatbot = lazy(() => import("@/components/Chatbot"));
 
 const Index = () => {
+  // Section headings, the hero text and the soft lights behind the dark
+  // sections drift at their own speeds as you scroll (data-drift).
+  useDriftAttributes();
   return (
     <div className="min-h-screen bg-background">
       <SEOHead />

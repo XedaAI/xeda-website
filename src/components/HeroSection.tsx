@@ -50,7 +50,7 @@ const HeroSection = () => {
         }}
       />
 
-      <div className="relative z-10 container mx-auto px-6 pt-28 pb-16 text-center max-w-4xl">
+      <div className="relative z-10 container mx-auto px-6 pt-28 pb-16 text-center max-w-4xl" data-drift="0.16" data-drift-max="150">
         <div
           ref={markRef}
           aria-hidden="true"

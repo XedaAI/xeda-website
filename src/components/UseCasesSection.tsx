@@ -137,9 +137,13 @@ const UseCasesSection = () => {
   };
 
   return (
-    <section ref={sectionRef} id="use-cases" lang={lang} className="py-28 md:py-36 section-ink" data-offscreen={offscreen ? "" : undefined}>
+    <section ref={sectionRef} id="use-cases" lang={lang} className="drift-host py-28 md:py-36 section-ink" data-offscreen={offscreen ? "" : undefined}>
+      {/* Soft light behind the section, drifting slowest of all: the far
+          layer of the page's parallax. */}
+      <div aria-hidden="true" className="drift-glow drift-glow--a" data-drift="0.22" data-drift-max="140" />
+      <div aria-hidden="true" className="drift-glow drift-glow--b" data-drift="0.18" data-drift-max="120" />
       <div className="container mx-auto px-6">
-        <div className="text-center mb-8 lg:mb-10">
+        <div className="text-center mb-8 lg:mb-10" data-drift="0.06" data-drift-max="40">
           <span className="text-sm font-semibold tracking-wide text-brand-accent mb-4 block">{t("useCases.label")}</span>
           <h2 className="text-3xl md:text-5xl font-semibold tracking-[-0.022em] text-foreground mb-5 text-balance">{t("useCases.title")}</h2>
           <p className="text-foreground/90 text-lg max-w-2xl mx-auto">{t("useCases.introCta")}</p>

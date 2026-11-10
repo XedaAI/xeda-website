@@ -44,7 +44,7 @@ export const OutPanel = ({
     <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 border-b border-border/70 px-3.5 py-2.5">
       <span className="ix-app">{app}</span>
       <span className="min-w-[9rem] flex-1 text-xs leading-snug text-muted-foreground">{title}</span>
-      <span className="ml-auto flex shrink-0 items-center gap-1.5 text-[10px] font-medium uppercase tracking-[0.08em]">
+      <span className="ml-auto flex shrink-0 items-center gap-1.5 text-[11.5px] font-medium uppercase tracking-[0.08em]">
         {right}
         <span className="ix-sync">
           <span className="ix-sync-wait" aria-hidden="true">{lang === "de" ? "Wartet" : "Waiting"}</span>
@@ -132,7 +132,7 @@ const inputKind = (item: InputItem, lang: SiteLanguage): ReactNode => {
             <span className={`ix-tag ${item.tag === "PDF" ? "ix-tag--pdf" : ""}`}>{item.tag}</span>
             <DocIcon className="h-3.5 w-3.5 text-muted-foreground" />
           </div>
-          <p className="mb-2 text-[11px] font-semibold leading-tight text-foreground/90">{tx(item.title, lang)}</p>
+          <p className="mb-2 text-[12.5px] font-semibold leading-tight text-foreground/90">{tx(item.title, lang)}</p>
           <span className="ix-line w-[88%]" />
           <span className="ix-line w-[70%]" />
           <span className="ix-line w-[52%]" />
@@ -146,17 +146,17 @@ const inputKind = (item: InputItem, lang: SiteLanguage): ReactNode => {
         <div className="ix-card w-[11.5rem] p-2.5">
           <div className="mb-1 flex items-center gap-1.5">
             <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-            <span className="truncate font-mono text-[10px] text-muted-foreground">{item.from}</span>
+            <span className="truncate font-mono text-[11.5px] text-muted-foreground">{item.from}</span>
           </div>
-          <p className="text-[11px] font-semibold leading-snug text-foreground/90">{tx(item.subject, lang)}</p>
+          <p className="text-[12.5px] font-semibold leading-snug text-foreground/90">{tx(item.subject, lang)}</p>
           <span className="ix-line mt-1.5 w-[80%]" />
         </div>
       );
     case "chat":
       return (
         <div className={`ix-bubble ${item.channel === "site" ? "ix-bubble--site" : ""} max-w-[12.5rem]`}>
-          {item.from && <span className="mb-0.5 block text-[9.5px] text-muted-foreground">{tx(item.from, lang)}</span>}
-          <span className="block text-[11.5px] leading-snug text-foreground/90">{tx(item.text, lang)}</span>
+          {item.from && <span className="mb-0.5 block text-[11px] text-muted-foreground">{tx(item.from, lang)}</span>}
+          <span className="block text-[13px] leading-snug text-foreground/90">{tx(item.text, lang)}</span>
         </div>
       );
     case "call": {
@@ -167,8 +167,8 @@ const inputKind = (item: InputItem, lang: SiteLanguage): ReactNode => {
             <CallIcon className="h-3.5 w-3.5" />
           </span>
           <span className="min-w-0">
-            <span className="block text-[11px] font-semibold text-foreground/90">{tx(item.title, lang)}</span>
-            <span className="block truncate text-[10px] text-muted-foreground">{tx(item.sub, lang)}</span>
+            <span className="block text-[12.5px] font-semibold text-foreground/90">{tx(item.title, lang)}</span>
+            <span className="block truncate text-[11.5px] text-muted-foreground">{tx(item.sub, lang)}</span>
           </span>
         </div>
       );
@@ -177,7 +177,7 @@ const inputKind = (item: InputItem, lang: SiteLanguage): ReactNode => {
       return (
         <div className="ix-card w-[8.4rem] overflow-hidden p-1">
           <div className="h-[4.6rem] overflow-hidden rounded-[0.35rem]"><SitePhotoArt /></div>
-          <span className="block px-1 pt-1 font-mono text-[9.5px] text-muted-foreground">{tx(item.caption, lang)}</span>
+          <span className="block px-1 pt-1 font-mono text-[11px] text-muted-foreground">{tx(item.caption, lang)}</span>
         </div>
       );
     case "note":
@@ -187,8 +187,8 @@ const inputKind = (item: InputItem, lang: SiteLanguage): ReactNode => {
         <div className="ix-card w-[9.6rem] overflow-hidden p-1">
           <div className="h-[3.6rem] overflow-hidden rounded-[0.35rem]"><HouseArt /></div>
           <div className="px-1.5 pb-1 pt-1.5">
-            <span className="block text-[12px] font-bold text-foreground">{tx(item.price, lang)}</span>
-            <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
+            <span className="block text-[13.5px] font-bold text-foreground">{tx(item.price, lang)}</span>
+            <span className="flex items-center gap-1 text-[11.5px] text-muted-foreground">
               <MapPin className="h-3 w-3" />{tx(item.place, lang)}
             </span>
           </div>
@@ -199,8 +199,8 @@ const inputKind = (item: InputItem, lang: SiteLanguage): ReactNode => {
         <div className="ix-card flex w-[10.5rem] items-center gap-2.5 p-2.5">
           <span className="ix-callicon"><Package className="h-3.5 w-3.5" /></span>
           <span className="min-w-0">
-            <span className="block text-[11px] font-semibold text-foreground/90">{tx(item.title, lang)}</span>
-            <span className="block truncate text-[10px] text-muted-foreground">{tx(item.sub, lang)}</span>
+            <span className="block text-[12.5px] font-semibold text-foreground/90">{tx(item.title, lang)}</span>
+            <span className="block truncate text-[11.5px] text-muted-foreground">{tx(item.sub, lang)}</span>
           </span>
         </div>
       );

@@ -825,7 +825,7 @@ const Chatbot = () => {
                 )}
               </ScrollArea>
               {/* EU AI Act Art. 50(1): say plainly that this is an AI. */}
-              <p className="px-3 pt-2 text-[11px] leading-snug text-muted-foreground border-t shrink-0">
+              <p className="px-3 pt-2 text-[12.5px] leading-snug text-muted-foreground border-t shrink-0">
                 {t.aiNotice}{" "}
                 <Link to="/privacy" className="underline underline-offset-2 hover:text-foreground">
                   {t.privacy}

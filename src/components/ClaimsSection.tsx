@@ -19,7 +19,7 @@ const ClaimsSection = () => {
     <section id="claims" className="py-28 md:py-36 bg-background">
       <div className="container mx-auto px-6">
         <div className="max-w-3xl mx-auto">
-          <div className="mb-14">
+          <div className="mb-14" data-drift="0.06" data-drift-max="40">
             <span className="text-sm font-semibold tracking-wide text-brand-accent mb-4 block">
               {t("claims.label")}
             </span>

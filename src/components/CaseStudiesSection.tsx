@@ -26,7 +26,7 @@ const CaseStudiesSection = () => {
   return (
     <section id="case-studies" className="py-28 md:py-36 bg-background">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-12">
+        <div className="text-center mb-12" data-drift="0.06" data-drift-max="40">
           <span className="text-sm font-semibold tracking-wide text-brand-accent mb-4 block">
             {t("caseStudies.label")}
           </span>
