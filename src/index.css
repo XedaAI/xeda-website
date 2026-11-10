@@ -1232,13 +1232,20 @@ All colors MUST be HSL.
    scroll per service; its content sticks under the header for that stretch,
    and the scroll position picks the service. Progress arrives as --wwd-p
    (0-1 overall) and --wwd-s0..2 (0-1 within each service). */
-.wwd-held { height: calc(100vh + var(--wwd-steps, 3) * var(--wwd-step-vh, 60) * 1vh); }
+.wwd-held {
+  height: calc(100vh + var(--wwd-steps, 3) * var(--wwd-step-vh, 60) * 1vh);
+  margin-bottom: 5rem;
+}
+/* Placed from the top, with the spare room (--wwd-pad, measured for the
+   longest description) split evenly, so the column never moves when the
+   service changes. The section only holds when it fits at all. */
 .wwd-sticky {
   position: sticky;
   top: var(--wwd-header, 4.5rem);
   height: calc(100vh - var(--wwd-header, 4.5rem));
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  padding-top: var(--wwd-pad, 2rem);
 }
 .wwd-sticky > .container { width: 100%; }
 .wwd-held .wwd-stage {
@@ -1254,6 +1261,10 @@ All colors MUST be HSL.
 .wwd-held .wwd-desc { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.45s ease; }
 .wwd-held .wwd-desc > span { min-height: 0; overflow: hidden; }
 .wwd-held .wwd-li.is-active .wwd-desc { grid-template-rows: 1fr; }
+/* A moved wrapper becomes its own layer, which would cut the pictures' screen
+   blend off from the panel and show their black ground; blend the wrapper as
+   a whole instead. */
+.wwd-art-wrap, .wwd-mini-art { mix-blend-mode: screen; }
 /* The picture drifts a little against the scroll while the section is held. */
 .wwd-held .wwd-art-wrap { translate: 0 calc((0.5 - var(--wwd-p, 0.5)) * 36px); }
 
@@ -2700,9 +2711,9 @@ All colors MUST be HSL.
   .ixw-go svg { display: none; }
   .ixw-stage-title { font-size: 1rem; }
 }
-/* Below 340px the title may take two lines; every stage keeps two lines'
+/* Below 360px the title may take two lines; every stage keeps two lines'
    room, so the window still does not change height. */
-@media (max-width: 339px) {
+@media (max-width: 359px) {
   .ixw-stage { min-height: 2.6rem; }
   .ixw-stage-title { white-space: normal; line-height: 1.2; }
   .ixw-stage-sub { margin-left: 0; min-height: 2.7em; }
@@ -2773,6 +2784,7 @@ All colors MUST be HSL.
 .ixw[data-phase="after"] .ixw-result { opacity: 1; transition: opacity 0.35s ease 0.12s; }
 .ixw-done-line { display: flex; align-items: center; flex-wrap: wrap; gap: 0.15rem 0.4rem; margin-bottom: 0.6rem; font-size: 0.875rem; line-height: 1.4; }
 .ixw-done-line strong { color: hsl(var(--foreground)); font-weight: 600; }
+.ixw-done-sum { flex-basis: 100%; padding-left: 1.4rem; }
 
 /* The scan line: a bright edge with a glow trailing above it. */
 .ixw-beam {
@@ -2785,12 +2797,14 @@ All colors MUST be HSL.
     linear-gradient(180deg, transparent, hsl(var(--primary) / 0.16));
   filter: drop-shadow(0 0 6px hsl(var(--primary) / 0.7));
 }
-.ixw[data-phase="processing"] .ixw-beam { animation: ixwBeam var(--scan, 1750ms) cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards; }
+/* Linear, and only as far as the inputs reach (--scan-end), so each input is
+   ticked exactly as the line passes it (MobileScene works out the times). */
+.ixw[data-phase="processing"] .ixw-beam { animation: ixwBeam var(--scan, 1750ms) linear forwards; }
 @keyframes ixwBeam {
   0% { top: -3.5rem; opacity: 0; }
-  8% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { top: calc(100% - 1rem); opacity: 0; }
+  6% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { top: calc(var(--scan-end, 100%) - 1.5rem); opacity: 0; }
 }
 
 /* What Xeda reads: lit as the scan finds it. */
@@ -2825,7 +2839,7 @@ All colors MUST be HSL.
   .ix-stage .ix-chip { font-size: 13px; }
   .ix-stage .ix-note { font-size: 12.5px; }
   .ix-stage .ix-sources-head { font-size: 11.5px; }
-  .ix-stage .ix-src { font-size: 13.5px; }
+  .ix-stage .ix-src { font-size: 13.5px; max-width: 17rem; }
   .ix-stage .ix-fields { width: 13rem; }
   .ix-stage .ix-field { font-size: 13px; padding: 0.32rem 0.65rem; }
   .ix-stage .ix-app { font-size: 11.5px; }

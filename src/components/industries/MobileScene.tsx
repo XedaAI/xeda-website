@@ -1,5 +1,5 @@
 import type React from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { ArrowLeft, ArrowRight, Check, ClipboardList, FileText, Mail, MessageCircle, MessageSquare, PhoneIncoming, Pill, RotateCcw } from "lucide-react";
 import type { SiteLanguage } from "@/contexts/LanguageContext";
 import { industries, tx, type Industry, type MobileInput } from "./data";
@@ -87,6 +87,38 @@ const MobileScene = ({
     ctaHadFocus.current = document.activeElement === ctaRef.current;
     onActivate();
   };
+  // And the other way: "See before" sits in the result, which goes inert when
+  // the before stage returns, so hand focus to "Activate Xeda".
+  const resetHadFocus = useRef(false);
+  useEffect(() => {
+    if (phase !== "before" || !resetHadFocus.current) return;
+    resetHadFocus.current = false;
+    ctaRef.current?.focus({ preventScroll: true });
+  }, [phase]);
+
+  // The scan line runs from the top of the window to the bottom of the inputs
+  // at an even speed; each input is ticked when the line reaches its middle.
+  // Measured, since the inputs' heights depend on the industry, the language
+  // and the width.
+  const viewRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const view = viewRef.current;
+    const list = view?.querySelector<HTMLElement>(".ixw-inputs");
+    if (!view || !list) return;
+    const place = () => {
+      const end = list.offsetTop + list.offsetHeight;
+      view.style.setProperty("--scan-end", `${end}px`);
+      const travel = end + 32; // the line starts at the top edge and runs past the end
+      list.querySelectorAll<HTMLElement>(".ixm-in").forEach((li) => {
+        const middle = list.offsetTop + li.offsetTop + li.offsetHeight / 2;
+        li.style.setProperty("--t", String(Math.round((middle / travel) * SCAN_MS)));
+      });
+    };
+    place();
+    const ro = new ResizeObserver(place);
+    ro.observe(list);
+    return () => ro.disconnect();
+  }, [industry.key, lang]);
 
   const flagged = industry.fields.filter((f) => f.flag).length;
   const summary = fill(t("useCases.mFieldsRead"), industry.fields.length) + (flagged ? ` · ${fill(t("useCases.mFlagged"), flagged)}` : "");
@@ -152,7 +184,7 @@ const MobileScene = ({
 
       {/* The window itself: the scattered inputs and the organised result share
           one frame, so it keeps its height from one stage to the next. */}
-      <div className="ixw-view">
+      <div className="ixw-view" ref={viewRef}>
         <Parallax className="ixm-bg" speed={0} phoneSpeed={0.06} max={22}>
           <img key={industry.key} src={industryImages[industry.key]} alt="" loading="lazy" decoding="async" />
         </Parallax>
@@ -166,8 +198,6 @@ const MobileScene = ({
                 "--i": i,
                 "--r": TILT[i % TILT.length].r,
                 "--x": TILT[i % TILT.length].x,
-                // when the scan line reaches this input
-                "--t": Math.round(((i + 0.55) / n) * SCAN_MS * 0.82),
               } as React.CSSProperties}
             >
               <InputIcon item={item} />
@@ -190,12 +220,18 @@ const MobileScene = ({
           <p className="ixw-done-line">
             <Check className="h-4 w-4 text-success" strokeWidth={2.8} />
             <strong>{t("useCases.mOrganised")}</strong>
-            <span className="text-muted-foreground"> · {summary}</span>
+            <span className="ixw-done-sum text-muted-foreground">{summary}</span>
           </p>
           <MobileOutput output={industry.output} lang={lang} />
           {/* Inside the frame, so the window does not grow when it appears. */}
           <p className="ixw-after">
-            <button type="button" className="ixm-again ixm-again--quiet" onClick={onReset}>{t("useCases.reset")}</button>
+            <button
+              type="button"
+              className="ixm-again ixm-again--quiet"
+              onClick={(e) => { resetHadFocus.current = document.activeElement === e.currentTarget; onReset(); }}
+            >
+              {t("useCases.reset")}
+            </button>
           </p>
         </div>
 

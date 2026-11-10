@@ -26,7 +26,7 @@ const AuditSection = () => {
               <span className="text-sm font-semibold tracking-wide text-brand-accent mb-3 block">
                 {t("audit.label")}
               </span>
-              <h2 className="text-3xl md:text-5xl font-semibold tracking-[-0.022em] text-foreground mb-5 text-balance" data-drift="0.06" data-drift-max="40">
+              <h2 className="text-3xl md:text-5xl font-semibold tracking-[-0.022em] text-foreground mb-5 text-balance">
                 {t("audit.title")}
               </h2>
               <p className="text-lg text-muted-foreground mb-8 leading-relaxed">

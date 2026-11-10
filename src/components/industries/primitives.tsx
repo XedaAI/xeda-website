@@ -146,7 +146,7 @@ const inputKind = (item: InputItem, lang: SiteLanguage): ReactNode => {
         <div className="ix-card w-[11.5rem] p-2.5">
           <div className="mb-1 flex items-center gap-1.5">
             <Mail className="h-3.5 w-3.5 text-muted-foreground" />
-            <span className="truncate font-mono text-[11.5px] text-muted-foreground">{item.from}</span>
+            <span className="truncate font-mono text-[11px] text-muted-foreground">{item.from}</span>
           </div>
           <p className="text-[12.5px] font-semibold leading-snug text-foreground/90">{tx(item.subject, lang)}</p>
           <span className="ix-line mt-1.5 w-[80%]" />

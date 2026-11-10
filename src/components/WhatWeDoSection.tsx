@@ -24,9 +24,20 @@ const STEP_VH = 60;
 const PIN_QUERY = "(min-width: 1024px) and (min-height: 600px)";
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+const mq = (q: string) => typeof window !== "undefined" && window.matchMedia(q).matches;
+const headerHeight = () => document.querySelector("header")?.getBoundingClientRect().height ?? 72;
+
+/** Scroll so that service k of the held section is the one in view. */
+const scrollToStep = (section: HTMLElement, k: number, n: number) => {
+  const headerH = headerHeight();
+  const r = section.getBoundingClientRect();
+  const span = r.height - (window.innerHeight - headerH);
+  const target = window.scrollY + r.top - headerH + span * ((k + 0.12) / n);
+  window.scrollTo({ top: target, behavior: "smooth" });
+};
 
 const WhatWeDoSection = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   // Each service has an illustration in place of an icon. They are too
   // detailed to read at icon size, so the panel shows the active one large and
@@ -39,11 +50,19 @@ const WhatWeDoSection = () => {
   const n = services.length;
 
   const [active, setActive] = useState(0);
-  const [reducedMotion, setReducedMotion] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
+  // Read synchronously, so the very first layout already has the section's
+  // real height (a reload restores the scroll position against that layout).
+  const [reducedMotion, setReducedMotion] = useState(() => mq("(prefers-reduced-motion: reduce)"));
+  const [isDesktop, setIsDesktop] = useState(() => mq("(min-width: 1024px)"));
+  const [tallEnough, setTallEnough] = useState(() => mq(PIN_QUERY));
+  // Whether the held content actually fits the window (it is measured; German
+  // runs longer than English). If not, the section stays a normal section.
+  const [fits, setFits] = useState(true);
+  const [fitLanguage, setFitLanguage] = useState(language);
+  if (fitLanguage !== language) { setFitLanguage(language); setFits(true); }
   // Desktop: the section holds still while you scroll, and the scroll walks
   // through the three services, so nobody passes it having seen only one.
-  const [pinned, setPinned] = useState(false);
+  const pinned = tallEnough && !reducedMotion && fits;
 
   useEffect(() => {
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -52,11 +71,18 @@ const WhatWeDoSection = () => {
     const sync = () => {
       setReducedMotion(motion.matches);
       setIsDesktop(desktop.matches);
-      setPinned(tall.matches && !motion.matches);
+      setTallEnough(tall.matches);
     };
-    sync();
     [motion, desktop, tall].forEach((m) => m.addEventListener("change", sync));
-    return () => [motion, desktop, tall].forEach((m) => m.removeEventListener("change", sync));
+    // After a resize, try holding again; the measurement decides.
+    let id = 0;
+    const onResize = () => { window.clearTimeout(id); id = window.setTimeout(() => setFits(true), 200); };
+    window.addEventListener("resize", onResize);
+    return () => {
+      [motion, desktop, tall].forEach((m) => m.removeEventListener("change", sync));
+      window.removeEventListener("resize", onResize);
+      window.clearTimeout(id);
+    };
   }, []);
 
   const sectionRef = useRef<HTMLElement>(null);
@@ -75,8 +101,32 @@ const WhatWeDoSection = () => {
     let raf = 0;
     const measure = () => {
       raf = 0;
-      const headerH = document.querySelector("header")?.getBoundingClientRect().height ?? 72;
+      const headerH = headerHeight();
       section.style.setProperty("--wwd-header", `${headerH}px`);
+      // Does the held content fit under the header? Measured with the longest
+      // description open, so the answer does not change from one service to
+      // the next. The column is then placed from the top with room to spare
+      // split evenly, so it never moves while the services change.
+      const col = sticky.querySelector<HTMLElement>("[data-wwd-col]");
+      const stage = sticky.querySelector<HTMLElement>(".wwd-stage");
+      if (col && col.firstElementChild && col.lastElementChild) {
+        const top = col.firstElementChild.getBoundingClientRect().top;
+        const bottom = col.lastElementChild.getBoundingClientRect().bottom;
+        const descs = [...col.querySelectorAll<HTMLElement>(".wwd-desc")];
+        const open = descs.reduce((sum, d) => sum + d.getBoundingClientRect().height, 0);
+        const longest = Math.max(0, ...descs.map((d) => (d.firstElementChild as HTMLElement | null)?.scrollHeight ?? 0));
+        const contentH = bottom - top - open + longest;
+        const avail = window.innerHeight - headerH;
+        if (contentH + 24 > avail) {
+          // Not before the site's fonts are in: the stand-in font runs wider,
+          // so German would measure too tall and give up holding for nothing.
+          if (document.fonts && document.fonts.status !== "loaded") { void document.fonts.ready.then(onScroll); return; }
+          setFits(false);
+          return;
+        }
+        const rowH = Math.max(contentH, stage?.getBoundingClientRect().height ?? 0);
+        sticky.style.setProperty("--wwd-pad", `${Math.max(12, (avail - rowH) / 2).toFixed(0)}px`);
+      }
       const r = section.getBoundingClientRect();
       const span = r.height - (window.innerHeight - headerH);
       const p = span > 0 ? clamp01((headerH - r.top) / span) : 0;
@@ -100,12 +150,36 @@ const WhatWeDoSection = () => {
   const goTo = (k: number) => {
     const section = sectionRef.current;
     if (!pinned || !section) { setActive(k); setChosen(true); return; }
-    const headerH = document.querySelector("header")?.getBoundingClientRect().height ?? 72;
-    const r = section.getBoundingClientRect();
-    const span = r.height - (window.innerHeight - headerH);
-    const target = window.scrollY + r.top - headerH + span * ((k + 0.12) / n);
-    window.scrollTo({ top: target, behavior: "smooth" });
+    scrollToStep(section, k, n);
   };
+
+  // Page Down / Space (and Page Up / Shift+Space) step one service at a time
+  // while the section is held; a full page would skip one. At the first or
+  // last service the keys scroll the page as usual.
+  const activeRef = useRef(active);
+  useEffect(() => { activeRef.current = active; }, [active]);
+  useEffect(() => {
+    if (!pinned) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+      const target = e.target as HTMLElement | null;
+      if (target && (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))) return;
+      if (e.key === " " && target?.closest("button, a, [role='button']")) return;
+      const down = e.key === "PageDown" || (e.key === " " && !e.shiftKey);
+      const up = e.key === "PageUp" || (e.key === " " && e.shiftKey);
+      if (!down && !up) return;
+      const section = sectionRef.current;
+      if (!section) return;
+      const r = section.getBoundingClientRect();
+      const held = r.top <= headerHeight() + 2 && r.bottom >= window.innerHeight - 2;
+      const next = activeRef.current + (down ? 1 : -1);
+      if (!held || next < 0 || next >= n) return;
+      e.preventDefault();
+      scrollToStep(section, next, n);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [pinned, n]);
 
   // --- Desktop without holding (short window or reduced motion) -------------
   // The panel cycles until someone points at or tabs into the list, and stops
@@ -189,7 +263,7 @@ const WhatWeDoSection = () => {
         <div className="container mx-auto px-6">
           {/* Statement on the left, a framed visual on the right. */}
           <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] gap-14 lg:gap-20 items-stretch">
-            <div className="min-w-0">
+            <div className="min-w-0" data-wwd-col>
               {heading}
 
               <ul
@@ -209,42 +283,67 @@ const WhatWeDoSection = () => {
                       className={`wwd-li ${isActive ? "is-active" : ""} ${index < active ? "is-done" : ""}`}
                       style={{ "--i": index } as React.CSSProperties}
                     >
-                      {/* A heading may not sit inside a button, so the service
-                          name is also given as a hidden heading for screen
-                          readers' heading navigation. */}
-                      <h3 className="sr-only">{t(service.titleKey)}</h3>
-                      <button
-                        type="button"
-                        aria-pressed={isActive}
-                        onClick={() => goTo(index)}
-                        onMouseEnter={pinned || !isDesktop ? undefined : () => setActive(index)}
-                        onFocus={pinned || !isDesktop ? undefined : () => setActive(index)}
-                        className={`wwd-item group relative w-full text-left flex gap-5 rounded-xl px-5 transition-colors ${pinned ? "py-3.5" : "py-5"} ${
-                          isActive ? "bg-accent/60" : "hover:bg-accent/30"
-                        }`}
-                      >
-                        {/* While held: how far through this service the scroll is. */}
-                        {pinned && <span className="wwd-rail" aria-hidden="true"><span style={{ transform: `scaleY(var(--wwd-s${index}))` }} /></span>}
-                        <span className={`font-mono text-sm pt-1 tabular-nums transition-colors ${isActive ? "text-brand-accent" : "text-muted-foreground"}`}>
-                          {String(index + 1).padStart(2, "0")}
-                        </span>
-                        <span className="block">
-                          <span className={`block text-lg font-semibold mb-1.5 transition-colors ${isActive ? "text-foreground" : "text-foreground/80"}`}>
-                            {t(service.titleKey)}
+                      {(() => {
+                        const itemClass = `wwd-item group relative w-full text-left flex gap-5 rounded-xl px-5 transition-colors ${pinned ? "py-3.5" : "py-5"} ${
+                          isActive ? "bg-accent/60" : isDesktop ? "hover:bg-accent/30" : ""
+                        }`;
+                        const number = (
+                          <span className={`font-mono text-sm pt-1 tabular-nums transition-colors ${isActive ? "text-brand-accent" : "text-muted-foreground"}`}>
+                            {String(index + 1).padStart(2, "0")}
                           </span>
-                          {/* While held, only the service in view shows its
-                              description, so the list fits a laptop screen. */}
+                        );
+                        const titleClass = `block text-lg font-semibold mb-1.5 transition-colors ${isActive ? "text-foreground" : "text-foreground/80"}`;
+                        const desc = (
+                          // While held, only the service in view shows its
+                          // description, so the list fits a laptop screen.
                           <span className="wwd-desc">
                             <span className={`block leading-relaxed transition-colors ${isActive || !isDesktop ? "text-foreground/80" : "text-muted-foreground"}`}>
                               {t(service.descKey)}
                             </span>
                           </span>
-                        </span>
-                        {/* How long until the next service, while it is cycling. */}
-                        {isActive && autoplay && (
-                          <span key={active} className="wwd-progress" style={{ "--wwd-cycle": `${CYCLE_MS}ms` } as React.CSSProperties} />
-                        )}
-                      </button>
+                        );
+                        // Phones: nothing to press (every picture is already
+                        // shown), so plain text with a real heading.
+                        if (!isDesktop) {
+                          return (
+                            <div className={itemClass}>
+                              {number}
+                              <div>
+                                <h3 className={titleClass}>{t(service.titleKey)}</h3>
+                                {desc}
+                              </div>
+                            </div>
+                          );
+                        }
+                        return (
+                          <>
+                            {/* A heading may not sit inside a button, so the
+                                service name is also a hidden heading for
+                                screen readers' heading navigation. */}
+                            <h3 className="sr-only">{t(service.titleKey)}</h3>
+                            <button
+                              type="button"
+                              aria-pressed={isActive}
+                              onClick={() => goTo(index)}
+                              onMouseEnter={pinned ? undefined : () => setActive(index)}
+                              onFocus={pinned ? undefined : () => setActive(index)}
+                              className={itemClass}
+                            >
+                              {/* While held: how far through this service the scroll is. */}
+                              {pinned && <span className="wwd-rail" aria-hidden="true"><span style={{ transform: `scaleY(var(--wwd-s${index}))` }} /></span>}
+                              {number}
+                              <span className="block">
+                                <span className={titleClass}>{t(service.titleKey)}</span>
+                                {desc}
+                              </span>
+                              {/* How long until the next service, while it is cycling. */}
+                              {isActive && autoplay && (
+                                <span key={active} className="wwd-progress" style={{ "--wwd-cycle": `${CYCLE_MS}ms` } as React.CSSProperties} />
+                              )}
+                            </button>
+                          </>
+                        );
+                      })()}
 
                       {/* Phones: every service shows its picture, always — no
                           fold to open — and it drifts a little in its frame as

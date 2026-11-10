@@ -129,7 +129,9 @@ const UseCasesSection = () => {
   const replay = () => {
     clearTimers();
     setPhase("before");
-    if (reducedMotion) { setPhase("after"); return; }
+    // With reduced motion there is no run to watch, but the before stage
+    // still shows for a moment, so Replay visibly does something.
+    if (reducedMotion) { timers.current.push(window.setTimeout(() => setPhase("after"), 450)); return; }
     timers.current.push(window.setTimeout(() => {
       setPhase("processing");
       timers.current.push(window.setTimeout(() => setPhase("after"), isDesktop ? RUN_MS.desktop : RUN_MS.phone));
