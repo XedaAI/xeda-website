@@ -111,7 +111,7 @@ const DesktopScene = ({
     onRun();
   };
   const onNode = () => (phase === "before" ? run() : phase === "after" ? onReset() : undefined);
-  const hint = phase === "before" ? t("useCases.clickHint") : phase === "processing" ? t("useCases.working") : t("useCases.mOrganised");
+  const hint = phase === "before" ? t("useCases.clickHint") : phase === "processing" ? t(`useCases.${industry.key}.working`) : t("useCases.mOrganised");
 
   return (
     <div
@@ -170,6 +170,7 @@ const DesktopScene = ({
         <StageHead n={2} title={t("useCases.stage2")} sub={t("useCases.stage2Sub")} center />
         <div className="ix-core-body">
         <XedaNode
+          industry={industry.key}
           phase={phase}
           fields={industry.fields}
           lang={lang}

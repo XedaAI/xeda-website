@@ -20,8 +20,14 @@ const STREAMS = [
 const CYCLE_MS = 6000;
 /** Scroll distance per service while the section is held, in viewport heights. */
 const STEP_VH = 60;
-/** Desktop windows tall enough to hold the whole section on screen. */
-const PIN_QUERY = "(min-width: 1024px) and (min-height: 600px)";
+/** Desktop windows tall enough to hold the whole section on screen, with a
+ *  mouse or trackpad: a touch swipe's momentum cannot be held back, so a
+ *  touch screen (a tablet held sideways) gets the normal section instead. */
+const PIN_QUERY = "(min-width: 1024px) and (min-height: 600px) and (pointer: fine)";
+/** Wheel stepping: a pause this long ends a gesture, and each service stays
+ *  in view at least this long before the next gesture can move on. */
+const GESTURE_GAP_MS = 180;
+const MIN_STEP_MS = 550;
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 const mq = (q: string) => typeof window !== "undefined" && window.matchMedia(q).matches;
@@ -179,6 +185,89 @@ const WhatWeDoSection = () => {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
+  }, [pinned, n]);
+
+  // The wheel, the same way. A fast flick or a hard spin would otherwise race
+  // through the held stretch and skip a service or two. Going down, arriving
+  // from above stops on the first service, and each wheel or trackpad gesture
+  // after that moves exactly one service on; the rest of the gesture (a
+  // trackpad's momentum, a wheel still spinning) is absorbed. After the last
+  // service the wheel scrolls the page as usual. Going up is never held back,
+  // nor are the scrollbar and the keyboard's Home / End.
+  useEffect(() => {
+    if (!pinned) return;
+    let locked = false; // absorbing the rest of the gesture that made a step
+    let pending = false; // a new gesture began while the last step was settling
+    let target = -1; // the service the last step went to
+    let stepAt = -Infinity;
+    let lastAt = -Infinity;
+    // The absorbed gesture's shape: it speeds up to a peak, then slows down
+    // (a trackpad's momentum). Speeding up again after slowing is a new push.
+    let peak = 0;
+    let trough = Infinity;
+    let slowing = false;
+    const step = (section: HTMLElement, k: number, now: number, mag: number) => {
+      target = k;
+      stepAt = now;
+      locked = true;
+      pending = false;
+      peak = mag;
+      trough = Infinity;
+      slowing = false;
+      scrollToStep(section, k, n);
+    };
+    const onWheel = (e: WheelEvent) => {
+      if (e.defaultPrevented || e.ctrlKey) return; // ctrl + wheel is zoom
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+      const now = performance.now();
+      const gap = now - lastAt;
+      lastAt = now;
+      const dy = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? window.innerHeight : 1);
+      const mag = Math.abs(dy);
+      if (dy <= 0) { locked = false; pending = false; return; }
+
+      const section = sectionRef.current;
+      if (!section) return;
+      const headerH = headerHeight();
+      const r = section.getBoundingClientRect();
+      const span = r.height - (window.innerHeight - headerH);
+      if (span <= 0) return;
+      const p = (headerH - r.top) / span;
+      if (p >= 1) { locked = false; pending = false; return; } // past it: an ordinary page
+
+      if (locked) {
+        // A new gesture: one after a pause, or a fresh push during the
+        // momentum of the last. It moves on once the service it brought up
+        // has been in view for the minimum time; until then it waits.
+        if (gap > GESTURE_GAP_MS) pending = true;
+        else if (!slowing) {
+          if (mag >= peak) peak = mag;
+          else if (mag < peak * 0.7) { slowing = true; trough = mag; }
+        } else {
+          trough = Math.min(trough, mag);
+          if (mag > Math.max(12, trough * 2)) pending = true;
+        }
+        if (pending && now - stepAt >= MIN_STEP_MS) { locked = false; pending = false; }
+        else { e.preventDefault(); return; }
+      }
+
+      if (p < 0) {
+        // Still above it: arriving stops on the first service.
+        if (p + dy / span <= 0) return;
+        e.preventDefault();
+        step(section, 0, now, mag);
+        return;
+      }
+      // Count from where the last step was going if it has not got there
+      // yet, so a quick second gesture does not land on the same service.
+      const at = Math.min(n - 1, Math.floor(p * n));
+      const from = now - stepAt < 900 && target > at ? target : at;
+      if (from >= n - 1) { target = -1; return; } // the last one: scroll on
+      e.preventDefault();
+      step(section, from + 1, now, mag);
+    };
+    window.addEventListener("wheel", onWheel, { passive: false });
+    return () => window.removeEventListener("wheel", onWheel);
   }, [pinned, n]);
 
   // --- Desktop without holding (short window or reduced motion) -------------

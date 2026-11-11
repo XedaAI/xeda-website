@@ -2875,7 +2875,10 @@ html:not(.dark) .dc-card-n { background: hsl(var(--dc-accent) / 0.1); }
    useScrollDrift moves these with the CSS translate property. The far layer:
    soft light behind the dark sections, clipped to the section, with the
    section's own content kept above it. */
-.drift-host { position: relative; overflow: hidden; }
+/* Clipped, not hidden: a hidden overflow can still be scrolled by script,
+   and focusing an industry tab at the edge of its strip would slide the
+   whole section sideways. (Older browsers fall back to hidden.) */
+.drift-host { position: relative; overflow: hidden; overflow: clip; }
 .drift-host > :not(.drift-glow) { position: relative; z-index: 1; }
 .drift-glow {
   position: absolute; z-index: 0; pointer-events: none;
@@ -2888,3 +2891,345 @@ html:not(.dark) .dc-card-n { background: hsl(var(--dc-accent) / 0.1); }
    without showing an edge. */
 .ixw-view .ixm-bg { inset: -22px 0; }
 
+
+/* --- Industry signatures (Signature.tsx) ----------------------------------
+   Each industry runs with its own instrument instead of one generic scan:
+   in the desktop node, under the lifted mark, and as the phone's scan line.
+   --sig is the instrument's colour: Xeda's orange, except where the trade
+   has its own (a scanner's red laser, a heart monitor's green, a tape
+   measure's yellow). */
+.ix-scene { --sig: var(--primary); }
+.ix-scene[data-industry="ecommerce"] { --sig: 0 86% 62%; }
+.ix-scene[data-industry="medical"] { --sig: var(--success); }
+.ix-scene[data-industry="construction"] { --sig: var(--ix-amber); }
+
+/* The data flowing in takes the instrument's colour. */
+.ix-scene[data-run] .ix-path--in { stroke: hsl(var(--sig) / 0.3); }
+.ix-pulse { stroke: hsl(var(--sig)); filter: drop-shadow(0 0 3px hsl(var(--sig) / 0.55)); }
+
+/* Desktop: in the node. The mark lifts to make room for it while it works,
+   and the instrument stays, at rest, once it is done. */
+.ix-sig {
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.ix-scene:not([data-phase="before"]) .ix-sig { opacity: 1; transition-duration: 0.45s; }
+.ix-sig-art { position: absolute; inset: 0; width: 100%; height: 100%; }
+.ix-node .ix-node-mark { position: relative; z-index: 1; transition: color 0.5s ease, transform 0.5s var(--ix-ease); }
+.ix-scene:not([data-phase="before"]) .ix-node .ix-node-mark { transform: translateY(-16%) scale(0.82); }
+.ix-node .ix-node-done { z-index: 2; }
+.ix-sig-band { position: absolute; left: 0; right: 0; bottom: 9%; display: flex; justify-content: center; }
+
+/* Accounting: ledger lines, and a tally rolling up to the batch's total. */
+.ix-sig-ledger line { stroke: hsl(var(--foreground) / 0.08); stroke-width: 0.6; }
+.ix-sig-ledger .ix-sig-margin { stroke: hsl(var(--sig) / 0.32); }
+.ix-tally {
+  display: inline-flex;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: hsl(var(--sig));
+  padding-bottom: 3px;
+  border-bottom: 3px double hsl(var(--sig) / 0.65);
+}
+.ix-tally > span { display: inline-block; height: 1em; }
+.ix-tally-d { overflow: hidden; }
+.ix-tally-d > span { display: flex; flex-direction: column; }
+.ix-tally-d > span > span { height: 1em; }
+.ix-scene:not([data-phase="before"]) .ix-tally-d > span {
+  transform: translateY(calc((10 + var(--v)) * -1em));
+  transition: transform 1.25s cubic-bezier(0.2, 0.7, 0.2, 1) calc(250ms + var(--k) * 70ms);
+}
+.ix-scene[data-phase="after"] .ix-sig .ix-tally { color: hsl(var(--foreground)); transition: color 0.5s ease; }
+
+/* Manufacturing: a turning gear, parts riding a conveyor. */
+.ix-sig-gear {
+  fill: none;
+  stroke: hsl(var(--sig) / 0.34);
+  stroke-width: 1.1;
+  stroke-linejoin: round;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.ix-sig-gear-hub { fill: none; stroke: hsl(var(--sig) / 0.16); stroke-width: 0.8; }
+.ix-scene[data-phase="processing"] .ix-sig-gear--big { animation: ixSpin 3.2s linear infinite; }
+.ix-scene[data-phase="processing"] .ix-sig-gear--small { animation: ixSpin 1.15s linear infinite reverse; }
+@keyframes ixSpin { to { transform: rotate(360deg); } }
+.ix-sig-belt rect { fill: none; stroke: hsl(var(--foreground) / 0.4); stroke-width: 0.9; }
+.ix-sig-belt circle { fill: hsl(var(--foreground) / 0.5); }
+.ix-sig-parts rect { fill: hsl(var(--sig) / 0.9); }
+.ix-scene[data-phase="processing"] .ix-sig-parts { animation: ixBelt 0.7s linear infinite; }
+@keyframes ixBelt { to { transform: translateX(26px); } }
+
+/* E-commerce: a barcode under a scanner's red laser; green once read. */
+.ix-sig-bars rect { fill: hsl(var(--foreground) / 0.62); transition: fill 0.4s ease; }
+.ix-scene[data-phase="after"] .ix-sig-bars rect { fill: hsl(var(--success) / 0.8); }
+.ix-sig-laser {
+  stroke: hsl(var(--sig));
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 1.5px hsl(var(--sig))) drop-shadow(0 0 4px hsl(var(--sig) / 0.85));
+  opacity: 0;
+}
+.ix-scene[data-phase="processing"] .ix-sig-laser { opacity: 1; animation: ixLaser 0.42s ease-in-out infinite alternate; }
+@keyframes ixLaser { from { transform: translateY(-7px); } to { transform: translateY(7px); } }
+
+/* Real estate: a street drawn in, a pin dropping on the right house. */
+.ix-sig-street { stroke: hsl(var(--foreground) / 0.32); stroke-width: 0.9; }
+.ix-sig-house {
+  fill: none;
+  stroke: hsl(var(--foreground) / 0.5);
+  stroke-width: 1.2;
+  stroke-linejoin: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+}
+.ix-scene:not([data-phase="before"]) .ix-sig-house {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.8s ease calc(0.15s + var(--h) * 0.2s), stroke 0.4s ease 1.35s;
+}
+.ix-scene:not([data-phase="before"]) .ix-sig-house.is-picked { stroke: hsl(var(--sig)); }
+.ix-sig-pin { fill: hsl(var(--sig)); opacity: 0; transform: translateY(-24px); }
+.ix-sig-pin circle { fill: hsl(var(--card)); }
+.ix-scene:not([data-phase="before"]) .ix-sig-pin {
+  opacity: 1;
+  transform: none;
+  transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) 1.05s, opacity 0.2s ease 1.05s;
+}
+.ix-sig-ripple { fill: none; stroke: hsl(var(--sig)); stroke-width: 0.8; opacity: 0; transform-box: fill-box; transform-origin: center; }
+.ix-scene[data-phase="processing"] .ix-sig-ripple { animation: ixRipple 0.85s ease-out 1.45s 2; }
+@keyframes ixRipple { from { opacity: 0.9; transform: scale(0.4); } to { opacity: 0; transform: scale(1.9); } }
+
+/* Medical: a heartbeat trace, its bright head running along it. */
+.ix-sig-ecg { fill: none; stroke: hsl(var(--sig) / 0.32); stroke-width: 1.2; stroke-linejoin: round; stroke-linecap: round; }
+.ix-sig-ecg--head { stroke: hsl(var(--sig)); stroke-width: 1.7; stroke-dasharray: 22 100; stroke-dashoffset: 22; opacity: 0; filter: drop-shadow(0 0 2px hsl(var(--sig))); }
+.ix-scene[data-phase="processing"] .ix-sig-ecg--head { opacity: 1; animation: ixEcg 0.95s linear infinite; }
+@keyframes ixEcg { from { stroke-dashoffset: 22; } to { stroke-dashoffset: -100; } }
+.ix-scene[data-phase="after"] .ix-sig-ecg { stroke: hsl(var(--sig) / 0.6); }
+
+/* Construction: a blueprint grid, a tape measure running out across it. */
+.ix-sig-grid line { stroke: hsl(var(--sig) / 0.1); stroke-width: 0.5; }
+.ix-tape { display: flex; align-items: center; width: 76%; height: 14px; }
+.ix-tape-case {
+  flex: none;
+  width: 14px; height: 14px;
+  border-radius: 3.5px;
+  background: hsl(var(--sig));
+  box-shadow: inset 0 0 0 3.5px hsl(var(--sig)), inset 0 0 0 7px hsl(220 12% 8% / 0.55);
+}
+.ix-tape-strip {
+  height: 7px;
+  width: 0;
+  border-radius: 0 1.5px 1.5px 0;
+  background:
+    repeating-linear-gradient(90deg, hsl(220 12% 8% / 0.8) 0 1px, transparent 1px 12px) left bottom / 100% 5px no-repeat,
+    repeating-linear-gradient(90deg, hsl(220 12% 8% / 0.6) 0 1px, transparent 1px 4px) left bottom / 100% 2.5px no-repeat,
+    hsl(var(--sig));
+}
+.ix-scene:not([data-phase="before"]) .ix-tape-strip { width: calc(100% - 14px); transition: width 1.35s cubic-bezier(0.25, 0.8, 0.3, 1) 0.25s; }
+
+/* Phone: the scan line itself. The beam keeps its trailing glow (in the
+   instrument's colour); the line and what rides on it are per industry. */
+.ixw-beam { background: linear-gradient(180deg, transparent, hsl(var(--sig) / 0.16)); filter: none; }
+.ixw-beam-line {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, hsl(var(--sig)) 18%, hsl(var(--sig)) 82%, transparent);
+  filter: drop-shadow(0 0 6px hsl(var(--sig) / 0.7));
+}
+.ixw[data-phase="processing"] .ixm-in {
+  border-color: hsl(var(--sig) / 0.75);
+  box-shadow: 0 0 0 1px hsl(var(--sig) / 0.35), 0 8px 20px -14px rgb(0 0 0 / 0.8);
+}
+.ixw-beam-badge {
+  position: absolute; left: 0.6rem; bottom: 0;
+  transform: translateY(50%);
+  display: grid; place-items: center;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: hsl(var(--card));
+  border: 1.5px solid hsl(var(--sig));
+  color: hsl(var(--sig));
+  box-shadow: 0 0 14px -2px hsl(var(--sig) / 0.65);
+}
+.ixw-beam-icon { width: 16px; height: 16px; }
+
+/* Accounting: a double ledger rule, the tally riding on its right end. */
+.ixw[data-industry="accounting"] .ixw-beam-line {
+  height: 5px;
+  background: none;
+  border-block: 1.5px solid hsl(var(--sig));
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+.ixw-beam-badge--wide { left: auto; right: 0.6rem; width: auto; height: 26px; padding: 0 0.5rem; border-radius: 7px; }
+.ixw-beam-badge--wide .ix-tally { font-size: 12.5px; padding: 0; border: 0; }
+.ixw .ix-tally-d > span { transition-duration: 1.05s; transition-delay: calc(150ms + var(--k) * 55ms); }
+
+/* Manufacturing: a conveyor running under a turning gear. */
+.ixw[data-industry="manufacturing"] .ixw-beam-line {
+  height: 3px;
+  background: repeating-linear-gradient(90deg, hsl(var(--sig)) 0 11px, transparent 11px 17px) 0 0 / 17px 100%;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+.ixw[data-industry="manufacturing"][data-phase="processing"] .ixw-beam-line { animation: ixwBelt 0.4s linear infinite; }
+@keyframes ixwBelt { to { background-position: 17px 0; } }
+.ixw[data-phase="processing"] .ixw-spin { animation: ixSpin 1.1s linear infinite; }
+
+/* E-commerce: a thin red laser with a hard glow. */
+.ixw[data-industry="ecommerce"] .ixw-beam-line {
+  height: 1.5px;
+  background: hsl(var(--sig));
+  box-shadow: 0 0 6px 1px hsl(var(--sig)), 0 0 18px 3px hsl(var(--sig) / 0.5);
+  filter: none;
+}
+
+/* Real estate: a dotted street line, a pin bobbing on it. */
+.ixw[data-industry="realestate"] .ixw-beam-line {
+  background: repeating-linear-gradient(90deg, hsl(var(--sig)) 0 6px, transparent 6px 11px);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+}
+.ixw[data-phase="processing"] .ixw-bob { animation: ixwBob 0.5s ease-in-out infinite alternate; }
+@keyframes ixwBob { from { transform: translateY(1px); } to { transform: translateY(-2.5px); } }
+
+/* Medical: the line is a heartbeat trace. */
+.ixw[data-industry="medical"] .ixw-beam-line { display: none; }
+.ixw-ecg { position: absolute; left: 0; right: 0; bottom: -10px; width: 100%; height: 28px; overflow: visible; }
+.ixw-ecg path { fill: none; stroke: hsl(var(--sig) / 0.4); stroke-width: 1.6; stroke-linejoin: round; stroke-linecap: round; }
+.ixw-ecg .ixw-ecg-head { stroke: hsl(var(--sig)); stroke-width: 2.4; stroke-dasharray: 16 100; stroke-dashoffset: 16; filter: drop-shadow(0 0 3px hsl(var(--sig))); }
+.ixw[data-phase="processing"] .ixw-ecg-head { animation: ixEcgPhone 0.85s linear infinite; }
+@keyframes ixEcgPhone { from { stroke-dashoffset: 16; } to { stroke-dashoffset: -100; } }
+.ixw[data-phase="processing"] .ixw-beat { animation: ixwBeat 0.85s ease-in-out infinite; }
+@keyframes ixwBeat { 0%, 40%, 100% { transform: scale(1); } 15% { transform: scale(1.22); } 28% { transform: scale(1.08); } }
+
+/* Construction: a tape measure running out from its case. */
+.ixw[data-industry="construction"] .ixw-beam-line {
+  left: 1.6rem; right: 0.75rem;
+  height: 9px;
+  bottom: -4.5px;
+  border-radius: 0 2px 2px 0;
+  background:
+    repeating-linear-gradient(90deg, hsl(220 12% 8% / 0.8) 0 1px, transparent 1px 15px) left bottom / 100% 6px no-repeat,
+    repeating-linear-gradient(90deg, hsl(220 12% 8% / 0.6) 0 1px, transparent 1px 5px) left bottom / 100% 3px no-repeat,
+    hsl(var(--sig));
+  filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.55));
+  transform-origin: left center;
+}
+.ixw[data-industry="construction"][data-phase="processing"] .ixw-beam-line { animation: ixwTape 0.55s cubic-bezier(0.25, 0.8, 0.3, 1) both; }
+@keyframes ixwTape { from { transform: scaleX(0); } }
+.ixw-beam-badge--case { width: 26px; height: 26px; border-radius: 7px; border: 0; background: hsl(var(--sig)); }
+.ixw-beam-badge--case > span {
+  width: 11px; height: 11px; border-radius: 50%;
+  background: hsl(220 12% 8% / 0.7);
+  box-shadow: 0 0 0 2px hsl(var(--sig)), 0 0 0 3.5px hsl(220 12% 8% / 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ix-sig, .ix-node .ix-node-mark, .ix-tally-d > span, .ix-sig-house, .ix-sig-pin, .ix-tape-strip { transition: none !important; }
+  .ix-sig *, .ixw-beam * { animation: none !important; }
+}
+
+/* --- Phone window: fits one screen ----------------------------------------
+   The line under the title carries the pointer to the button, then what Xeda
+   is doing, then the outcome with "See before"; the fields Xeda reads sit in
+   the window under the inputs. The window is as tall as the inputs with the
+   fields, or the result, need (--ixw-before / --ixw-after, measured), but the
+   result's share stops at the screen under the header (--ixw-over): a result
+   that needs more scrolls inside the window. */
+.ixw-stage-sub {
+  display: flex; align-items: center;
+  margin: 0.3rem 0 0;
+  min-height: 1.75rem;
+}
+.ixw-stage-sub > p { min-width: 0; flex: 1; margin: 0; }
+@media (max-width: 419px) { .ixw-stage-sub { min-height: 2.7em; } }
+.ixw-stage-sub .ixw-hint {
+  display: flex; justify-content: flex-end; align-items: center; gap: 0.25rem;
+  margin: 0;
+  text-align: right;
+}
+.ixw-stage-sub .ixw-hint-arrow { width: 1.35rem; height: 1.35rem; margin: 0 0.6rem -0.2rem 0; align-self: flex-start; }
+.ixw-stage-sub .ixw-done-line { display: flex; align-items: center; flex-wrap: wrap; gap: 0 0.4rem; margin: 0; font-size: 0.875rem; }
+.ixw-stage-sub .ixw-done-sum { flex-basis: auto; padding-left: 0; color: hsl(var(--foreground) / 0.85); }
+.ixw-see-before {
+  position: relative;
+  margin-left: auto;
+  padding: 0 0.15rem;
+  line-height: 1.35;
+  font-size: 0.875rem; font-weight: 500;
+  color: hsl(var(--foreground) / 0.8);
+  text-decoration: underline; text-underline-offset: 3px; text-decoration-color: hsl(var(--foreground) / 0.3);
+  white-space: nowrap;
+}
+/* A tap area of about 38px, without taking that room in the line (and
+   without reaching the Replay button above). */
+.ixw-see-before::after { content: ""; position: absolute; inset: -0.6rem -0.5rem; }
+.ixw-see-before:hover { color: hsl(var(--primary)); }
+.ixw-see-before:focus-visible { outline: none; box-shadow: 0 0 0 2px hsl(var(--ring)); border-radius: 0.35rem; }
+
+.ixw-view {
+  grid-template-rows: minmax(0, 1fr);
+  height: max(var(--ixw-before, 15rem), var(--ixw-after, 15rem));
+  height: max(var(--ixw-before, 15rem), min(var(--ixw-after, 15rem), calc(100svh - var(--ixw-over, 9rem))));
+}
+.ixw-result { max-height: 100%; overflow-y: auto; scrollbar-width: thin; }
+/* When the result scrolls inside the window and there is more below: its
+   last rows fade out, and a small arrow says so. */
+.ixw-view[data-more] .ixw-result {
+  -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 3rem), transparent);
+  mask-image: linear-gradient(180deg, #000 calc(100% - 3rem), transparent);
+}
+.ixw[data-phase="after"] .ixw-view[data-more]::after {
+  content: "";
+  position: absolute; left: 50%; bottom: 0.7rem; z-index: 2;
+  width: 0.65rem; height: 0.65rem;
+  border-right: 2px solid hsl(var(--foreground) / 0.8);
+  border-bottom: 2px solid hsl(var(--foreground) / 0.8);
+  transform: translateX(-50%) rotate(45deg);
+  pointer-events: none;
+  animation: ixwMore 1.4s ease-in-out infinite;
+}
+@keyframes ixwMore { 0%, 100% { translate: 0 0; } 50% { translate: 0 3px; } }
+@media (prefers-reduced-motion: reduce) { .ixw[data-phase="after"] .ixw-view[data-more]::after { animation: none; } }
+.ixw-view > .ixw-fields {
+  position: absolute; left: 0.55rem; right: 0.55rem; bottom: 0.6rem; z-index: 1;
+  margin: 0;
+  transition: opacity 0.25s ease, visibility 0.25s;
+}
+.ixw[data-phase="after"] .ixw-view > .ixw-fields { opacity: 0; visibility: hidden; }
+
+/* --- Desktop demo: fits one screen ----------------------------------------
+   The stage follows the window's height (between 31rem and 38rem), so the
+   industry tabs and the whole stage fit under the header at normal zoom on a
+   laptop. On shorter windows the spacing tightens (a smaller node, slimmer
+   field chips and result rows, the result's chips on one line); the text
+   keeps its size. */
+@media (min-width: 1024px) {
+  .ix-stage { height: clamp(31rem, calc(100svh - 9.6rem), 38rem); }
+}
+@media (min-width: 1024px) and (max-height: 799px) {
+  .ix-tabs { margin-bottom: 0.9rem; }
+  .ix-core { padding: 0.9rem 0.75rem 0.9rem; }
+  .ix-core-body { gap: 0.5rem; }
+  .ix-node { width: 6.75rem; border-radius: 1.6rem; }
+  .ix-stage .ix-fields { gap: 0.25rem; }
+  .ix-stage .ix-field { padding-block: 0.2rem; }
+  .ix-actions { flex-wrap: nowrap; gap: 0.5rem; min-height: 2.5rem; }
+  .ix-action { min-height: 2.4rem; padding-inline: 0.85rem; }
+  .ix-link-btn { min-height: 2.4rem; }
+  .ix-out { padding-block: 0.9rem 0.9rem; gap: 0.55rem; }
+  .ix-chips { max-height: 1.6rem; overflow: hidden; }
+  .ix-stage .ix-trow, .ix-stage .ix-lrow { padding-block: 0.45rem; }
+  .ix-stage .ix-panel .py-3 { padding-block: 0.55rem; }
+  .ix-stage .ix-panel .py-2 { padding-block: 0.35rem; }
+  .ix-stage .ix-panel .pt-2\.5 { padding-top: 0.45rem; }
+  .ix-stage .ix-panel .pb-3 { padding-bottom: 0.55rem; }
+}

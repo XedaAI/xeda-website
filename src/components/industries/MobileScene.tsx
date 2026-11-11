@@ -5,6 +5,7 @@ import type { SiteLanguage } from "@/contexts/LanguageContext";
 import { industries, tx, type Industry, type MobileInput } from "./data";
 import { HouseArt, SitePhotoArt } from "./primitives";
 import { MobileOutput } from "./MobileOutputs";
+import { BeamSignature } from "./Signature";
 import { industryImages } from "./images";
 import Parallax from "@/components/Parallax";
 import type { Phase } from "./XedaNode";
@@ -87,8 +88,8 @@ const MobileScene = ({
     ctaHadFocus.current = document.activeElement === ctaRef.current;
     onActivate();
   };
-  // And the other way: "See before" sits in the result, which goes inert when
-  // the before stage returns, so hand focus to "Activate Xeda".
+  // And the other way: "See before" sits in the line under the title, which
+  // goes when the before stage returns, so hand focus to "Activate Xeda".
   const resetHadFocus = useRef(false);
   useEffect(() => {
     if (phase !== "before" || !resetHadFocus.current) return;
@@ -98,13 +99,20 @@ const MobileScene = ({
 
   // The scan line runs from the top of the window to the bottom of the inputs
   // at an even speed; each input is ticked when the line reaches its middle.
-  // Measured, since the inputs' heights depend on the industry, the language
-  // and the width.
+  // And the window's height: enough for the inputs with the fields under
+  // them, and for the result, but the result's share no taller than the
+  // screen under the site's header (CSS, from --ixw-over), so the whole
+  // window fits at normal zoom. All measured, since the heights depend on
+  // the industry, the language and the width.
+  const stageRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
+    const stage = stageRef.current;
     const view = viewRef.current;
     const list = view?.querySelector<HTMLElement>(".ixw-inputs");
-    if (!view || !list) return;
+    const fields = view?.querySelector<HTMLElement>(".ixw-fields");
+    const result = view?.querySelector<HTMLElement>(".ixw-result");
+    if (!stage || !view || !list || !fields || !result) return;
     const place = () => {
       const end = list.offsetTop + list.offsetHeight;
       view.style.setProperty("--scan-end", `${end}px`);
@@ -113,12 +121,27 @@ const MobileScene = ({
         const middle = list.offsetTop + li.offsetTop + li.offsetHeight / 2;
         li.style.setProperty("--t", String(Math.round((middle / travel) * SCAN_MS)));
       });
+      const gap = parseFloat(getComputedStyle(fields).bottom) || 0;
+      view.style.setProperty("--ixw-before", `${Math.ceil(end + fields.offsetHeight + gap)}px`);
+      view.style.setProperty("--ixw-after", `${Math.ceil(result.scrollHeight)}px`);
+      const header = document.querySelector("header")?.getBoundingClientRect().height ?? 64;
+      const above = view.getBoundingClientRect().top - stage.getBoundingClientRect().top;
+      view.style.setProperty("--ixw-over", `${Math.ceil(header + above + 12)}px`);
+      more();
     };
+    // Whether the result, scrolling inside the window, has more below.
+    const more = () => view.toggleAttribute("data-more", result.scrollTop + result.clientHeight < result.scrollHeight - 4);
     place();
     const ro = new ResizeObserver(place);
-    ro.observe(list);
-    return () => ro.disconnect();
+    [stage, list, fields, result, ...result.children].forEach((el) => ro.observe(el));
+    result.addEventListener("scroll", more, { passive: true });
+    return () => { ro.disconnect(); result.removeEventListener("scroll", more); };
   }, [industry.key, lang]);
+
+  // A result scrolled inside the window starts from its top on the next run.
+  useEffect(() => {
+    if (phase !== "after") viewRef.current?.querySelector(".ixw-result")?.scrollTo(0, 0);
+  }, [phase]);
 
   const flagged = industry.fields.filter((f) => f.flag).length;
   const summary = fill(t("useCases.mFieldsRead"), industry.fields.length) + (flagged ? ` · ${fill(t("useCases.mFlagged"), flagged)}` : "");
@@ -127,7 +150,7 @@ const MobileScene = ({
   const stage = done
     ? { n: 3, title: t("useCases.stage3"), sub: t("useCases.stage3Sub") }
     : scanning
-      ? { n: 2, title: t("useCases.mScanning"), sub: t("useCases.working") }
+      ? { n: 2, title: t("useCases.mScanning"), sub: t(`useCases.${industry.key}.working`) }
       : { n: 1, title: t("useCases.stage1"), sub: t("useCases.stage1Sub") };
 
   return (
@@ -135,6 +158,7 @@ const MobileScene = ({
       id="ix-stage"
       role="tabpanel"
       aria-labelledby={`ix-tab-${industry.key}`}
+      ref={stageRef}
       className="ixm ixw ix-scene"
       data-phase={phase}
       // The result's own animations key off data-run; here it is set when
@@ -171,19 +195,40 @@ const MobileScene = ({
           </button>
         )}
       </div>
-      <p className="ixw-stage-sub" aria-hidden="true">{stage.sub}</p>
-
-      {/* Until it is pressed: a pointer to it. */}
-      <p className="ixw-hint" aria-hidden={phase !== "before"}>
-        <span>{t("useCases.mTapHint")}</span>
-        <svg viewBox="0 0 28 28" className="ixw-hint-arrow" aria-hidden="true">
-          <path d="M4 24 C 10 22, 18 16, 22 6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-          <path d="M15.5 8.5 L 22 5 L 24 12" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </p>
+      {/* Under the title, one line that says what to do or what happened:
+          before the press, a pointer up to the button; while it runs, what
+          Xeda is doing in this industry's terms; after, what came out, with
+          the way back. It keeps its height in every stage. */}
+      <div className="ixw-stage-sub">
+        {phase === "before" && (
+          <p className="ixw-hint" aria-hidden="true">
+            <span>{t("useCases.mTapHint")}</span>
+            <svg viewBox="0 0 28 28" className="ixw-hint-arrow" aria-hidden="true">
+              <path d="M4 24 C 10 22, 18 16, 22 6" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+              <path d="M15.5 8.5 L 22 5 L 24 12" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </p>
+        )}
+        {scanning && <p aria-hidden="true">{stage.sub}</p>}
+        {done && (
+          <p className="ixw-done-line">
+            <Check className="h-4 w-4 shrink-0 text-success" strokeWidth={2.8} />
+            <span className="ixw-done-sum">{summary}</span>
+            <button
+              type="button"
+              className="ixw-see-before"
+              onClick={(e) => { resetHadFocus.current = document.activeElement === e.currentTarget; onReset(); }}
+            >
+              {t("useCases.reset")}
+            </button>
+          </p>
+        )}
+      </div>
 
       {/* The window itself: the scattered inputs and the organised result share
-          one frame, so it keeps its height from one stage to the next. */}
+          one frame, so it keeps its height from one stage to the next. It is
+          as tall as its content needs, but never taller than the screen under
+          the site's header: a result that needs more scrolls inside it. */}
       <div className="ixw-view" ref={viewRef}>
         <Parallax className="ixm-bg" speed={0} phoneSpeed={0.06} max={22}>
           <img key={industry.key} src={industryImages[industry.key]} alt="" loading="lazy" decoding="async" />
@@ -216,42 +261,32 @@ const MobileScene = ({
           ))}
         </ul>
 
-        <div className="ixw-layer ixw-result" {...(!done ? { inert: "" } : {})}>
-          <p className="ixw-done-line">
-            <Check className="h-4 w-4 text-success" strokeWidth={2.8} />
-            <strong>{t("useCases.mOrganised")}</strong>
-            <span className="ixw-done-sum text-muted-foreground">{summary}</span>
-          </p>
-          <MobileOutput output={industry.output} lang={lang} />
-          {/* Inside the frame, so the window does not grow when it appears. */}
-          <p className="ixw-after">
-            <button
-              type="button"
-              className="ixm-again ixm-again--quiet"
-              onClick={(e) => { resetHadFocus.current = document.activeElement === e.currentTarget; onReset(); }}
+        {/* What Xeda reads, under the inputs, lighting up as the scan finds it. */}
+        <ul className="ixw-fields" aria-label={t("useCases.mReads")} {...(done ? { inert: "" } : {})}>
+          {industry.fields.map((f, i) => (
+            <li
+              key={i}
+              className={`ix-field ${f.flag ? "ix-field--flag" : ""}`}
+              style={ms(((i + 1) / (industry.fields.length + 1)) * SCAN_MS)}
             >
-              {t("useCases.reset")}
-            </button>
-          </p>
+              <span className="ix-field-dot" />
+              {tx(f.label, lang)}
+            </li>
+          ))}
+        </ul>
+
+        <div className="ixw-layer ixw-result" {...(!done ? { inert: "" } : {})}>
+          <MobileOutput output={industry.output} lang={lang} />
         </div>
 
-        {/* The scan line. */}
-        <span className="ixw-beam" aria-hidden="true" style={{ "--scan": `${SCAN_MS}ms` } as React.CSSProperties} />
+        {/* The scan line, in this industry's own form: a ledger rule with a
+            rolling tally, a conveyor with a turning gear, a barcode laser, a
+            pin over a dotted street line, a heartbeat, a tape measure. */}
+        <span className="ixw-beam" aria-hidden="true" style={{ "--scan": `${SCAN_MS}ms` } as React.CSSProperties}>
+          <span className="ixw-beam-line" />
+          <BeamSignature industry={industry.key} lang={lang} />
+        </span>
       </div>
-
-      {/* What Xeda reads, lighting up as the scan finds it. */}
-      <ul className="ixw-fields" aria-label={t("useCases.mReads")}>
-        {industry.fields.map((f, i) => (
-          <li
-            key={i}
-            className={`ix-field ${f.flag ? "ix-field--flag" : ""}`}
-            style={ms(((i + 1) / (industry.fields.length + 1)) * SCAN_MS)}
-          >
-            <span className="ix-field-dot" />
-            {tx(f.label, lang)}
-          </li>
-        ))}
-      </ul>
 
       {industry.caveat && <p className="ix-caveat ixm-caveat">{tx(industry.caveat, lang)}</p>}
 
