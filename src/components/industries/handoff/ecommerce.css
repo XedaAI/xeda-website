@@ -1,0 +1,38 @@
+/* E-commerce: inputs tossed into the box; rows drop in like parcels, each with a beep.
+   The hand-off from the scattered inputs to the organised result for this
+   industry, desktop (.ix-stage) and phone (.ixw); its set piece is in
+   EcommerceFx.tsx. Final states are the ordinary ones, so with reduced
+   motion everything simply shows. See index.tsx for the shared conventions. */
+
+.ix-stage[data-run][data-industry="ecommerce"] .ix-item { animation: ixTossIn 0.85s cubic-bezier(0.45, 0, 0.55, 1) calc(var(--i) * 80ms) both; }
+
+.ixw[data-run][data-industry="ecommerce"] .ixm-in { animation: ixmDropOut 0.45s cubic-bezier(0.55, 0, 1, 0.45) calc(var(--i) * 70ms) both; }
+
+/* E-commerce: rows dropping in like parcels, each with the scanner's beep. */
+
+.ix-stage[data-run][data-industry="ecommerce"] .ix-fill,
+.ixw[data-run][data-industry="ecommerce"] .ixm-row {
+  animation:
+    ixDrop 0.55s cubic-bezier(0.3, 0.7, 0.4, 1) calc(var(--d) * 1ms) both,
+    ixBeep 0.6s ease-out calc(var(--d) * 1ms + 320ms) both;
+}
+
+@keyframes ixTossIn {
+  0% { transform: translate(0, 0) rotate(var(--r)) scale(var(--s)); opacity: 0.92; }
+  45% { transform: translate(calc(var(--dx) * 0.55), calc(var(--dy) * 0.55 - 52px)) rotate(calc(var(--r) + 16deg)) scale(calc(var(--s) * 0.8)); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) rotate(28deg) scale(0.25); opacity: 0; }
+}
+
+@keyframes ixmDropOut { 0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; } 100% { transform: translateY(5rem) rotate(9deg) scale(0.6); opacity: 0; } }
+
+@keyframes ixDrop {
+  0% { opacity: 0; transform: translateY(-18px); }
+  55% { opacity: 1; transform: translateY(4px); }
+  75% { transform: translateY(-2px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ixBeep {
+  0%, 100% { box-shadow: inset 0 0 0 0 hsl(var(--sig) / 0); }
+  12% { box-shadow: inset 0 0 0 1.5px hsl(var(--sig)), inset 0 0 18px -6px hsl(var(--sig) / 0.7); }
+}

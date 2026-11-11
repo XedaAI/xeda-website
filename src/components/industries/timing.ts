@@ -14,4 +14,4 @@ export const rowAt = (i: number) => 1150 + i * 150;
 export const mRowAt = (i: number) => 220 + i * 110;
 
 /** How long a full run takes before it settles, desktop and phone. */
-export const RUN_MS = { desktop: 2450, phone: 1900 };
+export const RUN_MS = { desktop: 3000, phone: 1900 };

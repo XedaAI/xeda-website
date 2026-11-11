@@ -7,6 +7,7 @@ import { HouseArt, SitePhotoArt } from "./primitives";
 import { MobileOutput } from "./MobileOutputs";
 import { BeamSignature } from "./Signature";
 import { placeTriage } from "./triage";
+import HandoffFx from "./handoff";
 import { industryImages } from "./images";
 import Parallax from "@/components/Parallax";
 import type { Phase } from "./XedaNode";
@@ -318,6 +319,9 @@ const MobileScene = ({
           <span className="ixw-beam-line" />
           <BeamSignature industry={industry.key} lang={lang} />
         </span>
+
+        {/* The industry's hand-off set piece, over the window. */}
+        <div className="ixw-fx" aria-hidden="true"><HandoffFx key={industry.key} industry={industry.key} variant="phone" lang={lang} /></div>
       </div>
 
       {industry.caveat && <p className="ix-caveat ixm-caveat">{tx(industry.caveat, lang)}</p>}

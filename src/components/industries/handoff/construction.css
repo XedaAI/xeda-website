@@ -1,0 +1,55 @@
+/* Construction: inputs hoisted as by a crane; the result built from the bottom up.
+   The hand-off from the scattered inputs to the organised result for this
+   industry, desktop (.ix-stage) and phone (.ixw); its set piece is in
+   ConstructionFx.tsx. Final states are the ordinary ones, so with reduced
+   motion everything simply shows. See index.tsx for the shared conventions. */
+
+.ix-stage[data-run][data-industry="construction"] .ix-item { animation: ixHoistIn 1s cubic-bezier(0.45, 0, 0.3, 1) calc(var(--i) * 90ms) both; }
+
+.ixw[data-run][data-industry="construction"] .ixm-in { animation: ixmHoistOut 0.55s cubic-bezier(0.5, 0, 0.75, 0.4) calc(var(--i) * 70ms) both; }
+
+/* Construction: built from the bottom up, the last row laid first. */
+
+.ix-stage[data-industry="construction"] .ix-row:nth-last-child(1 of .ix-row),
+.ixw[data-industry="construction"] .ixm-row:nth-last-child(1 of .ixm-row) { --rev: 0; }
+
+.ix-stage[data-industry="construction"] .ix-row:nth-last-child(2 of .ix-row),
+.ixw[data-industry="construction"] .ixm-row:nth-last-child(2 of .ixm-row) { --rev: 1; }
+
+.ix-stage[data-industry="construction"] .ix-row:nth-last-child(3 of .ix-row),
+.ixw[data-industry="construction"] .ixm-row:nth-last-child(3 of .ixm-row) { --rev: 2; }
+
+.ix-stage[data-industry="construction"] .ix-row:nth-last-child(4 of .ix-row),
+.ixw[data-industry="construction"] .ixm-row:nth-last-child(4 of .ixm-row) { --rev: 3; }
+
+.ix-stage[data-industry="construction"] .ix-row:nth-last-child(5 of .ix-row),
+.ixw[data-industry="construction"] .ixm-row:nth-last-child(5 of .ixm-row) { --rev: 4; }
+
+.ix-stage[data-run][data-industry="construction"] .ix-fill { animation: ixRise 0.5s cubic-bezier(0.3, 0.7, 0.4, 1) calc(1150ms + var(--rev, 0) * 160ms) both; }
+
+.ix-stage[data-run][data-industry="construction"] .ix-skel { transition-delay: calc(1150ms + var(--rev, 0) * 160ms); }
+
+.ix-stage[data-run][data-industry="construction"] .ix-bar > span { transition-delay: calc(1150ms + var(--rev, 0) * 160ms + 300ms); }
+
+.ixw[data-run][data-industry="construction"] .ixm-row { animation: ixRise 0.45s cubic-bezier(0.3, 0.7, 0.4, 1) calc(200ms + var(--rev, 0) * 120ms) both; }
+
+.ixw[data-run][data-industry="construction"] .ix-bar > span { transition-delay: calc(200ms + var(--rev, 0) * 120ms + 300ms); }
+
+@keyframes ixHoistIn {
+  0% { transform: translate(0, 0) rotate(var(--r)) scale(var(--s)); opacity: 0.92; }
+  35% { transform: translate(0, -30px) rotate(calc(var(--r) * -1.5)) scale(var(--s)); opacity: 1; }
+  55% { transform: translate(calc(var(--dx) * 0.35), calc(var(--dy) * 0.35 - 34px)) rotate(var(--r)) scale(calc(var(--s) * 0.8)); }
+  100% { transform: translate(var(--dx), var(--dy)) rotate(0deg) scale(0.25); opacity: 0; }
+}
+
+@keyframes ixmHoistOut {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  35% { transform: translateY(-0.5rem) rotate(-1.2deg); opacity: 1; }
+  100% { transform: translateY(-4.5rem) rotate(2deg); opacity: 0; }
+}
+
+@keyframes ixRise {
+  0% { opacity: 0; transform: translateY(26px); }
+  65% { opacity: 1; transform: translateY(-3px); }
+  100% { opacity: 1; transform: translateY(0); }
+}

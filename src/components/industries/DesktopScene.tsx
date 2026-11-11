@@ -10,6 +10,7 @@ import Parallax from "@/components/Parallax";
 import StageHead from "./StageHead";
 import XedaNode, { type Phase } from "./XedaNode";
 import { placeTriage } from "./triage";
+import HandoffFx from "./handoff";
 import { delay } from "./timing";
 
 // The desktop scene (lg and up): inputs, Xeda and the result side by side,
@@ -221,6 +222,8 @@ const DesktopScene = ({
         </ul>
         <div className="ix-out-inner">
           <OutputView output={industry.output} lang={lang} hidden={phase !== "after"} />
+          {/* The industry's hand-off set piece, over the result. */}
+          <div className="ix-fx" aria-hidden="true"><HandoffFx key={industry.key} industry={industry.key} variant="desk" lang={lang} /></div>
           <p className="ix-waiting" aria-hidden={phase !== "before"}>{t("useCases.waiting")}</p>
         </div>
         {industry.caveat && <p className="ix-caveat">{tx(industry.caveat, lang)}</p>}

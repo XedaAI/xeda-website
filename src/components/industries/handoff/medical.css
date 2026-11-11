@@ -1,0 +1,60 @@
+/* Medical: inputs beat like a pulse; requests arrive jumbled and sort by priority.
+   The hand-off from the scattered inputs to the organised result for this
+   industry, desktop (.ix-stage) and phone (.ixw); its set piece is in
+   MedicalFx.tsx. Final states are the ordinary ones, so with reduced
+   motion everything simply shows. See index.tsx for the shared conventions. */
+
+.ix-stage[data-run][data-industry="medical"] .ix-item { animation: ixPulseIn 1.1s cubic-bezier(0.5, 0, 0.3, 1) calc(var(--i) * 50ms) both; }
+
+.ixw[data-run][data-industry="medical"] .ixm-in { animation: ixmPulseOut 0.7s ease calc(var(--i) * 40ms) both; }
+
+/* Medical: triage. The requests arrive in a jumble and sort themselves into
+   order of priority (--from: how many places away each one starts). */
+
+.ix-stage[data-industry="medical"] .ix-row:nth-child(1 of .ix-row),
+.ixw[data-industry="medical"] .ixm-row:nth-child(1 of .ixm-row) { --from: 1; }
+
+.ix-stage[data-industry="medical"] .ix-row:nth-child(2 of .ix-row),
+.ixw[data-industry="medical"] .ixm-row:nth-child(2 of .ixm-row) { --from: 2; }
+
+.ix-stage[data-industry="medical"] .ix-row:nth-child(3 of .ix-row),
+.ixw[data-industry="medical"] .ixm-row:nth-child(3 of .ixm-row) { --from: -2; }
+
+.ix-stage[data-industry="medical"] .ix-row:nth-child(4 of .ix-row),
+.ixw[data-industry="medical"] .ixm-row:nth-child(4 of .ixm-row) { --from: -1; }
+
+.ix-stage[data-run][data-industry="medical"] .ix-fill { background: hsl(var(--card)); animation: ixTriage 1.15s cubic-bezier(0.5, 0, 0.2, 1) 1150ms both; }
+
+.ix-stage[data-run][data-industry="medical"] .ix-skel { transition-delay: 1150ms; }
+
+.ixw[data-run][data-industry="medical"] .ixm-row { position: relative; background: hsl(var(--card)); animation: ixTriage 1.05s cubic-bezier(0.5, 0, 0.2, 1) 220ms both; }
+
+/* Opaque while they pass each other; the escalated row keeps its tint. */
+
+.ix-stage[data-run][data-industry="medical"] .ix-fill.ix-lrow--staff,
+.ixw[data-run][data-industry="medical"] .ixm-row:has(.ixm-row-staff) { background: color-mix(in srgb, hsl(var(--foreground)) 3.5%, hsl(var(--card))); }
+
+@keyframes ixPulseIn {
+  0% { transform: translate(0, 0) rotate(var(--r)) scale(var(--s)); opacity: 0.92; }
+  9% { transform: translate(0, 0) rotate(var(--r)) scale(calc(var(--s) * 1.07)); opacity: 1; }
+  18% { transform: translate(0, 0) rotate(var(--r)) scale(var(--s)); }
+  27% { transform: translate(0, 0) rotate(var(--r)) scale(calc(var(--s) * 1.05)); }
+  36% { transform: translate(0, 0) rotate(var(--r)) scale(var(--s)); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) rotate(0deg) scale(0.25); opacity: 0; }
+}
+
+@keyframes ixmPulseOut {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  14% { transform: translateY(0) scale(1.04); }
+  28% { transform: translateY(0) scale(1); }
+  42% { transform: translateY(0) scale(1.03); }
+  56% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-1rem) scale(0.96); opacity: 0; }
+}
+
+@keyframes ixTriage {
+  0% { opacity: 0; transform: translateY(var(--from-px, calc(var(--from, 0) * 100%))); }
+  22% { opacity: 1; transform: translateY(var(--from-px, calc(var(--from, 0) * 100%))); }
+  45% { transform: translateY(var(--from-px, calc(var(--from, 0) * 100%))); }
+  100% { opacity: 1; transform: translateY(0); }
+}
