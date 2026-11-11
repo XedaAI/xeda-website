@@ -95,6 +95,10 @@ const DesktopScene = ({
     if (!stage) return;
     const ro = new ResizeObserver(remeasure);
     ro.observe(stage);
+    // The result's rows can change height while the stage does not (a
+    // shorter window tightens their padding): re-measure the triage then.
+    const panel = stage.querySelector(".ix-panel");
+    if (panel) ro.observe(panel);
     return () => ro.disconnect();
   }, [industry.key, lang, remeasure]);
 

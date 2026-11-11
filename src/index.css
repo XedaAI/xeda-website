@@ -3408,7 +3408,7 @@ html:not(.dark) .dc-card-n { background: hsl(var(--dc-accent) / 0.1); }
 }
 .ix-scene[data-run] .ix-stamp { opacity: 0.92; animation: ixStamp 0.42s cubic-bezier(0.2, 0.8, 0.3, 1.25) calc(var(--d) * 1ms) both; }
 @keyframes ixStamp {
-  0% { opacity: 0; transform: rotate(-7deg) scale(2.4); }
+  0% { opacity: 0; transform: rotate(-7deg) scale(1.9); }
   55% { opacity: 0.95; transform: rotate(-7deg) scale(0.92); }
   100% { opacity: 0.92; transform: rotate(-7deg) scale(1); }
 }
