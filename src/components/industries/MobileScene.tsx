@@ -123,7 +123,11 @@ const MobileScene = ({
       });
       const gap = parseFloat(getComputedStyle(fields).bottom) || 0;
       view.style.setProperty("--ixw-before", `${Math.ceil(end + fields.offsetHeight + gap)}px`);
-      view.style.setProperty("--ixw-after", `${Math.ceil(result.scrollHeight)}px`);
+      // From layout sizes, not scrollHeight: the rows' slide-in offsets
+      // would count there and nudge the window between stages.
+      const pad = getComputedStyle(result);
+      const resultNeed = [...result.children].reduce((h, el) => h + (el as HTMLElement).offsetHeight, 0) + parseFloat(pad.paddingTop) + parseFloat(pad.paddingBottom);
+      view.style.setProperty("--ixw-after", `${Math.ceil(resultNeed)}px`);
       const header = document.querySelector("header")?.getBoundingClientRect().height ?? 64;
       const above = view.getBoundingClientRect().top - stage.getBoundingClientRect().top;
       view.style.setProperty("--ixw-over", `${Math.ceil(header + above + 12)}px`);

@@ -3150,7 +3150,9 @@ html:not(.dark) .dc-card-n { background: hsl(var(--dc-accent) / 0.1); }
   min-height: 1.75rem;
 }
 .ixw-stage-sub > p { min-width: 0; flex: 1; margin: 0; }
-@media (max-width: 419px) { .ixw-stage-sub { min-height: 2.7em; } }
+/* Two lines' room on narrower phones, with a little to spare so a wrapped
+   line never nudges the window by a pixel. */
+@media (max-width: 419px) { .ixw-stage-sub { min-height: calc(2.7em + 2px); } }
 .ixw-stage-sub .ixw-hint {
   display: flex; justify-content: flex-end; align-items: center; gap: 0.25rem;
   margin: 0;
