@@ -55,7 +55,10 @@ const TableM = ({ o, lang }: { o: TableOutput; lang: SiteLanguage }) => {
       ))}
       <Row i={n} status={o.footer.status ?? "ok"} lang={lang}
         lead={<FootIcon className="ixm-row-icon" />}
-        title={tx(o.footer.text, lang)} />
+        title={<>
+          {tx(o.footer.text, lang)}
+          {o.stamp && <span className="ix-stamp" style={delay(mRowAt(n) + 380)} aria-hidden="true">{tx(o.stamp, lang)}</span>}
+        </>} />
     </Panel>
   );
 };

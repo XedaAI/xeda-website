@@ -9,6 +9,7 @@ import { industryImages } from "./images";
 import Parallax from "@/components/Parallax";
 import StageHead from "./StageHead";
 import XedaNode, { type Phase } from "./XedaNode";
+import { placeTriage } from "./triage";
 import { delay } from "./timing";
 
 // The desktop scene (lg and up): inputs, Xeda and the result side by side,
@@ -85,6 +86,8 @@ const DesktopScene = ({
   const remeasure = useCallback(() => {
     const stage = stageRef.current;
     if (stage && stage.dataset.phase === "before") setPaths(measurePaths(stage));
+    // Medical: where each result row starts before the triage sort.
+    if (stage?.dataset.industry === "medical") placeTriage(stage, ".ix-panel .ix-row");
   }, []);
   useLayoutEffect(() => {
     remeasure();

@@ -37,6 +37,7 @@ const TableOut = ({ o, lang, hidden }: Props<TableOutput>) => {
       <div className="ix-foot" style={delay(done)}>
         <FootIcon className={`h-3.5 w-3.5 ${footStatus === "ok" ? "text-success" : "text-muted-foreground"}`} />
         <span>{tx(o.footer.text, lang)}</span>
+        {o.stamp && <span className="ix-stamp" style={delay(done + 380)} aria-hidden="true">{tx(o.stamp, lang)}</span>}
         <StatusMark status={footStatus} d={done + 120} lang={lang} />
       </div>
     </OutPanel>

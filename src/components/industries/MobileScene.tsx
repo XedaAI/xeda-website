@@ -6,6 +6,7 @@ import { industries, tx, type Industry, type MobileInput } from "./data";
 import { HouseArt, SitePhotoArt } from "./primitives";
 import { MobileOutput } from "./MobileOutputs";
 import { BeamSignature } from "./Signature";
+import { placeTriage } from "./triage";
 import { industryImages } from "./images";
 import Parallax from "@/components/Parallax";
 import type { Phase } from "./XedaNode";
@@ -148,6 +149,8 @@ const MobileScene = ({
       const above = view.getBoundingClientRect().top - stage.getBoundingClientRect().top;
       const over = Math.ceil(header + above + 12);
       view.style.setProperty("--ixw-over", `${over}px`);
+      // Medical: where each result row starts before the triage sort.
+      if (industry.key === "medical") placeTriage(result, ".ixm-row");
       // On the smallest screens even the inputs with the fields would not
       // fit: switch to a tighter layout (kept until the screen size, the
       // industry or the language changes, so it cannot flip back and forth).

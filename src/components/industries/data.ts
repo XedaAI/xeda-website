@@ -66,6 +66,8 @@ export type TableOutput = {
    *  left, so it is highlighted as it lands. */
   rows: { cells: (Lx | string)[]; sub: Lx; status: Status; note?: Lx; traced?: boolean }[];
   footer: { text: Lx; icon: "file" | "send"; status?: Status };
+  /** Accounting: the batch is stamped as posted once it is ready. */
+  stamp?: Lx;
 };
 export type ListOutput = {
   kind: "list";
@@ -155,6 +157,7 @@ export const industries: Industry[] = [
         { cells: ["Bürobedarf Muster", "RE-5567", "22.04.2026", l("€125.50", "125,50 €"), "19%"], sub: l("€125.50 · VAT 19% · RE-5567", "125,50 € · USt. 19 % · RE-5567"), status: "ok" },
       ],
       footer: { text: l("Import file ready (e.g. DATEV format)", "Importdatei bereit (z. B. DATEV-Format)"), icon: "file" },
+      stamp: l("Posted", "Gebucht"),
     },
     chips: [l("Vendor extracted", "Lieferant erfasst"), l("VAT checked", "USt. geprüft"), l("Invoices validated", "Rechnungen geprüft"), l("Import prepared", "Import vorbereitet")],
     summary: l(
