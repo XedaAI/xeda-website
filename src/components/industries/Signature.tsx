@@ -21,7 +21,9 @@ import type { Industry } from "./data";
 type Key = Industry["key"];
 
 /** The posting batch's total: the four invoices in the accounting result. */
-const TALLY: Record<SiteLanguage, string> = { en: "€1,699.49", de: "1.699,49 €" };
+// A no-break space before the euro sign in German: an ordinary space would
+// collapse between the digit boxes.
+const TALLY: Record<SiteLanguage, string> = { en: "€1,699.49", de: "1.699,49\u00a0€" };
 
 /** Digits that roll into place, like a calculator's tally. */
 const Tally = ({ lang }: { lang: SiteLanguage }) => {

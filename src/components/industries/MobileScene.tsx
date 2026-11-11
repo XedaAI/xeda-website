@@ -51,6 +51,16 @@ const InputIcon = ({ item }: { item: MobileInput }) => {
 };
 
 const fill = (s: string, n: number) => s.replace("{n}", String(n));
+
+/** The screen's height with the browser's bars shown (100svh), in px. */
+const smallViewportHeight = () => {
+  const probe = document.createElement("div");
+  probe.style.cssText = "position:fixed;top:0;left:0;width:0;height:100vh;height:100svh;visibility:hidden;pointer-events:none";
+  document.body.appendChild(probe);
+  const h = probe.getBoundingClientRect().height;
+  probe.remove();
+  return h;
+};
 const ms = (v: number) => ({ "--t": Math.round(v) }) as React.CSSProperties;
 
 const MobileScene = ({
@@ -121,20 +131,35 @@ const MobileScene = ({
         const middle = list.offsetTop + li.offsetTop + li.offsetHeight / 2;
         li.style.setProperty("--t", String(Math.round((middle / travel) * SCAN_MS)));
       });
+      // What the window needs, border included (its height is a border-box):
+      // the inputs with the fields under them, and the result. The result is
+      // measured from layout positions, not scrollHeight, which would count
+      // its rows' slide-in offsets.
+      const border = view.offsetHeight - view.clientHeight;
       const gap = parseFloat(getComputedStyle(fields).bottom) || 0;
-      view.style.setProperty("--ixw-before", `${Math.ceil(end + fields.offsetHeight + gap)}px`);
-      // From layout sizes, not scrollHeight: the rows' slide-in offsets
-      // would count there and nudge the window between stages.
-      const pad = getComputedStyle(result);
-      const resultNeed = [...result.children].reduce((h, el) => h + (el as HTMLElement).offsetHeight, 0) + parseFloat(pad.paddingTop) + parseFloat(pad.paddingBottom);
-      view.style.setProperty("--ixw-after", `${Math.ceil(resultNeed)}px`);
+      const beforeNeed = Math.ceil(end + fields.offsetHeight + gap + border);
+      const last = result.lastElementChild as HTMLElement | null;
+      const resultNeed = last
+        ? last.offsetTop + last.offsetHeight + parseFloat(getComputedStyle(last).marginBottom) + parseFloat(getComputedStyle(result).paddingBottom)
+        : 0;
+      view.style.setProperty("--ixw-before", `${beforeNeed}px`);
+      view.style.setProperty("--ixw-after", `${Math.ceil(resultNeed + border)}px`);
       const header = document.querySelector("header")?.getBoundingClientRect().height ?? 64;
       const above = view.getBoundingClientRect().top - stage.getBoundingClientRect().top;
-      view.style.setProperty("--ixw-over", `${Math.ceil(header + above + 12)}px`);
+      const over = Math.ceil(header + above + 12);
+      view.style.setProperty("--ixw-over", `${over}px`);
+      // On the smallest screens even the inputs with the fields would not
+      // fit: switch to a tighter layout (kept until the screen size, the
+      // industry or the language changes, so it cannot flip back and forth).
+      const screen = smallViewportHeight();
+      const size = `${window.innerWidth}x${screen}`;
+      if (view.dataset.tight !== undefined && view.dataset.tight !== size) delete view.dataset.tight;
+      if (view.dataset.tight === undefined && beforeNeed > screen - over) view.dataset.tight = size;
       more();
     };
     // Whether the result, scrolling inside the window, has more below.
     const more = () => view.toggleAttribute("data-more", result.scrollTop + result.clientHeight < result.scrollHeight - 4);
+    delete view.dataset.tight;
     place();
     const ro = new ResizeObserver(place);
     [stage, list, fields, result, ...result.children].forEach((el) => ro.observe(el));

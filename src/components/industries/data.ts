@@ -261,7 +261,7 @@ export const industries: Industry[] = [
       { kind: "chat", text: l("Is this property still available?", "Ist die Wohnung noch verfügbar?"), from: l("Website visitor", "Website-Besucher"), x: 3, y: 5, r: -3 },
       { kind: "chat", text: l("What is the price?", "Was kostet sie?"), from: l("Website visitor", "Website-Besucher"), x: 52, y: 20, r: 3 },
       { kind: "chat", text: l("Can I book a viewing?", "Kann ich eine Besichtigung buchen?"), from: l("Website visitor", "Website-Besucher"), x: 6, y: 38, r: 2 },
-      { kind: "listing", price: l("€525,000", "525.000 €"), place: l("3 rooms · Schwabing", "3 Zimmer · Schwabing"), x: 47, y: 47, r: 3 },
+      { kind: "listing", price: l("€525,000", "525.000 €"), place: l("3 rooms · Schwabing", "3 Zimmer · Schwabing"), x: 53, y: 51, r: 3 },
       { kind: "field", value: l("Lead #218 · unqualified", "Lead #218 · unqualifiziert"), x: 4, y: 80, r: -2, unresolved: true },
     ],
     mobileInputs: [
@@ -304,7 +304,7 @@ export const industries: Industry[] = [
     icon: Stethoscope,
     inputs: [
       { kind: "call", title: l("Incoming call", "Eingehender Anruf"), sub: l("Patient · appointment", "Patient · Termin"), x: 3, y: 5, r: -3 },
-      { kind: "doc", tag: "Rx", title: l("Repeat prescription", "Folgerezept"), icon: "rx", x: 50, y: 13, r: 4 },
+      { kind: "doc", tag: "Rx", title: l("Repeat prescription", "Folgerezept"), icon: "rx", x: 55, y: 14, r: 4 },
       { kind: "chat", text: l("Are you open on Saturday?", "Haben Sie samstags geöffnet?"), from: l("Online form", "Online-Formular"), x: 7, y: 35, r: 2 },
       { kind: "note", text: l("Appointment request · next week", "Terminwunsch · nächste Woche"), x: 50, y: 49, r: -4 },
       { kind: "chat", text: l("Question about my lab results", "Frage zu meinen Laborwerten"), from: l("Voicemail", "Mailbox"), x: 4, y: 64, r: 3 },
@@ -351,7 +351,7 @@ export const industries: Industry[] = [
     icon: HardHat,
     inputs: [
       { kind: "chat", channel: "site", text: l("Concrete arrives 2 pm, crane idle till then", "Beton kommt 14 Uhr, Kran steht bis dahin"), from: l("Site chat · foreman", "Baustellen-Chat · Polier"), x: 3, y: 5, r: -3 },
-      { kind: "photo", caption: l("IMG_2291.jpg", "IMG_2291.jpg"), x: 55, y: 11, r: 4 },
+      { kind: "photo", caption: l("IMG_2291.jpg", "IMG_2291.jpg"), x: 61, y: 15, r: 4 },
       { kind: "doc", tag: "PDF", title: l("Delivery note", "Lieferschein"), x: 7, y: 38, r: -3 },
       { kind: "doc", tag: "PDF", title: l("Invoice €8,420", "Rechnung 8.420 €"), icon: "invoice", x: 50, y: 50, r: 3 },
       { kind: "note", text: l("Call electrician re level 2", "Elektriker wg. 2. OG anrufen"), x: 5, y: 70, r: -4 },
