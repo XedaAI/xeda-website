@@ -1,46 +1,374 @@
-/* Accounting: papers filed flat; rows printed in behind a print head; the batch stamped posted.
-   The hand-off from the scattered inputs to the organised result for this
-   industry, desktop (.ix-stage) and phone (.ixw); its set piece is in
-   AccountingFx.tsx. Final states are the ordinary ones, so with reduced
-   motion everything simply shows. See index.tsx for the shared conventions. */
+/* Accounting: "print and post".
+   A printer slot drops over the work. The scattered papers are fed into it,
+   the organised batch is printed out of it line by line (a print bar riding
+   the edge, the paper feeding out a notch per line), the printer goes, and
+   the batch is stamped POSTED with a thump: the window jolts and an ink ring
+   bursts from the stamp. Desktop (.ix-stage) and phone (.ixw); the set
+   piece's parts are in AccountingFx.tsx, which measures where the real
+   stamp, the result and the inputs are. Final states are the ordinary ones,
+   so with reduced motion everything simply shows. See index.tsx for the
+   shared conventions.
 
-/* Desktop: the inputs on their way into the node (--dx / --dy). */
+   Phone, in ms from data-run (the end of the scan):
+     0     the printer drops in across the top of the window
+     50    the inputs are fed up into it one after another, folding flat (to 630)
+     650   the result is printed down out of it in 16 line steps (to 1550)
+     1560  the printer retracts (to 1780)
+     1600  the POSTED stamp comes down from 3x and lands at 1790: the window
+           jolts, ink rings burst (all over by 2320)
+   Desktop, in ms from the click:
+     0     the inputs fly into the Xeda node and fold flat (to 1320); the
+           printer drops onto the result panel and pulls the blank preview
+           up into itself (150 to 450)
+     1000  the panel is printed out of it in 18 line steps (to 2000)
+     2020  the printer retracts (to 2250)
+     2130  the stamp comes down and lands at 2330: the panel jolts, ink rings
+           burst (all over by 2860) */
 
+/* --- The set piece's parts ------------------------------------------------ */
+
+:is(.ix-stage, .ixw)[data-industry="accounting"] .hx-accounting {
+  --hx-acc-ink: color-mix(in srgb, hsl(var(--xeda)) 70%, hsl(var(--foreground)) 30%);
+  position: absolute; inset: 0;
+  pointer-events: none;
+}
+
+/* The printer: a dark housing with a slit for a mouth and a glowing orange
+   lip under it, the light it spills downwards, and a status light. */
+:is(.ix-stage, .ixw)[data-industry="accounting"] .hx-accounting-slot {
+  position: absolute; z-index: 3;
+  top: 0; left: 3%; right: 3%; height: 32px;
+  border: 1px solid hsl(var(--foreground) / 0.22);
+  border-top: 0;
+  border-radius: 0 0 14px 14px;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 5px, hsl(var(--foreground) / 0.09) 5px 7px) 50% 7px / 30% 9px no-repeat,
+    linear-gradient(180deg, hsl(var(--foreground) / 0.03), hsl(var(--foreground) / 0.11) 55%, hsl(var(--foreground) / 0.04) 56%, transparent),
+    hsl(var(--card));
+  box-shadow: 0 18px 28px -12px rgb(0 0 0 / 0.95), 0 0 0 1px hsl(var(--background) / 0.6);
+  opacity: 0;
+  transform: translateY(-115%);
+}
+:is(.ix-stage, .ixw)[data-industry="accounting"] .hx-accounting-mark {
+  position: absolute; left: 16px; top: 5px;
+  font-family: var(--font-mono);
+  font-size: 9px; font-weight: 700; line-height: 1;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: hsl(var(--foreground) / 0.5);
+}
+:is(.ix-stage, .ixw)[data-industry="accounting"] .hx-accounting-slot::before {
+  content: ""; position: absolute; left: 14px; right: 14px; bottom: 5px; height: 4px;
+  border-radius: 3px;
+  background: hsl(var(--background));
+  box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.95);
+}
+:is(.ix-stage, .ixw)[data-industry="accounting"] .hx-accounting-slot::after {
+  content: ""; position: absolute; left: 9px; right: 9px; bottom: -1.5px; height: 3px;
+  border-radius: 2px;
+  background: hsl(var(--sig));
+  box-shadow: 0 0 6px 1px hsl(var(--sig) / 0.95), 0 3px 16px 3px hsl(var(--sig) / 0.5);
+}
+:is(.ix-stage, .ixw)[data-industry="accounting"] .hx-accounting-spill {
+  position: absolute; left: 4%; right: 4%; top: 100%; height: 4.5rem;
+  background: radial-gradient(ellipse 55% 100% at 50% 0, hsl(var(--sig) / 0.26), hsl(var(--sig) / 0.08) 45%, transparent 75%);
+  opacity: 0.6;
+}
+:is(.ix-stage, .ixw)[data-industry="accounting"] .hx-accounting-led {
+  position: absolute; right: 16px; top: 7px;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: hsl(var(--sig));
+  box-shadow: 0 0 7px hsl(var(--sig));
+}
+
+/* The print bar: a double rule like the scan line's, with a glow trailing
+   over what has just been printed. Its lower edge is the edge of the print;
+   it travels the height of the result. */
+:is(.ix-stage, .ixw)[data-industry="accounting"] .hx-accounting-bar {
+  position: absolute; z-index: 2;
+  left: 0; right: 0; top: 0; height: 100%;
+  opacity: 0;
+  transform: translateY(-100%);
+}
+:is(.ix-stage, .ixw)[data-industry="accounting"] .hx-accounting-bar::before {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3rem;
+  background: linear-gradient(180deg, transparent, hsl(var(--sig) / 0.2));
+}
+:is(.ix-stage, .ixw)[data-industry="accounting"] .hx-accounting-bar::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -3px; height: 6px;
+  border-block: 1.5px solid hsl(var(--sig));
+  background: hsl(var(--sig) / 0.3);
+  box-shadow: 0 0 14px 2px hsl(var(--sig) / 0.7);
+}
+
+/* The stamp coming down (a copy of the real one, laid over it) and the ink
+   where it hits, centred on the real stamp. */
+:is(.ix-stage, .ixw)[data-industry="accounting"] .hx-accounting-hit {
+  position: absolute; left: var(--hx-acc-sx, 50%); top: var(--hx-acc-sy, 50%);
+  width: 0; height: 0;
+}
+:is(.ix-stage, .ixw)[data-industry="accounting"] .hx-accounting-stamp {
+  position: absolute; left: 0; top: 0; z-index: 1;
+  width: var(--hx-acc-sw, auto); height: var(--hx-acc-sh, auto);
+  translate: -50% -50%;
+  padding: 0.05rem 0.4rem;
+  border: 2px solid currentColor;
+  border-radius: 4px;
+  background: hsl(var(--card) / 0.6);
+  box-shadow: inset 0 0 0 1px hsl(3 82% 66% / 0.35);
+  font-family: var(--font-mono);
+  font-size: 12px; font-weight: 700; line-height: 1.35;
+  letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap;
+  color: hsl(3 82% 66%);
+  opacity: 0;
+  transform: rotate(-13deg) scale(3.2);
+}
+/* A soft flash of ink under the stamp, two rings, and a spatter of drops
+   (one dot's shadows, flung outwards as it scales). */
+:is(.ix-stage, .ixw)[data-industry="accounting"] .hx-accounting-hit::before {
+  content: ""; position: absolute; left: 0; top: 0;
+  width: 7rem; height: 7rem;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: radial-gradient(circle, hsl(var(--xeda) / 0.5), hsl(var(--xeda) / 0.18) 45%, transparent 68%);
+  opacity: 0;
+  transform: scale(0.4);
+}
+:is(.ix-stage, .ixw)[data-industry="accounting"] .hx-accounting-hit::after {
+  content: ""; position: absolute; left: 0; top: 0;
+  width: 4px; height: 4px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  box-shadow:
+    22px -12px 0 1px var(--hx-acc-ink), -20px -15px 0 0 var(--hx-acc-ink),
+    26px 13px 0 0 var(--hx-acc-ink), -25px 11px 0 1px var(--hx-acc-ink),
+    5px 21px 0 0 var(--hx-acc-ink), -6px -21px 0 0.5px var(--hx-acc-ink),
+    33px -1px 0 -0.5px var(--hx-acc-ink), -33px -2px 0 0 var(--hx-acc-ink);
+  opacity: 0;
+  transform: scale(0.5);
+}
+:is(.ix-stage, .ixw)[data-industry="accounting"] .hx-accounting-ring {
+  position: absolute; left: 0; top: 0;
+  width: 4.5rem; height: 4.5rem;
+  translate: -50% -50%;
+  border-radius: 50%;
+  border: 3px solid var(--hx-acc-ink);
+  box-shadow: 0 0 16px hsl(var(--xeda) / 0.85), inset 0 0 12px hsl(var(--xeda) / 0.6);
+  opacity: 0;
+  transform: scale(0.35);
+}
+:is(.ix-stage, .ixw)[data-industry="accounting"] .hx-accounting-ring--late { border-width: 1.5px; }
+
+/* --- Phone ------------------------------------------------------------------ */
+
+.ixw[data-industry="accounting"] .hx-accounting-bar { top: var(--hx-acc-rt, 0px); height: var(--hx-acc-rh, 100%); }
+
+/* The printer drops in, glows as it swallows each paper and while it
+   prints, and retracts once the batch is out. */
+.ixw[data-run][data-industry="accounting"] .hx-accounting-slot { animation: hxAccSlotM 1.8s linear; }
+.ixw[data-run][data-industry="accounting"] .hx-accounting-slot::after { animation: hxAccLipM 1.6s linear; }
+.ixw[data-run][data-industry="accounting"] .hx-accounting-spill { animation: hxAccSpillM 1.6s linear; }
+.ixw[data-run][data-industry="accounting"] .hx-accounting-led { animation: hxAccLed 1.55s steps(1, end) forwards; }
+
+/* The inputs, already straightened by the scan, are fed up into the slot one
+   after another (--hx-acc-up: the way to its mouth), folding flat as they go;
+   each next one tucks in under the one going in, like a stack in a tray. */
+.ixw[data-run][data-industry="accounting"] .ixm-in {
+  z-index: calc(3 - var(--i));
+  transform-origin: 50% 0;
+  animation: hxAccFeed 0.38s calc(50ms + var(--i) * 100ms) both;
+}
+
+/* The result is printed out of the slot: revealed top to bottom in line
+   steps while the paper feeds out a notch per line. Its rows are simply
+   there, printed; each status is checked as the print passes it. */
+.ixw[data-run][data-industry="accounting"] .ixw-result {
+  transition: none;
+  animation: hxAccPrintM 0.9s steps(16, end) 0.65s backwards;
+}
+.ixw[data-run][data-industry="accounting"] .hx-accounting-bar { animation: hxAccBarM 0.9s steps(16, end) 0.65s; }
+.ixw[data-run][data-industry="accounting"] .ixm-row { transition: none; }
+.ixw[data-run][data-industry="accounting"] .ixm-row--traced { animation-delay: 0.76s; }
+.ixw[data-run][data-industry="accounting"] .ixm-panel-meta { transition-delay: calc(var(--d) * 1ms + 540ms); }
+.ixw[data-run][data-industry="accounting"] .ixw-result .ix-status { transition-delay: calc(var(--d) * 1.3ms + 420ms); }
+
+/* Posted: the stamp comes down from three times its size and lands at
+   1790 ms; the real one is there from that moment, under the copy. */
+.ixw[data-run][data-industry="accounting"] .hx-accounting-stamp { animation: hxAccSlam 0.42s 1.6s; }
+.ixw[data-run][data-industry="accounting"] .ix-stamp { animation: hxAccInk 0.01s linear 1.79s both; }
+.ixw[data-run][data-industry="accounting"] .ixw-view { animation: hxAccShake 0.24s linear 1.79s; }
+.ixw[data-run][data-industry="accounting"] .hx-accounting-hit::before { animation: hxAccFlash 0.35s ease-out 1.79s; }
+.ixw[data-run][data-industry="accounting"] .hx-accounting-hit::after { animation: hxAccSpatter 0.42s cubic-bezier(0.2, 0.7, 0.3, 1) 1.79s; }
+.ixw[data-run][data-industry="accounting"] .hx-accounting-ring { animation: hxAccRing 0.45s cubic-bezier(0.2, 0.7, 0.3, 1) 1.79s; }
+.ixw[data-run][data-industry="accounting"] .hx-accounting-ring--late { animation-delay: 1.87s; }
+
+@keyframes hxAccSlotM {
+  0% { opacity: 1; transform: translateY(-115%); animation-timing-function: cubic-bezier(0.3, 1.5, 0.55, 1); }
+  12% { opacity: 1; transform: translateY(0); }
+  87% { opacity: 1; transform: translateY(0); animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.35); }
+  100% { opacity: 0.7; transform: translateY(-115%); }
+}
+/* A gulp as each paper goes in (at 350, 450 and 550 ms), then steady while
+   the batch prints (650 to 1550 ms). */
+@keyframes hxAccLipM {
+  0%, 18.5% { transform: scaleY(1); opacity: 0.8; }
+  21.9% { transform: scaleY(2.6); opacity: 1; }
+  25% { transform: scaleY(1.1); opacity: 0.85; }
+  28.1% { transform: scaleY(2.6); opacity: 1; }
+  31.2% { transform: scaleY(1.1); opacity: 0.85; }
+  34.4% { transform: scaleY(2.6); opacity: 1; }
+  38% { transform: scaleY(1.2); opacity: 0.9; }
+  40.6%, 96.8% { transform: scaleY(1.7); opacity: 1; }
+  100% { transform: scaleY(1); opacity: 1; }
+}
+@keyframes hxAccSpillM {
+  0%, 18.5% { opacity: 0.6; }
+  21.9%, 28.1%, 34.4% { opacity: 1; }
+  25%, 31.2% { opacity: 0.7; }
+  40.6%, 96.8% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+@keyframes hxAccFeed {
+  0% { transform: translateY(0) perspective(600px) rotateX(0deg) scale(1, 1); opacity: 1; animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.5); }
+  58% { transform: translateY(calc(var(--hx-acc-up, 0px) * -1)) perspective(600px) rotateX(0deg) scale(0.97, 0.94); opacity: 1; animation-timing-function: cubic-bezier(0.3, 0, 0.9, 0.6); }
+  94% { opacity: 1; }
+  100% { transform: translateY(calc(var(--hx-acc-up, 0px) * -1)) perspective(600px) rotateX(68deg) scale(0.9, 0.3); opacity: 0; }
+}
+@keyframes hxAccPrintM {
+  from { clip-path: inset(0 0 100% 0); transform: translateY(-22px); }
+  to { clip-path: inset(0 0 0 0); transform: translateY(0); }
+}
+@keyframes hxAccBarM {
+  from { opacity: 1; transform: translateY(calc(-100% - 22px)); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Desktop ---------------------------------------------------------------- */
+
+/* The inputs on their way into the node (--dx / --dy), folded flat. */
 .ix-stage[data-run][data-industry="accounting"] .ix-item { animation: ixFileIn 0.9s cubic-bezier(0.55, 0.05, 0.3, 1) calc(var(--i) * 70ms) both; }
 
-/* Phone: the inputs leaving the window once the scan is done. */
+/* The printer sits along the top edge of the result panel, a little wider
+   than the paper. */
+.ix-stage[data-industry="accounting"] .hx-accounting--desk .hx-accounting-slot { top: -14px; left: -12px; right: -12px; height: 34px; }
+.ix-stage[data-industry="accounting"] .hx-accounting--desk .hx-accounting-bar { left: -12px; right: -12px; }
+.ix-stage[data-industry="accounting"] .hx-accounting--desk { --hx-acc-big: 3.8; }
+.ix-stage[data-industry="accounting"] .hx-accounting--desk .hx-accounting-ring { width: 5.5rem; height: 5.5rem; }
 
-.ixw[data-run][data-industry="accounting"] .ixm-in { animation: ixmFileOut 0.5s cubic-bezier(0.55, 0.05, 0.3, 1) calc(var(--i) * 60ms) both; }
+.ix-stage[data-run][data-industry="accounting"] .hx-accounting-slot { animation: hxAccSlotD 2.25s linear; }
+.ix-stage[data-run][data-industry="accounting"] .hx-accounting-slot::after { animation: hxAccLipD 2s linear; }
+.ix-stage[data-run][data-industry="accounting"] .hx-accounting-spill { animation: hxAccSpillD 2s linear; }
+.ix-stage[data-run][data-industry="accounting"] .hx-accounting-led { animation: hxAccLed 2s steps(1, end) forwards; }
 
-/* Accounting: each row printed left to right, behind a print head. */
+/* The blank preview is pulled up into the slot, then the panel is printed
+   out of it: revealed top to bottom in line steps, feeding out a notch per
+   line. Behind the slot, while nothing shows, the preview becomes the real
+   thing: rows filled, no skeletons, no blur. */
+.ix-stage[data-run][data-industry="accounting"] .ix-out-inner > .ix-panel {
+  transition: opacity 0s linear 0.5s, filter 0s linear 0.5s, border-color 0.6s ease;
+  animation: hxAccPaperD 2s linear;
+}
+.ix-stage[data-run][data-industry="accounting"] .hx-accounting-bar { animation: hxAccBarD 1s steps(18, end) 1s; }
+.ix-stage[data-run][data-industry="accounting"] .ix-waiting { transition-delay: 0.05s; }
+.ix-stage[data-run][data-industry="accounting"] .ix-skel { transition: opacity 0s linear 0.5s; }
+.ix-stage[data-run][data-industry="accounting"] .ix-fill { transition: opacity 0s linear 0.5s, transform 0s linear 0.5s; }
+.ix-stage[data-run][data-industry="accounting"] :is(.ix-foot, .ix-note-line) { transition: opacity 0s linear 0.5s; }
+.ix-stage[data-run][data-industry="accounting"] .ix-fill.ix-trow--traced { animation-delay: 1.2s; }
 
-.ix-stage[data-run][data-industry="accounting"] .ix-fill,
-.ixw[data-run][data-industry="accounting"] .ixm-row { animation: ixPrint 0.5s steps(14, end) calc(var(--d) * 1ms) both; }
+/* Posted: the stamp comes down and lands at 2330 ms; the panel jolts. */
+.ix-stage[data-run][data-industry="accounting"] .hx-accounting-stamp { animation: hxAccSlam 0.44s 2.13s; }
+.ix-stage[data-run][data-industry="accounting"] .ix-stamp { animation: hxAccInk 0.01s linear 2.33s both; }
+.ix-stage[data-run][data-industry="accounting"] .ix-out-inner { animation: hxAccShake 0.26s linear 2.33s; }
+.ix-stage[data-run][data-industry="accounting"] .hx-accounting-hit::before { animation: hxAccFlash 0.38s ease-out 2.33s; }
+.ix-stage[data-run][data-industry="accounting"] .hx-accounting-hit::after { animation: hxAccSpatter 0.45s cubic-bezier(0.2, 0.7, 0.3, 1) 2.33s; }
+.ix-stage[data-run][data-industry="accounting"] .hx-accounting-ring { animation: hxAccRing 0.45s cubic-bezier(0.2, 0.7, 0.3, 1) 2.33s; }
+.ix-stage[data-run][data-industry="accounting"] .hx-accounting-ring--late { animation-delay: 2.41s; }
 
-.ix-stage[data-industry="accounting"] .ix-fill::after,
-.ixw[data-industry="accounting"] .ixm-row::after {
-  content: ""; position: absolute; top: 18%; bottom: 18%; left: 0;
-  width: 2px; border-radius: 1px;
-  background: hsl(var(--sig));
-  box-shadow: 0 0 6px hsl(var(--sig));
-  opacity: 0; pointer-events: none;
+@keyframes hxAccSlotD {
+  0% { opacity: 0; transform: translateY(-70%); animation-timing-function: cubic-bezier(0.3, 1.5, 0.55, 1); }
+  9.8% { opacity: 1; transform: translateY(0); }
+  89.8% { opacity: 1; transform: translateY(0); animation-timing-function: cubic-bezier(0.55, 0, 0.85, 0.35); }
+  100% { opacity: 0; transform: translateY(-90%); }
+}
+/* A gulp as it swallows the preview, a slow pulse while it waits for the
+   data, then steady while the batch prints (1000 to 2000 ms). */
+@keyframes hxAccLipD {
+  0%, 10% { transform: scaleY(1); opacity: 0.8; }
+  19% { transform: scaleY(2.8); opacity: 1; }
+  26% { transform: scaleY(1); opacity: 0.6; }
+  37% { transform: scaleY(1.4); opacity: 1; }
+  48% { transform: scaleY(1); opacity: 0.6; }
+  50%, 98% { transform: scaleY(1.7); opacity: 1; }
+  100% { transform: scaleY(1); opacity: 1; }
+}
+@keyframes hxAccSpillD {
+  0%, 10% { opacity: 0.6; }
+  19% { opacity: 1; }
+  26% { opacity: 0.45; }
+  37% { opacity: 0.8; }
+  48% { opacity: 0.45; }
+  50%, 98% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+@keyframes hxAccPaperD {
+  0%, 7.5% { clip-path: inset(0 0 0 0); transform: translateY(0); animation-timing-function: cubic-bezier(0.6, 0, 0.85, 0.3); }
+  22.5%, 50% { clip-path: inset(0 0 100% 0); transform: translateY(-14px); animation-timing-function: steps(18, end); }
+  99.99% { clip-path: inset(0 0 0 0); transform: translateY(0); }
+  100% { clip-path: none; transform: none; }
+}
+@keyframes hxAccBarD {
+  from { opacity: 1; transform: translateY(calc(-100% - 14px)); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.ixw[data-industry="accounting"] .ixm-row { position: relative; }
+/* --- Both ------------------------------------------------------------------- */
 
-.ix-stage[data-run][data-industry="accounting"] .ix-fill::after,
-.ixw[data-run][data-industry="accounting"] .ixm-row::after { animation: ixPrintHead 0.5s steps(14, end) calc(var(--d) * 1ms) both; }
-
-/* The row built from the very fragments shown on the left keeps its
-   highlight (ixTrace) alongside its trade's arrival. */
-
-.ix-stage[data-run][data-industry="accounting"] .ix-fill.ix-trow--traced,
-.ixw[data-run][data-industry="accounting"] .ixm-row.ixm-row--traced {
-  animation: ixPrint 0.5s steps(14, end) calc(var(--d) * 1ms) both, ixTrace 1.4s ease calc(var(--d) * 1ms) both;
+/* The status light blinks while the printer works and turns mint when the
+   batch is out. */
+@keyframes hxAccLed {
+  0% { background: hsl(var(--sig)); box-shadow: 0 0 7px hsl(var(--sig)); }
+  40% { background: hsl(var(--sig) / 0.25); box-shadow: none; }
+  48% { background: hsl(var(--sig)); box-shadow: 0 0 7px hsl(var(--sig)); }
+  56% { background: hsl(var(--sig) / 0.25); box-shadow: none; }
+  64% { background: hsl(var(--sig)); box-shadow: 0 0 7px hsl(var(--sig)); }
+  72% { background: hsl(var(--sig) / 0.25); box-shadow: none; }
+  80% { background: hsl(var(--sig)); box-shadow: 0 0 7px hsl(var(--sig)); }
+  88% { background: hsl(var(--sig) / 0.25); box-shadow: none; }
+  100% { background: hsl(var(--success)); box-shadow: 0 0 9px hsl(var(--success)); }
+}
+@keyframes hxAccSlam {
+  0% { opacity: 0; transform: rotate(-13deg) scale(var(--hx-acc-big, 3.2)); box-shadow: 0 22px 26px -8px rgb(0 0 0 / 0.6), inset 0 0 0 1px hsl(3 82% 66% / 0.35); animation-timing-function: cubic-bezier(0.55, 0, 1, 0.5); }
+  14% { opacity: 1; }
+  45% { opacity: 1; transform: rotate(-7deg) scale(1); box-shadow: 0 0 0 0 rgb(0 0 0 / 0), inset 0 0 0 1px hsl(3 82% 66% / 0.35); animation-timing-function: ease-out; }
+  56% { transform: rotate(-7deg) scale(0.93); }
+  68% { transform: rotate(-7deg) scale(1.03); }
+  78% { opacity: 1; transform: rotate(-7deg) scale(1); }
+  100% { opacity: 0; transform: rotate(-7deg) scale(1); box-shadow: 0 0 0 0 rgb(0 0 0 / 0), inset 0 0 0 1px hsl(3 82% 66% / 0.35); }
+}
+@keyframes hxAccInk { from { opacity: 0; } to { opacity: 0.92; } }
+@keyframes hxAccShake {
+  0% { translate: 0 0; }
+  16% { translate: 0 4px; }
+  36% { translate: -3px -2px; }
+  56% { translate: 3px 2px; }
+  76% { translate: -1px -1px; }
+  100% { translate: 0 0; }
+}
+@keyframes hxAccFlash {
+  0% { opacity: 1; transform: scale(0.4); }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+@keyframes hxAccSpatter {
+  0% { opacity: 1; transform: scale(0.5); }
+  70% { opacity: 0.9; }
+  100% { opacity: 0; transform: scale(2.1); }
+}
+@keyframes hxAccRing {
+  0% { opacity: 1; transform: scale(0.35); }
+  100% { opacity: 0; transform: scale(2.8); }
 }
 
-/* ...and the batch stamped once it is ready. */
-
+/* The batch stamp itself (also used without motion): it shows once the run
+   is done. */
 .ix-stamp {
   display: inline-block; flex: none;
   margin-left: 0.5rem;
@@ -67,21 +395,21 @@
   100% { transform: translate(var(--dx), var(--dy)) rotate(0deg) scale(0.3, 0.04); opacity: 0; }
 }
 
-@keyframes ixmFileOut {
-  0% { transform: translateY(0) scale(1, 1); opacity: 1; }
-  100% { transform: translateY(calc(var(--i) * -100% - 0.6rem)) scale(0.96, 0.15); opacity: 0; }
-}
-
-@keyframes ixPrint {
-  0% { clip-path: inset(0 100% 0 0); opacity: 1; transform: none; }
-  99.9% { clip-path: inset(0 0 0 0); opacity: 1; transform: none; }
-  100% { clip-path: none; opacity: 1; transform: none; }
-}
-
-@keyframes ixPrintHead { 0% { left: 0; opacity: 1; } 99% { left: calc(100% - 2px); opacity: 1; } 100% { left: calc(100% - 2px); opacity: 0; } }
-
 @keyframes ixStamp {
   0% { opacity: 0; transform: rotate(-7deg) scale(1.9); }
   55% { opacity: 0.95; transform: rotate(-7deg) scale(0.92); }
   100% { opacity: 0.92; transform: rotate(-7deg) scale(1); }
+}
+
+/* --- Reduced motion: nothing moves; the result simply shows. ---------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .ixw[data-industry="accounting"] :is(.ixw-view, .ixw-result, .ixm-in, .ixm-row, .ix-stamp),
+  .ix-stage[data-industry="accounting"] :is(.ix-out-inner, .ix-panel, .ix-item, .ix-fill, .ix-stamp),
+  :is(.ix-stage, .ixw)[data-industry="accounting"] :is(.hx-accounting-slot, .hx-accounting-spill, .hx-accounting-led, .hx-accounting-bar, .hx-accounting-stamp, .hx-accounting-ring),
+  :is(.ix-stage, .ixw)[data-industry="accounting"] .hx-accounting-slot::after,
+  :is(.ix-stage, .ixw)[data-industry="accounting"] .hx-accounting-hit::before,
+  :is(.ix-stage, .ixw)[data-industry="accounting"] .hx-accounting-hit::after { animation: none !important; }
+  .ixw[data-industry="accounting"] :is(.ixm-row, .ixm-panel-meta, .ixw-result .ix-status),
+  .ix-stage[data-industry="accounting"] :is(.ix-skel, .ix-fill, .ix-foot, .ix-note-line, .ix-waiting) { transition: none !important; }
 }

@@ -1,36 +1,527 @@
-/* Manufacturing: inputs queue in at a steady pace; rows roll in on a line.
+/* Manufacturing: the production line.
    The hand-off from the scattered inputs to the organised result for this
    industry, desktop (.ix-stage) and phone (.ixw); its set piece is in
-   ManufacturingFx.tsx. Final states are the ordinary ones, so with reduced
-   motion everything simply shows. See index.tsx for the shared conventions. */
+   ManufacturingFx.tsx, which measures the scene and hands the positions
+   over as --hx-manufacturing-* properties. Final states are the ordinary
+   ones, so with reduced motion everything simply shows. See index.tsx for
+   the shared conventions.
 
-.ix-stage[data-run][data-industry="manufacturing"] .ix-item { animation: ixQueueIn 0.95s linear calc(var(--i) * 150ms) both; }
+   Phone, from the end of the scan (t0, data-run):
+     0-0.26s     a conveyor slides in under the inputs, rollers turning
+     0.12-0.8s   the inputs drop onto it, lowest first, and ride off right
+     0.78-0.87s  the belt rises to the top of the result
+     0.86-2.24s  rows ride in on it one by one; a press stamps each one
+                 (squash, flash) and belt and press step down to the next
+                 row, while a gear turns where the panel's count will appear
+     2.16-2.42s  the belt runs off, the press lifts away, the count shows
+   Desktop, from the click:
+     0-1.3s      the inputs straighten and are pulled into the node
+     0.6-1.14s   a belt runs out of the node (its own belt, carried on) into
+                 a chute down the panel's left edge, which feeds a belt
+                 across the panel under the first row; a press above it
+     0.76s+      part boxes ride out of the node, 280ms apart, and drop down
+                 the chute to the line
+     1.18-2.6s   each box is pushed in as its row rides in on the line; the
+                 press stamps it (squash, flash), the line steps down a row
+     2.54-2.85s  the line runs off and fades; the run settles at 3s */
 
-.ixw[data-run][data-industry="manufacturing"] .ixm-in { animation: ixmConveyOut 0.5s linear calc(var(--i) * 90ms) both; }
+/* --- The conveyor (both) ---------------------------------------------------- */
 
-/* Manufacturing: rows rolling in on a line, one after another, each landing
-   with a small clunk. */
+.ixw[data-industry="manufacturing"] .hx-manufacturing-fx,
+.ix-stage[data-industry="manufacturing"] .hx-manufacturing-fx { position: absolute; inset: 0; }
+
+.ixw[data-industry="manufacturing"] .hx-manufacturing-belt,
+.ix-stage[data-industry="manufacturing"] .hx-manufacturing-belt { position: absolute; display: block; opacity: 0; }
+
+.ixw[data-industry="manufacturing"] .hx-manufacturing-band,
+.ix-stage[data-industry="manufacturing"] .hx-manufacturing-band {
+  position: absolute; inset: 0;
+  overflow: hidden;
+  border-radius: 9999px;
+  border: 1px solid hsl(var(--sig) / 0.75);
+  background: linear-gradient(180deg, hsl(var(--foreground) / 0.16), hsl(var(--card)) 45%, hsl(var(--background)));
+  box-shadow: 0 0 16px -3px hsl(var(--sig) / 0.6), 0 10px 18px -8px rgb(0 0 0 / 0.9);
+}
+
+/* The belt's two runs: cleats on top travelling forward, the return run
+   underneath travelling back. Each strip is one cleat wider than the band
+   and shifts by one cleat over and over. */
+.ixw[data-industry="manufacturing"] .hx-manufacturing-slats,
+.ix-stage[data-industry="manufacturing"] .hx-manufacturing-slats {
+  position: absolute; top: 2px; left: -13px; right: 0;
+  height: 5px;
+  background: repeating-linear-gradient(90deg, hsl(var(--sig)) 0 9px, transparent 9px 13px);
+}
+.ixw[data-industry="manufacturing"] .hx-manufacturing-return,
+.ix-stage[data-industry="manufacturing"] .hx-manufacturing-return {
+  position: absolute; bottom: 2px; left: 0; right: -13px;
+  height: 2px;
+  background: repeating-linear-gradient(90deg, hsl(var(--sig) / 0.45) 0 6px, transparent 6px 13px);
+}
+
+.ixw[data-industry="manufacturing"] .hx-manufacturing-roller,
+.ix-stage[data-industry="manufacturing"] .hx-manufacturing-roller {
+  position: absolute; top: 50%;
+  width: 20px; height: 20px; margin-top: -10px;
+  fill: hsl(var(--card));
+  stroke: hsl(var(--sig));
+  stroke-width: 1.7;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 4px hsl(var(--sig) / 0.6));
+}
+.ixw[data-industry="manufacturing"] .hx-manufacturing-roller circle,
+.ix-stage[data-industry="manufacturing"] .hx-manufacturing-roller circle { fill: hsl(var(--sig)); stroke: none; }
+.ixw[data-industry="manufacturing"] .hx-manufacturing-roller--a,
+.ix-stage[data-industry="manufacturing"] .hx-manufacturing-roller--a { left: -6px; }
+.ixw[data-industry="manufacturing"] .hx-manufacturing-roller--b,
+.ix-stage[data-industry="manufacturing"] .hx-manufacturing-roller--b { right: -6px; }
+
+.ixw[data-run][data-industry="manufacturing"] .hx-manufacturing-slats,
+.ix-stage[data-run][data-industry="manufacturing"] .hx-manufacturing-slats { animation: hx-manufacturing-run 0.16s linear 18; }
+.ixw[data-run][data-industry="manufacturing"] .hx-manufacturing-return,
+.ix-stage[data-run][data-industry="manufacturing"] .hx-manufacturing-return { animation: hx-manufacturing-return 0.16s linear 18; }
+.ixw[data-run][data-industry="manufacturing"] .hx-manufacturing-roller,
+.ix-stage[data-run][data-industry="manufacturing"] .hx-manufacturing-roller { animation: hx-manufacturing-spin 0.5s linear 6; }
+
+@keyframes hx-manufacturing-run { to { transform: translateX(13px); } }
+@keyframes hx-manufacturing-return { to { transform: translateX(-13px); } }
+@keyframes hx-manufacturing-spin { to { transform: rotate(360deg); } }
+
+/* The press: a steel platen on two rods, its face in the instrument's
+   colour. It rests on the seam above the row being made and comes down on
+   it as it lands. */
+.ixw[data-industry="manufacturing"] .hx-manufacturing-press,
+.ix-stage[data-industry="manufacturing"] .hx-manufacturing-dpress {
+  position: absolute; top: 0;
+  height: 6px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, hsl(var(--foreground) / 0.95), hsl(var(--foreground) / 0.6));
+  box-shadow: 0 2px 0 hsl(var(--sig)), 0 5px 16px -2px hsl(var(--sig) / 0.85);
+  opacity: 0;
+}
+.ixw[data-industry="manufacturing"] .hx-manufacturing-press::before,
+.ixw[data-industry="manufacturing"] .hx-manufacturing-press::after,
+.ix-stage[data-industry="manufacturing"] .hx-manufacturing-dpress::before,
+.ix-stage[data-industry="manufacturing"] .hx-manufacturing-dpress::after {
+  content: "";
+  position: absolute; bottom: 100%;
+  width: 4px; height: 7px;
+  border-radius: 1px 1px 0 0;
+  background: linear-gradient(180deg, hsl(var(--foreground) / 0), hsl(var(--foreground) / 0.75));
+}
+.ixw[data-industry="manufacturing"] .hx-manufacturing-press::before,
+.ix-stage[data-industry="manufacturing"] .hx-manufacturing-dpress::before { left: 18%; }
+.ixw[data-industry="manufacturing"] .hx-manufacturing-press::after,
+.ix-stage[data-industry="manufacturing"] .hx-manufacturing-dpress::after { right: 18%; }
+
+/* --- Phone ------------------------------------------------------------------- */
+
+/* The belt: across the window, its top on the line under the inputs
+   (--hx-manufacturing-in), later on the bottom of the row being made
+   (-b0 … -b4). */
+.ixw[data-industry="manufacturing"] .hx-manufacturing-line { left: 0.5rem; right: 0.5rem; top: 0; height: 13px; }
+.ixw[data-run][data-industry="manufacturing"] .hx-manufacturing-line { animation: hx-manufacturing-line 2.42s linear both; }
+
+.ixw[data-industry="manufacturing"] .hx-manufacturing-press { left: 1.15rem; right: 1.15rem; }
+.ixw[data-run][data-industry="manufacturing"] .hx-manufacturing-press { animation: hx-manufacturing-press 2.42s linear both; }
+
+/* The inputs: each drops onto the belt (its own fall, measured), lands with
+   a squash and is carried off to the right, a speed streak trailing it. The
+   input layer stays over the result until the last one has gone. */
+.ixw[data-run][data-industry="manufacturing"] .ixw-inputs { animation: hx-manufacturing-above 0.95s step-end; }
+@keyframes hx-manufacturing-above { from, to { z-index: 2; } }
+
+.ixw[data-run][data-industry="manufacturing"] .ixm-in {
+  transition: none;
+  transform-origin: 50% 100%;
+  animation:
+    hx-manufacturing-fall var(--hx-manufacturing-fallt, 160ms) cubic-bezier(0.5, 0, 0.9, 0.45) var(--hx-manufacturing-at, 120ms) both,
+    hx-manufacturing-carry 0.33s linear calc(var(--hx-manufacturing-at, 120ms) + var(--hx-manufacturing-fallt, 160ms)) forwards;
+}
+.ixw[data-industry="manufacturing"] .ixm-in::before {
+  content: "";
+  position: absolute; top: 14%; bottom: 14%; right: 100%;
+  width: 4.5rem;
+  border-radius: 9999px 0 0 9999px;
+  background: linear-gradient(90deg, transparent, hsl(var(--sig) / 0.18) 55%, hsl(var(--foreground) / 0.22));
+  opacity: 0;
+  pointer-events: none;
+}
+.ixw[data-run][data-industry="manufacturing"] .ixm-in::before {
+  animation: hx-manufacturing-streak 0.33s linear calc(var(--hx-manufacturing-at, 120ms) + var(--hx-manufacturing-fallt, 160ms)) both;
+}
+
+@keyframes hx-manufacturing-fall {
+  from { transform: none; opacity: 1; }
+  to { transform: translateY(var(--hx-manufacturing-fall, 0px)); opacity: 1; }
+}
+@keyframes hx-manufacturing-carry {
+  0% { translate: 0 0; scale: 1.02 0.9; animation-timing-function: cubic-bezier(0.3, 0, 0.4, 1); }
+  15% { translate: 0 0; scale: 1 1; animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.45); }
+  97% { opacity: 1; }
+  100% { translate: calc(100% + 5rem) 0; scale: 1.06 0.96; opacity: 0; }
+}
+@keyframes hx-manufacturing-streak {
+  0%, 22% { opacity: 0; }
+  55%, 92% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* The result: its frame shows once the inputs are on their way out; rows
+   wait off to the left until the line brings them. */
+.ixw[data-run][data-industry="manufacturing"] .ixw-result { transition: none; animation: hx-manufacturing-show 0.25s ease 0.42s backwards; }
+@keyframes hx-manufacturing-show { from { opacity: 0; } }
+
+.ixw[data-industry="manufacturing"] .ixm-panel > :nth-child(2) { --hx-manufacturing-k: 0; }
+.ixw[data-industry="manufacturing"] .ixm-panel > :nth-child(3) { --hx-manufacturing-k: 1; }
+.ixw[data-industry="manufacturing"] .ixm-panel > :nth-child(4) { --hx-manufacturing-k: 2; }
+.ixw[data-industry="manufacturing"] .ixm-panel > :nth-child(5) { --hx-manufacturing-k: 3; }
+.ixw[data-industry="manufacturing"] .ixm-panel > :nth-child(n + 6) { --hx-manufacturing-k: 4; }
+
+.ixw[data-industry="manufacturing"] .ixm-row { position: relative; transform-origin: 50% 100%; }
+
+/* Row k rides in from 0.86s + k × 0.26s, lands 0.2s later and is pressed. */
+.ixw[data-run][data-industry="manufacturing"] .ixm-row {
+  transition: none;
+  animation: hx-manufacturing-row 0.42s linear calc(860ms + var(--hx-manufacturing-k, 0) * 260ms) backwards;
+}
+.ixw[data-run][data-industry="manufacturing"] .ixm-row.ixm-row--traced {
+  animation:
+    hx-manufacturing-row 0.42s linear calc(860ms + var(--hx-manufacturing-k, 0) * 260ms) backwards,
+    ixTrace 1.4s ease calc(1060ms + var(--hx-manufacturing-k, 0) * 260ms) both;
+}
+.ixw[data-industry="manufacturing"] .ixm-row::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, hsl(var(--sig) / 0.34), hsl(var(--sig) / 0.1));
+  box-shadow: inset 0 2px 0 hsl(var(--sig));
+  opacity: 0;
+  pointer-events: none;
+}
+.ixw[data-run][data-industry="manufacturing"] .ixm-row::after {
+  animation: hx-manufacturing-flash 0.5s ease-out calc(1070ms + var(--hx-manufacturing-k, 0) * 260ms) both;
+}
+
+/* Each status once its row is pressed; the count once the line is done. */
+.ixw[data-run][data-industry="manufacturing"] .ixm-row .ix-status { transition-delay: calc(1190ms + var(--hx-manufacturing-k, 0) * 260ms); }
+.ixw[data-run][data-industry="manufacturing"] .ixm-row .ix-status:not(.ix-status--ok) { transition-delay: calc(1270ms + var(--hx-manufacturing-k, 0) * 260ms); }
+.ixw[data-run][data-industry="manufacturing"] .ixm-panel-meta { transition-delay: 2.2s; }
+
+/* The gear in the panel's head, where the count will appear, turning while
+   the line runs. */
+.ixw[data-industry="manufacturing"] .hx-manufacturing-gear {
+  position: absolute;
+  left: var(--hx-manufacturing-gx, 85%); top: var(--hx-manufacturing-gy, 3.5rem);
+  width: 22px; height: 22px; margin: -11px 0 0 -11px;
+  opacity: 0;
+}
+.ixw[data-industry="manufacturing"] .hx-manufacturing-gear-art {
+  display: block; width: 100%; height: 100%;
+  fill: hsl(var(--sig) / 0.16);
+  stroke: hsl(var(--sig));
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+}
+.ixw[data-industry="manufacturing"] .hx-manufacturing-gear-art circle { fill: hsl(var(--sig)); stroke: none; }
+.ixw[data-run][data-industry="manufacturing"] .hx-manufacturing-gear { animation: hx-manufacturing-gear 2.3s linear both; }
+.ixw[data-run][data-industry="manufacturing"] .hx-manufacturing-gear-art { animation: hx-manufacturing-spin 0.8s linear 3; }
+@keyframes hx-manufacturing-gear {
+  0%, 20% { opacity: 0; scale: 0.2; }
+  27% { opacity: 1; scale: 1; }
+  91% { opacity: 1; scale: 1; }
+  100% { opacity: 0; scale: 0.2; }
+}
+
+/* Generated from the timeline (rows land at 1.06, 1.32, 1.58, 1.84 and
+   2.1s): the belt slides in, holds under the inputs, rises to the first
+   row and steps down a row after each press, then runs off to the right;
+   the press comes down on each row as it lands and follows the belt. */
+/* generated:phone */
+@keyframes hx-manufacturing-line {
+  0% { opacity: 0; translate: -105% 0; transform: translateY(var(--hx-manufacturing-in)); animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
+  2.89% { opacity: 1; }
+  10.74% { translate: 0 0; }
+  32.23% { transform: translateY(var(--hx-manufacturing-in)); animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); }
+  35.95% { transform: translateY(var(--hx-manufacturing-b0)); }
+  45.87% { transform: translateY(var(--hx-manufacturing-b0)); animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); }
+  48.76% { transform: translateY(var(--hx-manufacturing-b1)); }
+  56.61% { transform: translateY(var(--hx-manufacturing-b1)); animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); }
+  59.5% { transform: translateY(var(--hx-manufacturing-b2)); }
+  67.36% { transform: translateY(var(--hx-manufacturing-b2)); animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); }
+  70.25% { transform: translateY(var(--hx-manufacturing-b3)); }
+  78.1% { transform: translateY(var(--hx-manufacturing-b3)); animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); }
+  80.99% { transform: translateY(var(--hx-manufacturing-b4)); }
+  89.26% { translate: 0 0; opacity: 1; animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.5); }
+  99.17% { translate: 105% 0; }
+  100% { opacity: 0; translate: 105% 0; transform: translateY(var(--hx-manufacturing-b4)); }
+}
+@keyframes hx-manufacturing-press {
+  0% { opacity: 0; transform: translateY(calc(var(--hx-manufacturing-t0) - 37px)); }
+  29.75% { opacity: 0; transform: translateY(calc(var(--hx-manufacturing-t0) - 37px)); animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
+  35.54% { opacity: 1; transform: translateY(calc(var(--hx-manufacturing-t0) - 7px)); }
+  42.98% { transform: translateY(calc(var(--hx-manufacturing-t0) - 7px)); animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.5); }
+  44.13% { transform: translateY(calc(var(--hx-manufacturing-t0) - 6px)); animation-timing-function: linear; }
+  45.79% { transform: translateY(calc(var(--hx-manufacturing-t0) + 1px)); animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
+  48.14% { transform: translateY(calc(var(--hx-manufacturing-t0) - 7px)); animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); }
+  51.03% { transform: translateY(calc(var(--hx-manufacturing-t1) - 7px)); }
+  53.72% { transform: translateY(calc(var(--hx-manufacturing-t1) - 7px)); animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.5); }
+  54.88% { transform: translateY(calc(var(--hx-manufacturing-t1) - 6px)); animation-timing-function: linear; }
+  56.53% { transform: translateY(calc(var(--hx-manufacturing-t1) + 1px)); animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
+  58.88% { transform: translateY(calc(var(--hx-manufacturing-t1) - 7px)); animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); }
+  61.78% { transform: translateY(calc(var(--hx-manufacturing-t2) - 7px)); }
+  64.46% { transform: translateY(calc(var(--hx-manufacturing-t2) - 7px)); animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.5); }
+  65.62% { transform: translateY(calc(var(--hx-manufacturing-t2) - 6px)); animation-timing-function: linear; }
+  67.27% { transform: translateY(calc(var(--hx-manufacturing-t2) + 1px)); animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
+  69.63% { transform: translateY(calc(var(--hx-manufacturing-t2) - 7px)); animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); }
+  72.52% { transform: translateY(calc(var(--hx-manufacturing-t3) - 7px)); }
+  75.21% { transform: translateY(calc(var(--hx-manufacturing-t3) - 7px)); animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.5); }
+  76.36% { transform: translateY(calc(var(--hx-manufacturing-t3) - 6px)); animation-timing-function: linear; }
+  78.02% { transform: translateY(calc(var(--hx-manufacturing-t3) + 1px)); animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
+  80.37% { transform: translateY(calc(var(--hx-manufacturing-t3) - 7px)); animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); }
+  83.26% { transform: translateY(calc(var(--hx-manufacturing-t4) - 7px)); }
+  85.95% { transform: translateY(calc(var(--hx-manufacturing-t4) - 7px)); animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.5); }
+  87.11% { transform: translateY(calc(var(--hx-manufacturing-t4) - 6px)); animation-timing-function: linear; }
+  88.76% { transform: translateY(calc(var(--hx-manufacturing-t4) + 1px)); animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
+  91.12% { transform: translateY(calc(var(--hx-manufacturing-t4) - 7px)); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); }
+  97.52% { opacity: 0; transform: translateY(calc(var(--hx-manufacturing-t4) - 37px)); }
+  100% { opacity: 0; transform: translateY(calc(var(--hx-manufacturing-t4) - 37px)); }
+}
+/* end generated:phone */
+
+/* --- Desktop ----------------------------------------------------------------- */
+
+/* The inputs straighten, draw back a touch and are pulled into the node one
+   after another (--dx / --dy point at it). */
+.ix-stage[data-run][data-industry="manufacturing"] .ix-item {
+  transition: none;
+  animation: hx-manufacturing-feed 0.85s linear calc(var(--i) * 90ms) both;
+}
+@keyframes hx-manufacturing-feed {
+  0% { transform: rotate(var(--r)) scale(var(--s)); opacity: 0.92; animation-timing-function: cubic-bezier(0.3, 0, 0.3, 1); }
+  18% { transform: translate(calc(var(--dx) * -0.04), calc(var(--dy) * -0.04)) rotate(0deg) scale(calc(var(--s) * 0.92)); opacity: 1; animation-timing-function: cubic-bezier(0.6, 0, 0.85, 0.45); }
+  86% { opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) rotate(0deg) scale(0.2); opacity: 0; }
+}
+
+/* The result comes into focus sooner: the line starts delivering at 1.2s. */
+.ix-stage[data-run][data-industry="manufacturing"] .ix-out-inner > .ix-panel { transition: opacity 0.4s ease 0.55s, filter 0.4s ease 0.55s; }
+
+/* The outfeed belt: from under the node (its own belt, at 84% of its
+   height, carries on here) to the top of the chute, unrolled from the node. */
+.ix-stage[data-industry="manufacturing"] .hx-manufacturing-out {
+  left: calc(var(--hx-manufacturing-nx, -60px) - 24px);
+  width: calc(var(--hx-manufacturing-cx, -14px) - var(--hx-manufacturing-nx, -60px) + 31px);
+  top: var(--hx-manufacturing-by, 0px);
+  height: 12px;
+}
+.ix-stage[data-run][data-industry="manufacturing"] .hx-manufacturing-out { animation: hx-manufacturing-out 2.85s linear both; }
+@keyframes hx-manufacturing-out {
+  0%, 21% { opacity: 0; clip-path: inset(-10px 100% -10px -10px); }
+  22% { opacity: 1; animation-timing-function: cubic-bezier(0.3, 0.6, 0.4, 1); }
+  30% { clip-path: inset(-10px -10px -10px -10px); }
+  90% { opacity: 1; }
+  100% { opacity: 0; clip-path: inset(-10px -10px -10px -10px); }
+}
+
+/* The chute: a guide down the panel's left edge, from the belt to the last
+   row, with a stop at each row that lights as its row is made. */
+.ix-stage[data-industry="manufacturing"] .hx-manufacturing-chute {
+  position: absolute;
+  left: calc(var(--hx-manufacturing-cx, -14px) - 7px); width: 14px;
+  top: calc(var(--hx-manufacturing-by, 0px) + 9px);
+  height: calc(var(--hx-manufacturing-pb, 100%) - var(--hx-manufacturing-by, 0px) - 9px);
+  border-inline: 1.5px solid hsl(var(--sig) / 0.75);
+  border-radius: 0 0 4px 4px;
+  background: linear-gradient(90deg, hsl(var(--sig) / 0.06), hsl(var(--sig) / 0.2), hsl(var(--sig) / 0.06));
+  box-shadow: 0 0 14px -4px hsl(var(--sig) / 0.6);
+  opacity: 0;
+}
+.ix-stage[data-run][data-industry="manufacturing"] .hx-manufacturing-chute { animation: hx-manufacturing-chute 2.85s linear both; }
+@keyframes hx-manufacturing-chute {
+  0%, 27% { opacity: 0; clip-path: inset(0 -10px 100% -10px); }
+  28% { opacity: 1; animation-timing-function: cubic-bezier(0.3, 0.6, 0.4, 1); }
+  36% { clip-path: inset(0 -10px 0 -10px); }
+  90% { opacity: 1; }
+  100% { opacity: 0; clip-path: inset(0 -10px 0 -10px); }
+}
+.ix-stage[data-industry="manufacturing"] .hx-manufacturing-stop {
+  position: absolute; left: 100%;
+  top: calc(var(--hx-manufacturing-y, 0px) - 9px - 1px);
+  width: 9px; height: 2px;
+  border-radius: 1px;
+  background: hsl(var(--sig) / 0.45);
+}
+.ix-stage[data-run][data-industry="manufacturing"] .hx-manufacturing-stop {
+  animation: hx-manufacturing-stop 0.5s ease-out calc(1360ms + var(--k) * 280ms) both;
+}
+@keyframes hx-manufacturing-stop {
+  0% { background: hsl(var(--sig) / 0.45); box-shadow: none; }
+  15% { background: hsl(var(--sig)); box-shadow: 0 0 8px hsl(var(--sig)); }
+  100% { background: hsl(var(--sig) / 0.7); box-shadow: none; }
+}
+
+/* The line across the panel: its left roller on the chute, its top on the
+   bottom of the row being made (-b0 … -b4). */
+.ix-stage[data-industry="manufacturing"] .hx-manufacturing-station {
+  left: calc(var(--hx-manufacturing-cx, -14px) - 4px); right: -0.6rem; top: 0;
+  height: 12px;
+}
+.ix-stage[data-run][data-industry="manufacturing"] .hx-manufacturing-station { animation: hx-manufacturing-station 2.85s linear both; }
+
+.ix-stage[data-industry="manufacturing"] .hx-manufacturing-dpress { left: calc(var(--hx-manufacturing-px, 0px) + 0.6rem); right: 0.6rem; }
+.ix-stage[data-run][data-industry="manufacturing"] .hx-manufacturing-dpress { animation: hx-manufacturing-dpress 2.85s linear both; }
+
+/* The part boxes: out of the node along the belt (0.2s), down the chute to
+   the line (0.22s), then pushed in as their row rides in. */
+.ix-stage[data-industry="manufacturing"] .hx-manufacturing-box {
+  position: absolute;
+  left: calc(var(--hx-manufacturing-nx, -60px) - 26px);
+  top: calc(var(--hx-manufacturing-by, 0px) - 12px);
+  width: 12px; height: 12px;
+  border-radius: 2px;
+  background: hsl(var(--sig));
+  box-shadow: inset 0 0 0 1.5px hsl(var(--background) / 0.35), 0 0 10px -1px hsl(var(--sig) / 0.85);
+  opacity: 0;
+}
+.ix-stage[data-run][data-industry="manufacturing"] .hx-manufacturing-box {
+  animation:
+    hx-manufacturing-box-x 0.49s linear calc(760ms + var(--k) * 280ms) both,
+    hx-manufacturing-box-y 0.22s cubic-bezier(0.55, 0, 0.9, 0.5) calc(960ms + var(--k) * 280ms) both;
+}
+@keyframes hx-manufacturing-box-x {
+  0% { opacity: 0; translate: 0 0; animation-timing-function: cubic-bezier(0.3, 0, 0.7, 1); }
+  6% { opacity: 1; }
+  41% { translate: calc(var(--hx-manufacturing-cx, -14px) - var(--hx-manufacturing-nx, -60px) + 20px) 0; }
+  86% { translate: calc(var(--hx-manufacturing-cx, -14px) - var(--hx-manufacturing-nx, -60px) + 20px) 0; opacity: 1; scale: 1; animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.5); }
+  100% { translate: calc(var(--hx-manufacturing-cx, -14px) - var(--hx-manufacturing-nx, -60px) + 40px) 0; opacity: 0; scale: 0.3; }
+}
+@keyframes hx-manufacturing-box-y { from { transform: none; } to { transform: translateY(var(--hx-manufacturing-dy, 0px)); } }
+
+/* The rows: k = 0 … 3 and the footer (4) ride in from 1.18s + k × 0.28s,
+   land 0.18s later and are pressed (squash, flash). */
+.ix-stage[data-industry="manufacturing"] .ix-panel > :nth-child(3) { --hx-manufacturing-k: 0; }
+.ix-stage[data-industry="manufacturing"] .ix-panel > :nth-child(4) { --hx-manufacturing-k: 1; }
+.ix-stage[data-industry="manufacturing"] .ix-panel > :nth-child(5) { --hx-manufacturing-k: 2; }
+.ix-stage[data-industry="manufacturing"] .ix-panel > :nth-child(6) { --hx-manufacturing-k: 3; }
+.ix-stage[data-industry="manufacturing"] .ix-panel > :nth-child(n + 7) { --hx-manufacturing-k: 4; }
+
+.ix-stage[data-industry="manufacturing"] .ix-fill,
+.ix-stage[data-industry="manufacturing"] .ix-foot { position: relative; transform-origin: 50% 100%; }
 
 .ix-stage[data-run][data-industry="manufacturing"] .ix-fill,
-.ixw[data-run][data-industry="manufacturing"] .ixm-row { animation: ixConvey 0.7s linear calc(var(--d) * 1ms) both; }
-
-.ix-stage[data-run][data-industry="manufacturing"] .ix-fill.ix-trow--traced,
-.ixw[data-run][data-industry="manufacturing"] .ixm-row.ixm-row--traced {
-  animation: ixConvey 0.7s linear calc(var(--d) * 1ms) both, ixTrace 1.4s ease calc(var(--d) * 1ms) both;
+.ix-stage[data-run][data-industry="manufacturing"] .ix-foot {
+  transition: none;
+  animation: hx-manufacturing-row 0.375s linear calc(1180ms + var(--hx-manufacturing-k, 0) * 280ms) backwards;
+}
+.ix-stage[data-run][data-industry="manufacturing"] .ix-fill.ix-trow--traced {
+  animation:
+    hx-manufacturing-row 0.375s linear calc(1180ms + var(--hx-manufacturing-k, 0) * 280ms) backwards,
+    ixTrace 1.4s ease calc(1360ms + var(--hx-manufacturing-k, 0) * 280ms) both;
+}
+.ix-stage[data-industry="manufacturing"] .ix-fill::after,
+.ix-stage[data-industry="manufacturing"] .ix-foot::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, hsl(var(--sig) / 0.34), hsl(var(--sig) / 0.08));
+  box-shadow: inset 0 2px 0 hsl(var(--sig));
+  opacity: 0;
+  pointer-events: none;
+}
+.ix-stage[data-run][data-industry="manufacturing"] .ix-fill::after,
+.ix-stage[data-run][data-industry="manufacturing"] .ix-foot::after {
+  animation: hx-manufacturing-flash 0.5s ease-out calc(1370ms + var(--hx-manufacturing-k, 0) * 280ms) both;
 }
 
-@keyframes ixQueueIn {
-  0% { transform: translate(0, 0) rotate(var(--r)) scale(var(--s)); opacity: 0.92; }
-  18% { transform: translate(calc(var(--dx) * 0.1), calc(var(--dy) * 0.1)) rotate(0deg) scale(calc(var(--s) * 0.85)); opacity: 1; }
-  100% { transform: translate(var(--dx), var(--dy)) rotate(0deg) scale(0.3); opacity: 0; }
+/* The empty slot stays until its row arrives; statuses and the note follow
+   the press; "Updated" once the last row is in. */
+.ix-stage[data-run][data-industry="manufacturing"] .ix-skel { transition-delay: calc(1220ms + var(--hx-manufacturing-k, 0) * 280ms); }
+.ix-stage[data-run][data-industry="manufacturing"] :is(.ix-fill, .ix-foot) .ix-status { transition-delay: calc(1480ms + var(--hx-manufacturing-k, 0) * 280ms); }
+.ix-stage[data-run][data-industry="manufacturing"] :is(.ix-fill, .ix-foot) .ix-status:not(.ix-status--ok) { transition-delay: calc(1580ms + var(--hx-manufacturing-k, 0) * 280ms); }
+.ix-stage[data-run][data-industry="manufacturing"] .ix-note-line { transition-delay: calc(1560ms + var(--hx-manufacturing-k, 0) * 280ms); }
+.ix-stage[data-run][data-industry="manufacturing"] .ix-sync-done { transition-delay: 2.6s; }
+
+/* Generated (rows land at 1.36, 1.64, 1.92, 2.2 and 2.48s): the line
+   unrolls under the first row and steps down after each press, then runs
+   off; the press comes down on each row and follows it. */
+/* generated:desk */
+@keyframes hx-manufacturing-station {
+  0% { opacity: 0; clip-path: inset(-10px 100% -10px -10px); transform: translateY(var(--hx-manufacturing-b0)); }
+  31.58% { opacity: 0; clip-path: inset(-10px 100% -10px -10px); animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
+  32.98% { opacity: 1; }
+  40% { clip-path: inset(-10px -10px -10px -10px); }
+  49.47% { transform: translateY(var(--hx-manufacturing-b0)); animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); }
+  51.75% { transform: translateY(var(--hx-manufacturing-b1)); }
+  59.3% { transform: translateY(var(--hx-manufacturing-b1)); animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); }
+  61.58% { transform: translateY(var(--hx-manufacturing-b2)); }
+  69.12% { transform: translateY(var(--hx-manufacturing-b2)); animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); }
+  71.4% { transform: translateY(var(--hx-manufacturing-b3)); }
+  78.95% { transform: translateY(var(--hx-manufacturing-b3)); animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); }
+  81.23% { transform: translateY(var(--hx-manufacturing-b4)); }
+  89.12% { translate: 0 0; opacity: 1; animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.5); }
+  99.3% { translate: 105% 0; }
+  100% { opacity: 0; translate: 105% 0; transform: translateY(var(--hx-manufacturing-b4)); }
 }
+@keyframes hx-manufacturing-dpress {
+  0% { opacity: 0; transform: translateY(calc(var(--hx-manufacturing-t0) - 37px)); }
+  35.09% { opacity: 0; transform: translateY(calc(var(--hx-manufacturing-t0) - 37px)); animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
+  40.7% { opacity: 1; transform: translateY(calc(var(--hx-manufacturing-t0) - 7px)); }
+  47.02% { transform: translateY(calc(var(--hx-manufacturing-t0) - 7px)); animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.5); }
+  48% { transform: translateY(calc(var(--hx-manufacturing-t0) - 6px)); animation-timing-function: linear; }
+  49.4% { transform: translateY(var(--hx-manufacturing-t0)); animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
+  51.23% { transform: translateY(calc(var(--hx-manufacturing-t0) - 7px)); animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); }
+  53.51% { transform: translateY(calc(var(--hx-manufacturing-t1) - 7px)); }
+  56.84% { transform: translateY(calc(var(--hx-manufacturing-t1) - 7px)); animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.5); }
+  57.82% { transform: translateY(calc(var(--hx-manufacturing-t1) - 6px)); animation-timing-function: linear; }
+  59.23% { transform: translateY(var(--hx-manufacturing-t1)); animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
+  61.05% { transform: translateY(calc(var(--hx-manufacturing-t1) - 7px)); animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); }
+  63.33% { transform: translateY(calc(var(--hx-manufacturing-t2) - 7px)); }
+  66.67% { transform: translateY(calc(var(--hx-manufacturing-t2) - 7px)); animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.5); }
+  67.65% { transform: translateY(calc(var(--hx-manufacturing-t2) - 6px)); animation-timing-function: linear; }
+  69.05% { transform: translateY(var(--hx-manufacturing-t2)); animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
+  70.88% { transform: translateY(calc(var(--hx-manufacturing-t2) - 7px)); animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); }
+  73.16% { transform: translateY(calc(var(--hx-manufacturing-t3) - 7px)); }
+  76.49% { transform: translateY(calc(var(--hx-manufacturing-t3) - 7px)); animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.5); }
+  77.47% { transform: translateY(calc(var(--hx-manufacturing-t3) - 6px)); animation-timing-function: linear; }
+  78.88% { transform: translateY(var(--hx-manufacturing-t3)); animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
+  80.7% { transform: translateY(calc(var(--hx-manufacturing-t3) - 7px)); animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); }
+  82.98% { transform: translateY(calc(var(--hx-manufacturing-t4) - 7px)); }
+  86.32% { transform: translateY(calc(var(--hx-manufacturing-t4) - 7px)); animation-timing-function: cubic-bezier(0.6, 0, 0.9, 0.5); }
+  87.3% { transform: translateY(calc(var(--hx-manufacturing-t4) - 6px)); animation-timing-function: linear; }
+  88.7% { transform: translateY(var(--hx-manufacturing-t4)); animation-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1); }
+  90.53% { transform: translateY(calc(var(--hx-manufacturing-t4) - 7px)); opacity: 1; animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); }
+  95.09% { opacity: 0; transform: translateY(calc(var(--hx-manufacturing-t4) - 37px)); }
+  100% { opacity: 0; transform: translateY(calc(var(--hx-manufacturing-t4) - 37px)); }
+}
+/* end generated:desk */
 
-@keyframes ixmConveyOut { 0% { transform: translateX(0); opacity: 1; } 80% { opacity: 1; } 100% { transform: translateX(115%); opacity: 0; } }
+/* --- Shared: a row's ride and press, the flash ------------------------------ */
 
-@keyframes ixConvey {
-  0% { opacity: 0; transform: translate(-56px, 0); }
+@keyframes hx-manufacturing-row {
+  0% { translate: -104% 0; scale: 1 1; animation-timing-function: cubic-bezier(0.3, 0.5, 0.35, 1); }
+  48% { translate: 0 0; scale: 1 1; animation-timing-function: cubic-bezier(0.3, 0, 0.6, 1); }
+  60% { scale: 1 0.86; animation-timing-function: cubic-bezier(0.3, 0, 0.4, 1); }
+  80% { scale: 1 1.04; }
+  100% { translate: 0 0; scale: 1 1; }
+}
+@keyframes hx-manufacturing-flash {
+  0% { opacity: 0; }
   12% { opacity: 1; }
-  82% { transform: translate(0, 0); }
-  90% { transform: translate(0, 1.5px); }
-  100% { opacity: 1; transform: translate(0, 0); }
+  100% { opacity: 0; }
+}
+
+/* --- Reduced motion: nothing moves; the result simply shows ----------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .ixw[data-industry="manufacturing"] :is(.ixw-inputs, .ixm-in, .ixw-result, .ixm-row),
+  .ixw[data-industry="manufacturing"] .ixm-in::before,
+  .ixw[data-industry="manufacturing"] .ixm-row::after,
+  .ix-stage[data-industry="manufacturing"] :is(.ix-item, .ix-fill, .ix-foot),
+  .ix-stage[data-industry="manufacturing"] .ix-fill::after,
+  .ix-stage[data-industry="manufacturing"] .ix-foot::after,
+  .ixw[data-industry="manufacturing"] :is(.hx-manufacturing-line, .hx-manufacturing-press, .hx-manufacturing-gear, .hx-manufacturing-gear-art),
+  .ix-stage[data-industry="manufacturing"] :is(.hx-manufacturing-out, .hx-manufacturing-chute, .hx-manufacturing-stop, .hx-manufacturing-station, .hx-manufacturing-box, .hx-manufacturing-dpress),
+  .ixw[data-industry="manufacturing"] :is(.hx-manufacturing-slats, .hx-manufacturing-return, .hx-manufacturing-roller),
+  .ix-stage[data-industry="manufacturing"] :is(.hx-manufacturing-slats, .hx-manufacturing-return, .hx-manufacturing-roller) {
+    animation: none !important;
+  }
 }
