@@ -1,60 +1,420 @@
-/* Medical: inputs beat like a pulse; requests arrive jumbled and sort by priority.
-   The hand-off from the scattered inputs to the organised result for this
-   industry, desktop (.ix-stage) and phone (.ixw); its set piece is in
-   MedicalFx.tsx. Final states are the ordinary ones, so with reduced
-   motion everything simply shows. See index.tsx for the shared conventions. */
+/* Medical: "triage".
+   A heartbeat monitor sweeps across the work and every request beats as its
+   line passes. The requests then arrive in a jumble, each wearing its triage
+   priority (1 red, 2 orange, 3 yellow, 4 green, as on a triage scale), are
+   held a moment so the jumble can be read, and sort themselves into order,
+   rows swapping places: first the most urgent jumps to the top, then the
+   next one up. The priorities shrink into the rows' status marks and the
+   monitor gives one last steady beat across the result. Desktop (.ix-stage)
+   and phone (.ixw); the set piece's parts (the traces, the desktop "Sorted
+   by priority" flash) are in MedicalFx.tsx, which also measures where they
+   go. Final states are the ordinary ones, so with reduced motion everything
+   simply shows. See index.tsx for the shared conventions.
 
-.ix-stage[data-run][data-industry="medical"] .ix-item { animation: ixPulseIn 1.1s cubic-bezier(0.5, 0, 0.3, 1) calc(var(--i) * 50ms) both; }
+   Phone, in ms from data-run (the end of the scan):
+     40    the monitor's line sweeps across the window (to 600), its trace
+           fading behind it; the requests beat on its three beats (152, 320,
+           488)
+     480   the requests shrink into a queue at the left edge and leave it,
+           one after another (to 1010)
+     500   the result's panel fades in behind the queue
+     650   the result's rows arrive jumbled from the right (3, 1, 4, 2),
+           each with its priority popping up (to 1200); they beat once
+           (1230) while the jumble is held
+     1380  the sort: 1 jumps over 3 to the top (to 1635), then 2 jumps up
+           over 4 and 3 (1680 to 1980); sorted, held
+     2000  the last beat runs along the panel's header line (to 2410)
+     2130  the priorities shrink into the status marks (to 2320)
+   Desktop, in ms from the click:
+     40    the monitor's line sweeps across the whole stage (to 940): each
+           input beats as the line passes it and is pulled into Xeda (all in
+           by about 1250), the node beats as the line goes through it
+     1120  the result's rows arrive jumbled from Xeda's side (to 1720)
+           with their priorities; they beat once (1710)
+     1858  the sort: 1 to the top (to 2100), then 2 up (2142 to 2426);
+           sorted, held
+     2300  "Sorted by priority" flashes over the panel's top edge (to 2900)
+     2440  the last beat runs along the panel's header line (to 2900)
+     2560  the priorities shrink into the status marks (to 2740) */
 
-.ixw[data-run][data-industry="medical"] .ixm-in { animation: ixmPulseOut 0.7s ease calc(var(--i) * 40ms) both; }
+/* --- The jumble: where each request starts, and what it wears ----------- */
 
-/* Medical: triage. The requests arrive in a jumble and sort themselves into
-   order of priority (--from: how many places away each one starts). */
-
+/* Where each row starts (in whole rows, when triage.ts has not measured)
+   and half way through the sort (MedicalFx measures --hx-med-mid); when it
+   arrives (its place in the jumble, top to bottom); its priority's number,
+   colour and ink; who passes in front when rows swap. */
 .ix-stage[data-industry="medical"] .ix-row:nth-child(1 of .ix-row),
-.ixw[data-industry="medical"] .ixm-row:nth-child(1 of .ixm-row) { --from: 1; }
-
+.ixw[data-industry="medical"] .ixm-row:nth-child(1 of .ixm-row) {
+  --from: 1; --hx-med-mid-n: 0; --hx-med-pos: 1; --hx-med-z: 4;
+  --hx-med-c: var(--xeda); --hx-med-ink: var(--foreground);
+}
 .ix-stage[data-industry="medical"] .ix-row:nth-child(2 of .ix-row),
-.ixw[data-industry="medical"] .ixm-row:nth-child(2 of .ixm-row) { --from: 2; }
-
+.ixw[data-industry="medical"] .ixm-row:nth-child(2 of .ixm-row) {
+  --from: 2; --hx-med-mid-n: 2; --hx-med-pos: 3; --hx-med-z: 3;
+  --hx-med-c: var(--primary); --hx-med-ink: var(--background);
+}
 .ix-stage[data-industry="medical"] .ix-row:nth-child(3 of .ix-row),
-.ixw[data-industry="medical"] .ixm-row:nth-child(3 of .ixm-row) { --from: -2; }
-
+.ixw[data-industry="medical"] .ixm-row:nth-child(3 of .ixm-row) {
+  --from: -2; --hx-med-mid-n: -1; --hx-med-pos: 0; --hx-med-z: 2;
+  --hx-med-c: var(--ix-amber); --hx-med-ink: var(--background);
+}
 .ix-stage[data-industry="medical"] .ix-row:nth-child(4 of .ix-row),
-.ixw[data-industry="medical"] .ixm-row:nth-child(4 of .ixm-row) { --from: -1; }
+.ixw[data-industry="medical"] .ixm-row:nth-child(4 of .ixm-row) {
+  --from: -1; --hx-med-mid-n: -1; --hx-med-pos: 2; --hx-med-z: 1;
+  --hx-med-c: var(--success); --hx-med-ink: var(--background);
+}
 
-.ix-stage[data-run][data-industry="medical"] .ix-fill { background: hsl(var(--card)); animation: ixTriage 1.15s cubic-bezier(0.5, 0, 0.2, 1) 1150ms both; }
+/* The priority's number: generated content, kept out of what screen
+   readers announce (the alternative text after the slash is empty). */
+.ix-stage[data-run][data-industry="medical"] .ix-row:nth-child(1 of .ix-row) .ix-fill::after,
+.ixw[data-run][data-industry="medical"] .ixm-row:nth-child(1 of .ixm-row)::after { content: "1"; content: "1" / ""; }
+.ix-stage[data-run][data-industry="medical"] .ix-row:nth-child(2 of .ix-row) .ix-fill::after,
+.ixw[data-run][data-industry="medical"] .ixm-row:nth-child(2 of .ixm-row)::after { content: "2"; content: "2" / ""; }
+.ix-stage[data-run][data-industry="medical"] .ix-row:nth-child(3 of .ix-row) .ix-fill::after,
+.ixw[data-run][data-industry="medical"] .ixm-row:nth-child(3 of .ixm-row)::after { content: "3"; content: "3" / ""; }
+.ix-stage[data-run][data-industry="medical"] .ix-row:nth-child(4 of .ix-row) .ix-fill::after,
+.ixw[data-run][data-industry="medical"] .ixm-row:nth-child(4 of .ixm-row)::after { content: "4"; content: "4" / ""; }
 
-.ix-stage[data-run][data-industry="medical"] .ix-skel { transition-delay: 1150ms; }
+/* --- The rows: arrive jumbled, sort, settle ------------------------------ */
 
-.ixw[data-run][data-industry="medical"] .ixm-row { position: relative; background: hsl(var(--card)); animation: ixTriage 1.05s cubic-bezier(0.5, 0, 0.2, 1) 220ms both; }
-
-/* Opaque while they pass each other; the escalated row keeps its tint. */
-
+/* Opaque while they pass each other (the escalated row keeps its tint), in
+   their own layer so the priority's tint sits under their text. The
+   animations hold only their start (fill: backwards) and nothing
+   transitions underneath, so once they end each row simply has its
+   ordinary style: no transform of any kind is left. */
+.ix-stage[data-run][data-industry="medical"] .ix-fill {
+  position: relative; z-index: var(--hx-med-z);
+  background: hsl(var(--card));
+  transition: none;
+  animation:
+    hx-medical-arrive 300ms cubic-bezier(0.2, 0.8, 0.3, 1) calc(1120ms + var(--hx-med-pos) * 60ms) backwards,
+    hx-medical-sort 1420ms linear 1120ms backwards;
+}
+.ix-stage[data-run][data-industry="medical"] .ix-skel { transition-delay: 1100ms; }
+.ixw[data-run][data-industry="medical"] .ixm-row {
+  --hx-med-in: 44px;
+  position: relative; z-index: var(--hx-med-z);
+  background: hsl(var(--card));
+  transition: none;
+  animation:
+    hx-medical-arrive 300ms cubic-bezier(0.2, 0.8, 0.3, 1) calc(650ms + var(--hx-med-pos) * 45ms) backwards,
+    hx-medical-sort 1500ms linear 600ms backwards;
+}
 .ix-stage[data-run][data-industry="medical"] .ix-fill.ix-lrow--staff,
 .ixw[data-run][data-industry="medical"] .ixm-row:has(.ixm-row-staff) { background: color-mix(in srgb, hsl(var(--foreground)) 3.5%, hsl(var(--card))); }
 
-@keyframes ixPulseIn {
-  0% { transform: translate(0, 0) rotate(var(--r)) scale(var(--s)); opacity: 0.92; }
-  9% { transform: translate(0, 0) rotate(var(--r)) scale(calc(var(--s) * 1.07)); opacity: 1; }
-  18% { transform: translate(0, 0) rotate(var(--r)) scale(var(--s)); }
-  27% { transform: translate(0, 0) rotate(var(--r)) scale(calc(var(--s) * 1.05)); }
-  36% { transform: translate(0, 0) rotate(var(--r)) scale(var(--s)); opacity: 1; }
+/* The one that jumps lifts a little as it passes the others: 1 in the
+   sort's first step, 2 in its second. */
+.ix-stage[data-run][data-industry="medical"] .ix-row:nth-child(1 of .ix-row) .ix-fill {
+  animation:
+    hx-medical-arrive 300ms cubic-bezier(0.2, 0.8, 0.3, 1) calc(1120ms + var(--hx-med-pos) * 60ms) backwards,
+    hx-medical-sort 1420ms linear 1120ms backwards,
+    hx-medical-lift 242ms ease-in-out 1858ms;
+}
+.ix-stage[data-run][data-industry="medical"] .ix-row:nth-child(2 of .ix-row) .ix-fill {
+  animation:
+    hx-medical-arrive 300ms cubic-bezier(0.2, 0.8, 0.3, 1) calc(1120ms + var(--hx-med-pos) * 60ms) backwards,
+    hx-medical-sort 1420ms linear 1120ms backwards,
+    hx-medical-lift 284ms ease-in-out 2142ms;
+}
+.ixw[data-run][data-industry="medical"] .ixm-row:nth-child(1 of .ixm-row) {
+  animation:
+    hx-medical-arrive 300ms cubic-bezier(0.2, 0.8, 0.3, 1) calc(650ms + var(--hx-med-pos) * 45ms) backwards,
+    hx-medical-sort 1500ms linear 600ms backwards,
+    hx-medical-lift 255ms ease-in-out 1380ms;
+}
+.ixw[data-run][data-industry="medical"] .ixm-row:nth-child(2 of .ixm-row) {
+  animation:
+    hx-medical-arrive 300ms cubic-bezier(0.2, 0.8, 0.3, 1) calc(650ms + var(--hx-med-pos) * 45ms) backwards,
+    hx-medical-sort 1500ms linear 600ms backwards,
+    hx-medical-lift 300ms ease-in-out 1680ms;
+}
+
+/* The priority's tint: its colour washing in from the row's left edge. */
+.ix-stage[data-run][data-industry="medical"] .ix-fill::before,
+.ixw[data-run][data-industry="medical"] .ixm-row::before {
+  content: "";
+  position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(90deg, hsl(var(--hx-med-c) / 0.3), hsl(var(--hx-med-c) / 0.09) 42%, transparent 82%);
+  box-shadow: inset 3px 0 0 hsl(var(--hx-med-c));
+  opacity: 0;
+  pointer-events: none;
+}
+.ix-stage[data-run][data-industry="medical"] .ix-fill::before { animation: hx-medical-tint 1620ms linear 1120ms both; }
+.ixw[data-run][data-industry="medical"] .ixm-row::before { animation: hx-medical-tint 1720ms linear 600ms both; }
+
+/* The priority itself: a big numbered disc over the status mark, popping up
+   as its row arrives, beating once while the jumble is held, and shrinking
+   into the status mark once the rows are in order. */
+.ix-stage[data-run][data-industry="medical"] .ix-fill::after,
+.ixw[data-run][data-industry="medical"] .ixm-row::after {
+  position: absolute; z-index: 2;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  font-family: var(--font-sans);
+  font-weight: 800; line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: hsl(var(--hx-med-ink));
+  background: hsl(var(--hx-med-c));
+  box-shadow: 0 0 0 3px hsl(var(--hx-med-c) / 0.22), 0 0 18px -2px hsl(var(--hx-med-c) / 0.75);
+  opacity: 0;
+  scale: 0;
+  pointer-events: none;
+}
+.ix-stage[data-run][data-industry="medical"] .ix-fill::after {
+  /* Centred on the 20px status mark (the row's right padding is 0.875rem). */
+  top: calc(50% - 21px); right: calc(0.875rem - 11px);
+  width: 42px; height: 42px;
+  font-size: 22px;
+  animation:
+    hx-medical-pop 380ms cubic-bezier(0.34, 1.56, 0.64, 1) calc(1250ms + var(--hx-med-pos) * 60ms) both,
+    hx-medical-badge 1620ms linear 1120ms both;
+}
+.ixw[data-run][data-industry="medical"] .ixm-row::after {
+  /* Centred on the 20px status mark (the row's right padding is 0.8rem). */
+  top: calc(50% - 15px); right: calc(0.8rem - 5px);
+  width: 30px; height: 30px;
+  font-size: 17px;
+  animation:
+    hx-medical-pop 380ms cubic-bezier(0.34, 1.56, 0.64, 1) calc(710ms + var(--hx-med-pos) * 45ms) both,
+    hx-medical-badge 1720ms linear 600ms both;
+}
+
+/* In from the side: on desktop from Xeda (left), on the phone from the
+   right, as the queue leaves to the left. */
+@keyframes hx-medical-arrive {
+  from { opacity: 0; translate: var(--hx-med-in, -36px) 0; }
+  to { opacity: 1; translate: none; }
+}
+/* Held in the jumble (--from-px, from triage.ts), then two steps: to the
+   half-way order (--hx-med-mid), then into place, where it is held a moment
+   before the priorities go. The steps take the same share of the run on
+   desktop and phone. */
+@keyframes hx-medical-sort {
+  0% { transform: translateY(var(--from-px, calc(var(--from, 0) * 100%))); }
+  52% { transform: translateY(var(--from-px, calc(var(--from, 0) * 100%))); animation-timing-function: cubic-bezier(0.6, 0, 0.25, 1); }
+  69% { transform: translateY(var(--hx-med-mid, calc(var(--hx-med-mid-n, 0) * 100%))); }
+  72% { transform: translateY(var(--hx-med-mid, calc(var(--hx-med-mid-n, 0) * 100%))); animation-timing-function: cubic-bezier(0.6, 0, 0.25, 1); }
+  92%, 100% { transform: none; }
+}
+@keyframes hx-medical-lift {
+  0%, 100% { scale: 1; }
+  50% { scale: 1.035; }
+}
+@keyframes hx-medical-tint {
+  0%, 89% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes hx-medical-pop {
+  0% { scale: 0; }
+  60% { scale: 1.2; }
+  100% { scale: 1; }
+}
+/* A double beat (lub-dub) while the jumble is held; into the status mark
+   at the end. */
+@keyframes hx-medical-badge {
+  0% { transform: none; opacity: 1; }
+  33% { transform: none; }
+  36.5% { transform: scale(1.24); }
+  40% { transform: none; }
+  43% { transform: scale(1.1); }
+  46%, 89% { transform: none; opacity: 1; }
+  100% { transform: scale(0.4); opacity: 0; }
+}
+
+/* --- Phone: the requests beat, queue up and leave ------------------------- */
+
+/* Each beats on one of the trace's beats, top to bottom ... */
+.ixw[data-industry="medical"] .ixm-in:nth-child(1 of .ixm-in) { --hx-med-beat: 86ms; }
+.ixw[data-industry="medical"] .ixm-in:nth-child(2 of .ixm-in) { --hx-med-beat: 254ms; }
+.ixw[data-industry="medical"] .ixm-in:nth-child(3 of .ixm-in) { --hx-med-beat: 422ms; }
+/* ... then they shrink into a short queue at the left edge (MedicalFx
+   measures how far each moves, --hx-med-qy) and leave it one by one. */
+.ixw[data-run][data-industry="medical"] .ixm-in {
+  transform-origin: 0 50%;
+  animation:
+    hx-medical-beat 300ms ease-out var(--hx-med-beat, 0ms) backwards,
+    hx-medical-queue 440ms cubic-bezier(0.5, 0, 0.3, 1) calc(480ms + var(--i) * 45ms) both;
+}
+/* Over the result while they queue and leave (they are inert by then, and
+   take no pointer events). */
+.ixw[data-run][data-industry="medical"] .ixw-inputs { z-index: 2; pointer-events: none; }
+/* A ring of the monitor's colour flashes round each as it beats. */
+.ixw[data-run][data-industry="medical"] .ixm-in::after,
+.ix-stage[data-run][data-industry="medical"] .ix-item::after {
+  content: "";
+  position: absolute; inset: -2px;
+  border-radius: 0.8rem;
+  border: 2px solid hsl(var(--sig));
+  box-shadow: 0 0 20px -2px hsl(var(--sig) / 0.8), inset 0 0 16px -6px hsl(var(--sig) / 0.7);
+  opacity: 0;
+  pointer-events: none;
+}
+.ixw[data-run][data-industry="medical"] .ixm-in::after { animation: hx-medical-ring 460ms ease-out var(--hx-med-beat, 0ms) both; }
+.ix-stage[data-run][data-industry="medical"] .ix-item::after { inset: -5px; animation: hx-medical-ring 520ms ease-out calc(var(--hx-med-at, calc(120ms + var(--i) * 60ms)) - 60ms) both; }
+/* The result's panel comes in once the queue has formed. */
+.ixw[data-industry="medical"][data-phase="after"] .ixw-result { transition: opacity 0.3s ease 0.5s; }
+
+@keyframes hx-medical-beat {
+  0% { scale: 1; }
+  22% { scale: 1.09; }
+  45% { scale: 0.99; }
+  62% { scale: 1.04; }
+  100% { scale: 1; }
+}
+@keyframes hx-medical-ring {
+  0% { opacity: 0; }
+  14% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes hx-medical-queue {
+  0% { transform: none; opacity: 1; }
+  42%, 58% { transform: translate(-2px, var(--hx-med-qy, 0px)) scale(0.42); opacity: 1; }
+  100% { transform: translate(-115%, var(--hx-med-qy, 0px)) scale(0.42); opacity: 0; }
+}
+
+/* --- Desktop: the inputs beat as the line passes and go into Xeda -------- */
+
+.ix-stage[data-run][data-industry="medical"] .ix-item {
+  animation: hx-medical-pull 820ms linear calc(var(--hx-med-at, calc(120ms + var(--i) * 60ms)) - 60ms) both;
+}
+.ix-stage[data-run][data-industry="medical"] .ix-node {
+  animation: hx-medical-thump 440ms ease-out calc(var(--hx-med-at, 460ms) - 60ms) backwards;
+}
+@keyframes hx-medical-pull {
+  0% { transform: translate(0, 0) rotate(var(--r)) scale(var(--s)); opacity: 0.92; animation-timing-function: ease-out; }
+  8% { transform: translate(0, 0) rotate(var(--r)) scale(calc(var(--s) * 1.14)); opacity: 1; animation-timing-function: ease-in-out; }
+  17% { transform: translate(0, 0) rotate(var(--r)) scale(calc(var(--s) * 0.98)); animation-timing-function: ease-in-out; }
+  25% { transform: translate(0, 0) rotate(var(--r)) scale(calc(var(--s) * 1.06)); animation-timing-function: ease-in-out; }
+  33% { transform: translate(0, 0) rotate(var(--r)) scale(var(--s)); opacity: 1; animation-timing-function: cubic-bezier(0.55, 0.05, 0.3, 1); }
   100% { transform: translate(var(--dx), var(--dy)) rotate(0deg) scale(0.25); opacity: 0; }
 }
-
-@keyframes ixmPulseOut {
-  0% { transform: translateY(0) scale(1); opacity: 1; }
-  14% { transform: translateY(0) scale(1.04); }
-  28% { transform: translateY(0) scale(1); }
-  42% { transform: translateY(0) scale(1.03); }
-  56% { transform: translateY(0) scale(1); opacity: 1; }
-  100% { transform: translateY(-1rem) scale(0.96); opacity: 0; }
+@keyframes hx-medical-thump {
+  0% { scale: 1; }
+  16% { scale: 1.08; }
+  36% { scale: 0.99; }
+  54% { scale: 1.04; }
+  100% { scale: 1; }
 }
 
-@keyframes ixTriage {
-  0% { opacity: 0; transform: translateY(var(--from-px, calc(var(--from, 0) * 100%))); }
-  22% { opacity: 1; transform: translateY(var(--from-px, calc(var(--from, 0) * 100%))); }
-  45% { transform: translateY(var(--from-px, calc(var(--from, 0) * 100%))); }
-  100% { opacity: 1; transform: translateY(0); }
+/* --- The monitor: a trace drawn behind a sweeping line -------------------- */
+
+:is(.ix-stage, .ixw)[data-industry="medical"] .hx-medical { position: absolute; inset: 0; pointer-events: none; }
+
+/* The sweep's box (placed by MedicalFx) holds the trace, drawn to it, and
+   the sweeping line. The trace sits in a window as wide as the box that
+   moves with the line, its left part fading out (a mask), while the trace
+   inside it moves back the same distance: it stays put and is uncovered at
+   the line, fading behind it. */
+:is(.ix-stage, .ixw)[data-industry="medical"] .hx-medical-sweep {
+  --hx-med-trail: 60%;
+  --hx-med-reach: 9rem;
+  --hx-med-glow: 90px;
+  position: absolute;
+  overflow: hidden;
+  opacity: 0;
+}
+:is(.ix-stage, .ixw)[data-industry="medical"] .hx-medical-trail {
+  position: absolute; inset: 0;
+  -webkit-mask-image: linear-gradient(90deg, transparent calc(100% - var(--hx-med-trail)), hsl(0 0% 0% / 0.5) calc(100% - var(--hx-med-trail) * 0.45), #000);
+  mask-image: linear-gradient(90deg, transparent calc(100% - var(--hx-med-trail)), hsl(0 0% 0% / 0.5) calc(100% - var(--hx-med-trail) * 0.45), #000);
+  transform: translateX(-100%);
+}
+:is(.ix-stage, .ixw)[data-industry="medical"] .hx-medical-trace {
+  position: absolute; left: 0; top: 0;
+  overflow: visible;
+  transform: translateX(100%);
+}
+:is(.ix-stage, .ixw)[data-industry="medical"] .hx-medical-trace path { fill: none; stroke-linejoin: round; stroke-linecap: round; }
+:is(.ix-stage, .ixw)[data-industry="medical"] .hx-medical-glow { stroke: hsl(var(--sig) / 0.28); stroke-width: 8; }
+:is(.ix-stage, .ixw)[data-industry="medical"] .hx-medical-line { stroke: hsl(var(--sig)); stroke-width: 2.8; }
+/* The line: brightest where it draws the trace, a glow there. */
+:is(.ix-stage, .ixw)[data-industry="medical"] .hx-medical-head {
+  position: absolute; inset: 0;
+  transform: translateX(-100%);
+}
+:is(.ix-stage, .ixw)[data-industry="medical"] .hx-medical-head::before {
+  content: "";
+  position: absolute; right: -1px; top: 0; bottom: 0; width: 2px;
+  background: linear-gradient(180deg,
+    transparent calc(var(--hx-med-base) - var(--hx-med-reach)),
+    hsl(var(--sig) / 0.85) var(--hx-med-base),
+    transparent calc(var(--hx-med-base) + var(--hx-med-reach)));
+}
+:is(.ix-stage, .ixw)[data-industry="medical"] .hx-medical-head::after {
+  content: "";
+  position: absolute;
+  right: calc(var(--hx-med-glow) / -2);
+  top: calc(var(--hx-med-base) - var(--hx-med-glow) / 2);
+  width: var(--hx-med-glow); height: var(--hx-med-glow);
+  border-radius: 50%;
+  background: radial-gradient(circle, hsl(var(--sig) / 0.6), hsl(var(--sig) / 0.16) 40%, transparent 70%);
+}
+
+/* Durations: the line crosses the box in the sweep's time, then the trail
+   follows it out (time x (1 + trail)). */
+.ixw[data-industry="medical"] .hx-medical-sweep--intro { --hx-med-dur: 896ms; --hx-med-delay: 40ms; }
+.ixw[data-industry="medical"] .hx-medical-sweep--pulse { --hx-med-trail: 45%; --hx-med-reach: 1.6rem; --hx-med-glow: 40px; --hx-med-dur: 406ms; --hx-med-delay: 2000ms; }
+.ix-stage[data-industry="medical"] .hx-medical-sweep--intro { --hx-med-trail: 35%; --hx-med-reach: 16rem; --hx-med-glow: 120px; --hx-med-dur: 1215ms; --hx-med-delay: 40ms; }
+.ix-stage[data-industry="medical"] .hx-medical-sweep--intro .hx-medical-line { stroke-width: 3.2; }
+.ix-stage[data-industry="medical"] .hx-medical-sweep--intro .hx-medical-glow { stroke-width: 12; }
+.ix-stage[data-industry="medical"] .hx-medical-sweep--pulse { --hx-med-trail: 45%; --hx-med-reach: 1.8rem; --hx-med-glow: 46px; --hx-med-dur: 464ms; --hx-med-delay: 2440ms; }
+
+:is(.ix-stage, .ixw)[data-run][data-industry="medical"] .hx-medical-sweep { animation: hx-medical-on var(--hx-med-dur) linear var(--hx-med-delay) both; }
+:is(.ix-stage, .ixw)[data-run][data-industry="medical"] :is(.hx-medical-trail, .hx-medical-head) { animation: hx-medical-sweep var(--hx-med-dur) linear var(--hx-med-delay) both; }
+:is(.ix-stage, .ixw)[data-run][data-industry="medical"] .hx-medical-trace { animation: hx-medical-sweep-back var(--hx-med-dur) linear var(--hx-med-delay) both; }
+
+@keyframes hx-medical-on {
+  0%, 99.9% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes hx-medical-sweep {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(var(--hx-med-trail)); }
+}
+@keyframes hx-medical-sweep-back {
+  from { transform: translateX(100%); }
+  to { transform: translateX(calc(var(--hx-med-trail) * -1)); }
+}
+
+/* --- Desktop: "Sorted by priority" ---------------------------------------- */
+
+.ix-stage[data-industry="medical"] .hx-medical-flash {
+  position: absolute; left: 50%; top: 0; z-index: 3;
+  display: inline-flex; align-items: center; gap: 0.45rem;
+  translate: -50% -50%;
+  padding: 0.4rem 0.85rem 0.4rem 0.7rem;
+  border-radius: 9999px;
+  border: 1px solid hsl(var(--sig) / 0.6);
+  background: hsl(var(--background) / 0.94);
+  box-shadow: 0 0 0 4px hsl(var(--sig) / 0.08), 0 0 26px -6px hsl(var(--sig) / 0.65), 0 12px 30px -12px rgb(0 0 0 / 0.9);
+  font-size: 12px; font-weight: 600; line-height: 1.2;
+  letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap;
+  color: hsl(var(--sig));
+  opacity: 0;
+}
+.ix-stage[data-industry="medical"] .hx-medical-flash svg {
+  width: 14px; height: 14px; flex: none;
+  fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round;
+}
+.ix-stage[data-run][data-industry="medical"] .hx-medical-flash { animation: hx-medical-flash 600ms ease 2300ms both; }
+@keyframes hx-medical-flash {
+  0% { opacity: 0; transform: translateY(6px) scale(0.92); }
+  18%, 78% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: translateY(-4px); }
+}
+
+/* --- Reduced motion: nothing moves; the result simply shows -------------- */
+
+/* (Important, as in index.css: the run's rules above are more specific.) */
+@media (prefers-reduced-motion: reduce) {
+  .ix-stage[data-industry="medical"] :is(.ix-item, .ix-node, .ix-fill, .hx-medical-sweep, .hx-medical-trail, .hx-medical-head, .hx-medical-trace, .hx-medical-flash),
+  .ix-stage[data-industry="medical"] .ix-fill::before,
+  .ix-stage[data-industry="medical"] .ix-fill::after,
+  .ix-stage[data-industry="medical"] .ix-item::after,
+  .ixw[data-industry="medical"] :is(.ixm-in, .ixm-row, .hx-medical-sweep, .hx-medical-trail, .hx-medical-head, .hx-medical-trace),
+  .ixw[data-industry="medical"] .ixm-row::before,
+  .ixw[data-industry="medical"] .ixm-row::after,
+  .ixw[data-industry="medical"] .ixm-in::after { animation: none !important; }
+  .ixw[data-industry="medical"][data-phase="after"] .ixw-result { transition: none; }
 }

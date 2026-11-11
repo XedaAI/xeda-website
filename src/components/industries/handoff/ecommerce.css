@@ -1,38 +1,506 @@
-/* E-commerce: inputs tossed into the box; rows drop in like parcels, each with a beep.
+/* E-commerce: packed and shipped.
    The hand-off from the scattered inputs to the organised result for this
    industry, desktop (.ix-stage) and phone (.ixw); its set piece is in
    EcommerceFx.tsx. Final states are the ordinary ones, so with reduced
-   motion everything simply shows. See index.tsx for the shared conventions. */
+   motion everything simply shows. See index.tsx for the shared conventions.
 
-.ix-stage[data-run][data-industry="ecommerce"] .ix-item { animation: ixTossIn 0.85s cubic-bezier(0.45, 0, 0.55, 1) calc(var(--i) * 80ms) both; }
+   Phone, from the end of the scan (data-run), in ms:
+       0-300   an open carton rises into the bottom of the window
+      80-740   the three requests are dropped into it, the lowest first; it
+               jolts as each lands
+     760-980   the side flaps fold in, the long flaps close
+     905-1015  tape runs across the lid
+     990-1160  the red scanner sweeps the carton; its label flashes, a tick
+    1210-1500  the carton slides off to the right
+    1230-1710  the result is delivered from above and bounces into place
+    1440-2385  its rows unbox one by one, each swept by the scanner, then
+               ticked; the van drives along the tracking steps
+   Desktop, from the click:
+       0-270   an open carton pops up beside Xeda, in the scattered side
+     120-1010  the six requests are tossed into it; it rattles as they land
+    1010-1240  the flaps close; 1170 tape; 1240 the red scanner, the label
+               flashes, a tick
+    1430-1700  it is pushed into Xeda, which gulps it
+    1400-2260  a parcel leaves the node's far side along the data paths for
+               each row (the last for the tracking line) and bursts open
+               where it lands
+    1700-2700  each row unboxes as its parcel lands, swept by the red laser,
+               then ticked
+    2270-2730  the van drives along the tracking steps, lighting them; the
+               last tick lands by 2880 */
 
-.ixw[data-run][data-industry="ecommerce"] .ixm-in { animation: ixmDropOut 0.45s cubic-bezier(0.55, 0, 1, 0.45) calc(var(--i) * 70ms) both; }
-
-/* E-commerce: rows dropping in like parcels, each with the scanner's beep. */
-
-.ix-stage[data-run][data-industry="ecommerce"] .ix-fill,
-.ixw[data-run][data-industry="ecommerce"] .ixm-row {
-  animation:
-    ixDrop 0.55s cubic-bezier(0.3, 0.7, 0.4, 1) calc(var(--d) * 1ms) both,
-    ixBeep 0.6s ease-out calc(var(--d) * 1ms + 320ms) both;
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] {
+  /* Kraft card, from Xeda's orange: the face, the lid, the shaded side and
+     the inside; packing tape; the van on the tracking steps. */
+  --hx-kraft: color-mix(in oklab, hsl(var(--primary)) 58%, hsl(var(--card)));
+  --hx-kraft-hi: color-mix(in oklab, hsl(var(--primary)) 76%, hsl(var(--card)));
+  --hx-kraft-lo: color-mix(in oklab, hsl(var(--primary)) 36%, hsl(var(--card)));
+  --hx-kraft-edge: color-mix(in oklab, hsl(var(--primary)) 30%, hsl(var(--background)));
+  --hx-hole: color-mix(in oklab, hsl(var(--primary)) 12%, hsl(var(--background)));
+  --hx-tape: color-mix(in oklab, hsl(var(--primary)) 72%, hsl(var(--foreground)));
+  --hx-van: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 16'%3E%3Cpath fill-rule='evenodd' d='M1 1.5h13v10H1z M15 4.5h4.3l3.7 4.2v2.8h-8z M16.5 6v2.4h4.2l-2.1-2.4z'/%3E%3Ccircle cx='5.5' cy='13' r='2.4'/%3E%3Ccircle cx='18.5' cy='13' r='2.4'/%3E%3C/svg%3E");
 }
 
-@keyframes ixTossIn {
-  0% { transform: translate(0, 0) rotate(var(--r)) scale(var(--s)); opacity: 0.92; }
-  45% { transform: translate(calc(var(--dx) * 0.55), calc(var(--dy) * 0.55 - 52px)) rotate(calc(var(--r) + 16deg)) scale(calc(var(--s) * 0.8)); opacity: 1; }
-  100% { transform: translate(var(--dx), var(--dy)) rotate(28deg) scale(0.25); opacity: 0; }
+/* ======================================================================
+   The carton and the parcels (drawn the same on phone and desktop)
+   ====================================================================== */
+
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] :is(.hx-ecommerce-art, .hx-ecommerce-parcel svg) :is(polygon, rect) {
+  stroke: var(--hx-kraft-edge);
+  stroke-width: 1.1;
+  stroke-linejoin: round;
+}
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-k { fill: var(--hx-kraft); }
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-k-top { fill: var(--hx-kraft-hi); }
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-k-lid { fill: color-mix(in oklab, var(--hx-kraft-hi) 85%, hsl(var(--foreground))); }
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-k-in { fill: var(--hx-kraft-lo); }
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-tape { fill: var(--hx-tape); stroke: none; }
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-label-bg { fill: hsl(var(--foreground) / 0.93); stroke: none; }
+
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-box {
+  position: absolute;
+  aspect-ratio: 200 / 190;
+  transform-origin: 50% 100%;
+  visibility: hidden;
+}
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-squash { position: absolute; inset: 0; transform-origin: 50% 95%; }
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-art {
+  display: block; width: 100%; height: 100%; overflow: visible;
+  filter: drop-shadow(0 14px 18px rgb(0 0 0 / 0.55));
+}
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-floor { fill: hsl(var(--background) / 0.6); }
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-art .hx-ecommerce-hole { fill: var(--hx-hole); }
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-art .hx-ecommerce-shade { fill: hsl(var(--background) / 0.2); stroke: none; }
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-arrows { fill: none; stroke: var(--hx-kraft-edge); stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-art .hx-ecommerce-label-ink,
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-art .hx-ecommerce-bars rect { fill: hsl(var(--background)); stroke: none; }
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-art .hx-ecommerce-label-flash { fill: hsl(var(--success)); stroke: none; opacity: 0; }
+
+/* Flaps fold about their hinges (in the drawing's own units): the open
+   flap turns edge-on, then the closed one opens out from the same hinge. */
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-art :is(polygon, rect) { transform-box: view-box; }
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] :is(.hx-ecommerce-back-open, .hx-ecommerce-back-shut) { transform-origin: 100px 70px; }
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] :is(.hx-ecommerce-front-open, .hx-ecommerce-front-shut) { transform-origin: 100px 92px; }
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-wing--l { transform-origin: 38px 81px; }
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-wing--r { transform-origin: 162px 81px; }
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] :is(.hx-ecommerce-back-shut, .hx-ecommerce-front-shut) { transform: scaleY(0); }
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-art .hx-ecommerce-tape { transform-origin: 34px 81px; transform: scaleX(0); }
+
+/* The scanner: the instrument's red laser, sweeping down the carton. */
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-scan {
+  position: absolute; left: -6%; right: -6%; top: 14%;
+  height: 22%;
+  background:
+    linear-gradient(hsl(var(--sig)) 0 0) bottom / 100% 2px no-repeat,
+    linear-gradient(180deg, hsl(var(--sig) / 0), hsl(var(--sig) / 0.3));
+  filter: drop-shadow(0 0 5px hsl(var(--sig) / 0.8));
+  opacity: 0;
 }
 
-@keyframes ixmDropOut { 0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; } 100% { transform: translateY(5rem) rotate(9deg) scale(0.6); opacity: 0; } }
+/* Read: a green tick at the carton's corner, with a ring for the beep. */
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-ok {
+  position: absolute; right: 0; top: 10%;
+  display: grid; place-items: center;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: hsl(var(--success));
+  box-shadow: 0 0 0 4px hsl(var(--success) / 0.22), 0 0 22px hsl(var(--success) / 0.55);
+  transform: scale(0);
+}
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-ok svg { width: 19px; height: 19px; fill: none; stroke: hsl(var(--background)); stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; }
 
-@keyframes ixDrop {
-  0% { opacity: 0; transform: translateY(-18px); }
-  55% { opacity: 1; transform: translateY(4px); }
-  75% { transform: translateY(-2px); }
-  100% { opacity: 1; transform: translateY(0); }
+/* Speed lines behind it as it goes. */
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-streaks {
+  position: absolute; right: 96%; top: 48%;
+  width: 70%; height: 32%;
+  display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end;
+  transform-origin: 100% 50%;
+  opacity: 0;
+}
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-streaks > span { height: 3px; width: 100%; border-radius: 2px; background: linear-gradient(90deg, transparent, hsl(var(--foreground) / 0.6)); }
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-streaks > span:nth-child(2) { width: 70%; }
+:is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-streaks > span:nth-child(3) { width: 85%; }
+
+/* Sealing and reading it, at the beats each layout sets on the carton:
+   --hx-t-close (flaps), --hx-t-tape, --hx-t-scan, --hx-t-read (the beep). */
+:is(.ix-stage, .ixw)[data-run][data-industry="ecommerce"] .hx-ecommerce-wing { animation: hx-ecommerce-fold-x 90ms cubic-bezier(0.5, 0, 1, 0.6) var(--hx-t-close) both; }
+:is(.ix-stage, .ixw)[data-run][data-industry="ecommerce"] .hx-ecommerce-back-open { animation: hx-ecommerce-fold-out 70ms cubic-bezier(0.5, 0, 1, 0.6) calc(var(--hx-t-close) + 40ms) both; }
+:is(.ix-stage, .ixw)[data-run][data-industry="ecommerce"] .hx-ecommerce-back-shut { animation: hx-ecommerce-fold-in 80ms cubic-bezier(0, 0.4, 0.5, 1) calc(var(--hx-t-close) + 110ms) both; }
+:is(.ix-stage, .ixw)[data-run][data-industry="ecommerce"] .hx-ecommerce-front-open { animation: hx-ecommerce-fold-out 70ms cubic-bezier(0.5, 0, 1, 0.6) calc(var(--hx-t-close) + 80ms) both; }
+:is(.ix-stage, .ixw)[data-run][data-industry="ecommerce"] .hx-ecommerce-front-shut { animation: hx-ecommerce-fold-in 80ms cubic-bezier(0, 0.4, 0.5, 1) calc(var(--hx-t-close) + 150ms) both; }
+:is(.ix-stage, .ixw)[data-run][data-industry="ecommerce"] .hx-ecommerce-art .hx-ecommerce-tape { animation: hx-ecommerce-tape 110ms cubic-bezier(0.3, 0, 0.3, 1) var(--hx-t-tape) both; }
+:is(.ix-stage, .ixw)[data-run][data-industry="ecommerce"] .hx-ecommerce-scan { animation: hx-ecommerce-scan 170ms cubic-bezier(0.45, 0, 0.55, 1) var(--hx-t-scan) both; }
+:is(.ix-stage, .ixw)[data-run][data-industry="ecommerce"] .hx-ecommerce-art .hx-ecommerce-label-flash { animation: hx-ecommerce-flash 280ms ease-out var(--hx-t-read) both; }
+:is(.ix-stage, .ixw)[data-run][data-industry="ecommerce"] .hx-ecommerce-ok { animation: hx-ecommerce-pop 280ms cubic-bezier(0.3, 1.7, 0.5, 1) calc(var(--hx-t-read) + 10ms) both; }
+
+/* The requests are tossed into the carton (EcommerceFx measures the way):
+   above it for the flight, cut off at its mouth as they go in. They start
+   from where they rest, turned by --hx-r0 and scaled by --hx-s0. */
+@keyframes hx-ecommerce-toss {
+  0% {
+    transform: translate(0px, 0px) rotate(var(--hx-r0)) scale(var(--hx-s0));
+    clip-path: inset(-20px -20px -20px -20px);
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.25, 0.55, 0.4, 1);
+  }
+  42% {
+    transform: translate(var(--hx-ax, 0px), var(--hx-ay, -20px)) rotate(var(--hx-ar, 0deg)) scale(var(--hx-as, 0.8));
+    animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.5);
+  }
+  82% {
+    transform: translate(var(--hx-mx, 0px), var(--hx-my, 0px)) rotate(0deg) scale(var(--hx-ms, 0.5));
+    clip-path: inset(-20px -20px 0px -20px);
+    animation-timing-function: linear;
+  }
+  96% { opacity: 1; }
+  100% {
+    transform: translate(var(--hx-mx, 0px), var(--hx-ey, 0px)) rotate(0deg) scale(var(--hx-ms, 0.5));
+    clip-path: inset(-20px -20px calc(100% + 20px) -20px);
+    opacity: 0;
+  }
 }
 
-@keyframes ixBeep {
-  0%, 100% { box-shadow: inset 0 0 0 0 hsl(var(--sig) / 0); }
-  12% { box-shadow: inset 0 0 0 1.5px hsl(var(--sig)), inset 0 0 18px -6px hsl(var(--sig) / 0.7); }
+/* ======================================================================
+   Phone
+   ====================================================================== */
+
+.ixw[data-industry="ecommerce"] .hx-ecommerce-ph { position: absolute; inset: 0; }
+
+/* The carton: bottom centre, over half the window wide. */
+.ixw[data-industry="ecommerce"] .hx-ecommerce-box {
+  --hx-bw: clamp(150px, 56%, 220px);
+  --hx-t-close: 760ms;
+  --hx-t-tape: 905ms;
+  --hx-t-scan: 990ms;
+  --hx-t-read: 1140ms;
+  left: calc(50% - var(--hx-bw) / 2);
+  bottom: 6px;
+  width: var(--hx-bw);
+}
+
+.ixw[data-run][data-industry="ecommerce"] .hx-ecommerce-box { visibility: visible; animation: hx-ecommerce-ship 1500ms linear both; }
+.ixw[data-run][data-industry="ecommerce"] .hx-ecommerce-squash { animation: hx-ecommerce-jolt 760ms linear both; }
+.ixw[data-run][data-industry="ecommerce"] .hx-ecommerce-streaks { animation: hx-ecommerce-streaks 290ms ease-out 1210ms both; }
+
+/* Up from below the window, at rest while it is filled, sealed and read,
+   then off to the right. */
+@keyframes hx-ecommerce-ship {
+  0% { transform: translateY(118%); animation-timing-function: cubic-bezier(0.25, 0.9, 0.35, 1.18); }
+  20% { transform: none; }
+  80.7% { transform: none; animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.35); }
+  99% { opacity: 1; }
+  100% { transform: translateX(250%) rotate(-5deg); opacity: 0; }
+}
+/* A jolt each time a request lands in it (424, 544, 664 ms). */
+@keyframes hx-ecommerce-jolt {
+  0%, 55.5% { transform: none; }
+  58.5% { transform: translateY(3px) scale(1.06, 0.9); }
+  62% { transform: scale(0.98, 1.04); }
+  65.5%, 71.3% { transform: none; }
+  74.3% { transform: translateY(3px) scale(1.06, 0.9); }
+  77.8% { transform: scale(0.98, 1.04); }
+  81.3%, 87.1% { transform: none; }
+  90.1% { transform: translateY(3px) scale(1.06, 0.9); }
+  93.6% { transform: scale(0.98, 1.04); }
+  97.1%, 100% { transform: none; }
+}
+
+/* The requests, dropped in one by one, the lowest first (so none falls
+   behind another): over the effects layer while they fall, turning about
+   their top left corner as the measurements expect. */
+.ixw[data-run][data-industry="ecommerce"] .ixw-inputs { z-index: 4; pointer-events: none; }
+.ixw[data-run][data-industry="ecommerce"] .ixm-in {
+  --hx-r0: 0deg;
+  --hx-s0: 1;
+  transform-origin: 0 0;
+  transition: none;
+  animation: hx-ecommerce-toss 420ms linear calc(80ms + (2 - var(--i)) * 120ms) both;
+}
+
+/* The result: delivered from above, landing with a bounce. */
+.ixw[data-run][data-industry="ecommerce"] .ixw-result { transform-origin: 50% 100%; animation: hx-ecommerce-deliver 480ms linear 1230ms both; }
+@keyframes hx-ecommerce-deliver {
+  0% { transform: translateY(-104%); animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.45); }
+  50% { transform: scale(1.015, 0.965); animation-timing-function: ease-out; }
+  56% { transform: none; animation-timing-function: cubic-bezier(0.2, 0.6, 0.4, 1); }
+  74% { transform: translateY(-26px); animation-timing-function: cubic-bezier(0.6, 0, 0.8, 0.4); }
+  88% { transform: scale(1.006, 0.988); animation-timing-function: ease-out; }
+  94% { transform: translateY(-5px); animation-timing-function: ease-in; }
+  100% { transform: none; }
+}
+
+/* Its rows unbox one after another (every 75 ms from 1440 ms), each swept
+   by the scanner, flashed green and ticked. */
+.ixw[data-industry="ecommerce"] .ixm-row { position: relative; --hx-at: calc(1440ms + (var(--d) - 220) * 0.6818ms); }
+.ixw[data-industry="ecommerce"] .ixm-row::after {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, hsl(var(--sig) / 0) 45%, hsl(var(--sig) / 0.16) calc(100% - 14px), hsl(var(--sig) / 0.5) calc(100% - 2px), hsl(var(--sig)) calc(100% - 2px));
+  opacity: 0;
+  transform: translateX(-100%);
+}
+.ixw[data-industry="ecommerce"] .ixm-row::before {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background: hsl(var(--success) / 0.13);
+  box-shadow: inset 3px 0 0 hsl(var(--success));
+  opacity: 0;
+}
+.ixw[data-run][data-industry="ecommerce"] .ixm-row { transform-origin: 0 50%; transition: none; animation: hx-ecommerce-unbox 320ms ease-out var(--hx-at) both; }
+.ixw[data-run][data-industry="ecommerce"] .ixm-row::after { animation: hx-ecommerce-sweep 240ms cubic-bezier(0.45, 0, 0.55, 1) calc(var(--hx-at) + 60ms) both; }
+.ixw[data-run][data-industry="ecommerce"] .ixm-row::before { animation: hx-ecommerce-beep 320ms ease-out calc(var(--hx-at) + 270ms) both; }
+.ixw[data-run][data-industry="ecommerce"] .ixm-row .ix-status { transition: none; animation: hx-ecommerce-tick 320ms cubic-bezier(0.3, 1.7, 0.5, 1) calc(var(--hx-at) + 250ms) both; }
+
+/* The tracking line: the van drives along its steps, lighting them. */
+.ixw[data-industry="ecommerce"] .ixm-steps { position: relative; }
+.ixw[data-industry="ecommerce"] .ixm-steps::after {
+  content: "";
+  position: absolute; left: -2px; right: -2px; bottom: 1px;
+  height: 15px;
+  background: hsl(var(--success));
+  -webkit-mask: var(--hx-van) right bottom / 22px 15px no-repeat;
+  mask: var(--hx-van) right bottom / 22px 15px no-repeat;
+  pointer-events: none;
+  opacity: 0;
+  --hx-van-w: 22px;
+  transform: translateX(calc(-100% + var(--hx-van-w)));
+}
+.ixw[data-run][data-industry="ecommerce"] .ixm-steps::after { animation: hx-ecommerce-drive 460ms cubic-bezier(0.45, 0.05, 0.4, 1) calc(var(--hx-at) + 80ms) both; }
+.ixw[data-run][data-industry="ecommerce"] .ixm-steps > span:nth-child(1) { transition-delay: calc(var(--hx-at) + 210ms); }
+.ixw[data-run][data-industry="ecommerce"] .ixm-steps > span:nth-child(2) { transition-delay: calc(var(--hx-at) + 330ms); }
+.ixw[data-run][data-industry="ecommerce"] .ixm-steps > span:nth-child(3) { transition-delay: calc(var(--hx-at) + 450ms); }
+
+/* ======================================================================
+   Desktop
+   ====================================================================== */
+
+.ix-stage[data-industry="ecommerce"] .hx-ecommerce-desk { position: absolute; inset: 0; }
+
+/* The carton: placed by EcommerceFx just short of the node, in the
+   scattered side (the effects slot reaches outside the result). */
+.ix-stage[data-industry="ecommerce"] .hx-ecommerce-box {
+  --hx-t-close: 1010ms;
+  --hx-t-tape: 1170ms;
+  --hx-t-scan: 1240ms;
+  --hx-t-read: 1385ms;
+  left: var(--hx-bx, -200px);
+  top: var(--hx-by, 0px);
+  width: var(--hx-bw, 150px);
+}
+.ix-stage[data-run][data-industry="ecommerce"] .hx-ecommerce-box { visibility: visible; animation: hx-ecommerce-feed 1700ms linear both; }
+.ix-stage[data-run][data-industry="ecommerce"] .hx-ecommerce-squash { animation: hx-ecommerce-rattle 1000ms linear both; }
+.ix-stage[data-run][data-industry="ecommerce"] .hx-ecommerce-streaks { animation: hx-ecommerce-streaks 240ms ease-out 1440ms both; }
+
+/* Pops up, waits to be filled, sealed and read, then is pushed into the
+   node (which is drawn over it, so it goes in). */
+@keyframes hx-ecommerce-feed {
+  0% { transform: translateY(30px) scale(0.3); opacity: 0; animation-timing-function: cubic-bezier(0.3, 1.45, 0.5, 1); }
+  6% { opacity: 1; }
+  16% { transform: none; }
+  84% { transform: none; animation-timing-function: cubic-bezier(0.55, 0, 0.75, 0.45); }
+  97% { transform: translate(var(--hx-px, 120px), var(--hx-py, 0px)) scale(0.6); opacity: 1; }
+  100% { transform: translate(var(--hx-px, 120px), var(--hx-py, 0px)) scale(0.55); opacity: 0; }
+}
+/* A rattle as each request lands in it (481 ms on, every 90 ms). */
+@keyframes hx-ecommerce-rattle {
+  0%, 48% { transform: none; }
+  50.5% { transform: translateY(3px) scale(1.05, 0.91); }
+  53.5% { transform: scale(0.985, 1.03); }
+  57% { transform: none; }
+  59.5% { transform: translateY(3px) scale(1.05, 0.91); }
+  62.5% { transform: scale(0.985, 1.03); }
+  66% { transform: none; }
+  68.5% { transform: translateY(3px) scale(1.05, 0.91); }
+  71.5% { transform: scale(0.985, 1.03); }
+  75% { transform: none; }
+  77.5% { transform: translateY(3px) scale(1.05, 0.91); }
+  80.5% { transform: scale(0.985, 1.03); }
+  84% { transform: none; }
+  86.5% { transform: translateY(3px) scale(1.05, 0.91); }
+  89.5% { transform: scale(0.985, 1.03); }
+  93% { transform: none; }
+  95.5% { transform: translateY(3px) scale(1.05, 0.91); }
+  98.5% { transform: scale(0.985, 1.03); }
+  100% { transform: none; }
+}
+
+/* The requests are tossed into it, one after another, over it (the
+   scattered side is lifted above the result's layer for the run). */
+.ix-stage[data-run][data-industry="ecommerce"] .ix-in { z-index: 3; }
+.ix-stage[data-run][data-industry="ecommerce"] .ix-item {
+  --hx-r0: var(--r);
+  --hx-s0: var(--s);
+  transition: none;
+  animation: hx-ecommerce-toss 440ms linear calc(120ms + var(--i) * 90ms) both;
+}
+
+/* Xeda takes the carton in with a gulp. */
+.ix-stage[data-run][data-industry="ecommerce"] .ix-node { animation: hx-ecommerce-gulp 380ms ease-out 1590ms both; }
+@keyframes hx-ecommerce-gulp {
+  0% { transform: none; }
+  30% { transform: scale(1.09); }
+  60% { transform: scale(0.97); }
+  100% { transform: none; }
+}
+
+/* The parcels replace the pulses on the outgoing paths. */
+.ix-stage[data-industry="ecommerce"] .ix-pulse--out { visibility: hidden; }
+
+.ix-stage[data-industry="ecommerce"] .hx-ecommerce-parcel {
+  --hx-launch: calc(1400ms + var(--k) * 140ms);
+  position: absolute; left: 0; top: 0;
+  width: 46px; height: 46px;
+  offset-anchor: 50% 50%;
+  offset-rotate: 0deg;
+  offset-distance: 0%;
+  visibility: hidden;
+}
+.ix-stage[data-industry="ecommerce"] .hx-ecommerce-parcel-body { position: absolute; inset: 0; opacity: 0; filter: drop-shadow(0 8px 10px rgb(0 0 0 / 0.6)); }
+.ix-stage[data-industry="ecommerce"] .hx-ecommerce-parcel svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.ix-stage[data-industry="ecommerce"] .hx-ecommerce-burst {
+  position: absolute; inset: -6px;
+  border-radius: 50%;
+  border: 2px solid var(--hx-kraft-hi);
+  box-shadow: 0 0 12px hsl(var(--primary) / 0.55), inset 0 0 8px hsl(var(--primary) / 0.35);
+  opacity: 0;
+}
+@supports (offset-path: path("M0 0")) {
+  .ix-stage[data-run][data-industry="ecommerce"] .hx-ecommerce-parcel { visibility: visible; animation: hx-ecommerce-fly 380ms linear var(--hx-launch) both; }
+  .ix-stage[data-run][data-industry="ecommerce"] .hx-ecommerce-parcel-body { animation: hx-ecommerce-parcel 380ms linear var(--hx-launch) both; }
+  .ix-stage[data-run][data-industry="ecommerce"] .hx-ecommerce-burst { animation: hx-ecommerce-burst 340ms ease-out calc(var(--hx-launch) + 300ms) both; }
+}
+/* Out of the node along the path; it lands 296 ms after it leaves. */
+@keyframes hx-ecommerce-fly {
+  0% { offset-distance: 0%; animation-timing-function: cubic-bezier(0.35, 0.1, 0.4, 1); }
+  78%, 100% { offset-distance: 100%; }
+}
+/* A pop as it comes out, a turn in the air, a squash as it lands, then it
+   bursts open. */
+@keyframes hx-ecommerce-parcel {
+  0% { opacity: 0; transform: scale(0.4) rotate(-30deg); animation-timing-function: ease-out; }
+  12% { opacity: 1; transform: scale(1.18) rotate(-14deg); animation-timing-function: ease-in-out; }
+  78% { transform: scale(1) rotate(10deg); animation-timing-function: ease-out; }
+  86% { opacity: 1; transform: translateY(4px) scale(1.3, 0.7) rotate(0deg); }
+  100% { opacity: 0; transform: scale(1.9); }
+}
+@keyframes hx-ecommerce-burst {
+  0% { opacity: 1; transform: scale(0.3); }
+  100% { opacity: 0; transform: scale(2.2); }
+}
+
+/* Each row unboxes as its parcel lands (every 140 ms from 1700 ms), out
+   from its left edge, is swept by the laser, flashes green and is ticked. */
+.ix-stage[data-industry="ecommerce"] .ix-panel :is(.ix-skel, .ix-fill) { --hx-at: calc(1700ms + (var(--d) - 1150) * 0.9333ms); }
+.ix-stage[data-industry="ecommerce"] .ix-panel .ix-foot { --hx-at: 2260ms; }
+.ix-stage[data-industry="ecommerce"] .ix-panel .ix-fill { position: relative; }
+.ix-stage[data-industry="ecommerce"] .ix-panel .ix-fill::after {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, hsl(var(--sig) / 0) 40%, hsl(var(--sig) / 0.16) calc(100% - 18px), hsl(var(--sig) / 0.55) calc(100% - 3px), hsl(var(--sig)) calc(100% - 3px));
+  opacity: 0;
+  transform: translateX(-100%);
+}
+.ix-stage[data-industry="ecommerce"] .ix-panel .ix-fill::before {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background: hsl(var(--success) / 0.12);
+  box-shadow: inset 3px 0 0 hsl(var(--success));
+  opacity: 0;
+}
+.ix-stage[data-run][data-industry="ecommerce"] .ix-panel .ix-skel { transition-delay: var(--hx-at); }
+.ix-stage[data-run][data-industry="ecommerce"] .ix-panel :is(.ix-fill, .ix-foot) { transform-origin: 0 50%; transition: none; animation: hx-ecommerce-unbox 420ms ease-out var(--hx-at) both; }
+.ix-stage[data-run][data-industry="ecommerce"] .ix-panel .ix-fill::after { animation: hx-ecommerce-sweep 320ms cubic-bezier(0.45, 0, 0.55, 1) calc(var(--hx-at) + 90ms) both; }
+.ix-stage[data-run][data-industry="ecommerce"] .ix-panel .ix-fill::before { animation: hx-ecommerce-beep 380ms ease-out calc(var(--hx-at) + 400ms) both; }
+.ix-stage[data-run][data-industry="ecommerce"] .ix-panel .ix-fill .ix-status { transition: none; animation: hx-ecommerce-tick 380ms cubic-bezier(0.3, 1.7, 0.5, 1) calc(var(--hx-at) + 380ms) both; }
+.ix-stage[data-run][data-industry="ecommerce"] .ix-panel .ix-foot .ix-status { transition: none; animation: hx-ecommerce-tick 320ms cubic-bezier(0.3, 1.7, 0.5, 1) 2560ms both; }
+
+/* The tracking line: the van drives along the steps, lighting them. */
+.ix-stage[data-industry="ecommerce"] .ix-track { position: relative; }
+.ix-stage[data-industry="ecommerce"] .ix-track::after {
+  content: "";
+  position: absolute; left: 0; right: 0.25rem; top: -16px;
+  height: 17px;
+  background: hsl(var(--success));
+  -webkit-mask: var(--hx-van) right bottom / 26px 17px no-repeat;
+  mask: var(--hx-van) right bottom / 26px 17px no-repeat;
+  pointer-events: none;
+  opacity: 0;
+  --hx-van-w: 26px;
+  transform: translateX(calc(-100% + var(--hx-van-w)));
+}
+.ix-stage[data-run][data-industry="ecommerce"] .ix-track::after { animation: hx-ecommerce-drive 460ms cubic-bezier(0.3, 0, 0.45, 1) 2270ms both; }
+.ix-stage[data-run][data-industry="ecommerce"] .ix-track li:nth-child(1),
+.ix-stage[data-run][data-industry="ecommerce"] .ix-track li:nth-child(1)::before { transition-delay: 2380ms; }
+.ix-stage[data-run][data-industry="ecommerce"] .ix-track li:nth-child(2),
+.ix-stage[data-run][data-industry="ecommerce"] .ix-track li:nth-child(2)::before { transition-delay: 2490ms; }
+.ix-stage[data-run][data-industry="ecommerce"] .ix-track li:nth-child(3),
+.ix-stage[data-run][data-industry="ecommerce"] .ix-track li:nth-child(3)::before { transition-delay: 2620ms; }
+
+/* ======================================================================
+   Shared keyframes (phone and desktop)
+   ====================================================================== */
+
+@keyframes hx-ecommerce-fold-x { from { transform: none; } to { transform: scaleX(0); } }
+@keyframes hx-ecommerce-fold-out { from { transform: none; } to { transform: scaleY(0); } }
+@keyframes hx-ecommerce-fold-in { from { transform: scaleY(0); } to { transform: none; } }
+@keyframes hx-ecommerce-tape { from { transform: scaleX(0); } to { transform: none; } }
+@keyframes hx-ecommerce-scan {
+  0% { opacity: 0; transform: none; }
+  15%, 85% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(267%); }
+}
+@keyframes hx-ecommerce-flash { 0% { opacity: 0; } 20% { opacity: 0.85; } 100% { opacity: 0; } }
+@keyframes hx-ecommerce-pop {
+  0% { transform: scale(0); box-shadow: 0 0 0 0 hsl(var(--success) / 0.7), 0 0 22px hsl(var(--success) / 0.55); }
+  100% { transform: none; box-shadow: 0 0 0 14px hsl(var(--success) / 0), 0 0 22px hsl(var(--success) / 0.55); }
+}
+@keyframes hx-ecommerce-streaks {
+  0% { opacity: 0; transform: scaleX(0.2); }
+  40% { opacity: 1; transform: none; }
+  100% { opacity: 0.4; transform: none; }
+}
+@keyframes hx-ecommerce-unbox {
+  0% { opacity: 0; transform: scale(0.35, 0.5); }
+  30% { opacity: 1; }
+  58% { transform: scale(1.025, 1.06); }
+  80% { transform: scale(0.995, 0.99); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes hx-ecommerce-sweep {
+  0% { opacity: 1; transform: translateX(-100%); }
+  82% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: none; }
+}
+@keyframes hx-ecommerce-beep { 0% { opacity: 0; } 22% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes hx-ecommerce-tick {
+  0% { opacity: 0; transform: scale(0.2); box-shadow: 0 0 0 0 hsl(var(--success) / 0.7); }
+  40% { opacity: 1; }
+  100% { opacity: 1; transform: none; box-shadow: 0 0 0 9px hsl(var(--success) / 0); }
+}
+@keyframes hx-ecommerce-drive {
+  0% { opacity: 0; transform: translateX(calc(-100% + var(--hx-van-w))); }
+  10% { opacity: 1; }
+  88% { opacity: 1; transform: none; }
+  100% { opacity: 0; transform: none; }
+}
+
+/* Reduced motion: nothing moves; the result simply shows (the set piece's
+   slot is hidden, index.css). */
+@media (prefers-reduced-motion: reduce) {
+  .ixw[data-industry="ecommerce"] :is(.ixm-in, .ixw-result, .ixm-row, .ix-status),
+  .ixw[data-industry="ecommerce"] .ixm-row::before,
+  .ixw[data-industry="ecommerce"] .ixm-row::after,
+  .ixw[data-industry="ecommerce"] .ixm-steps::after,
+  .ix-stage[data-industry="ecommerce"] :is(.ix-item, .ix-node, .ix-fill, .ix-foot, .ix-status),
+  .ix-stage[data-industry="ecommerce"] .ix-fill::before,
+  .ix-stage[data-industry="ecommerce"] .ix-fill::after,
+  .ix-stage[data-industry="ecommerce"] .ix-track::after,
+  :is(.ix-stage, .ixw)[data-industry="ecommerce"] :is(.hx-ecommerce-box, .hx-ecommerce-squash, .hx-ecommerce-scan, .hx-ecommerce-ok, .hx-ecommerce-streaks, .hx-ecommerce-parcel, .hx-ecommerce-parcel-body, .hx-ecommerce-burst),
+  :is(.ix-stage, .ixw)[data-industry="ecommerce"] .hx-ecommerce-art * { animation: none !important; }
+  .ixw[data-run][data-industry="ecommerce"] .ixw-inputs { z-index: 1; }
+  .ix-stage[data-run][data-industry="ecommerce"] .ix-in { z-index: 2; }
 }

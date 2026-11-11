@@ -1,29 +1,184 @@
-/* Real estate: inputs flipped like cards; rows dealt face up; a pin on the booked viewing.
+/* Real estate: matched and booked.
    The hand-off from the scattered inputs to the organised result for this
    industry, desktop (.ix-stage) and phone (.ixw); its set piece is in
-   RealestateFx.tsx. Final states are the ordinary ones, so with reduced
-   motion everything simply shows. See index.tsx for the shared conventions. */
+   RealestateFx.tsx, which measures the scene and hands the positions over
+   as --hx-realestate-* properties. Final states are the ordinary ones, so
+   with reduced motion everything simply shows. See index.tsx for the shared
+   conventions.
 
-.ix-stage[data-run][data-industry="realestate"] .ix-item { animation: ixFlipIn 0.95s cubic-bezier(0.5, 0, 0.3, 1) calc(var(--i) * 90ms) both; }
+   Phone, from the end of the scan (t0, data-run):
+     0-0.68s     the inputs turn over one by one (their backs in the
+                 instrument's colour, a house on them) and slide together
+                 into one deck in the middle of the window
+     0.69-1.25s  the deck is turned over: the lead card, in its place and
+                 with the same back, swings face up (edge-on at ~0.81s) and
+                 opens out to its full height
+     1.0-1.74s   its rows are dealt onto it, one by one
+     1.36-2.06s  a big map pin drops from the top of the window onto the
+                 booked viewing day (1.66s), bounces, and sends out two
+                 rings; the day lights up with a "Matched" flash
+     2.02-2.42s  the pin settles into the small pin the day keeps
+   Desktop, from the click:
+     0-1.16s     the inputs turn over into cards and are pulled into the node
+     0.56-1.22s  the node deals three listings onto the result side, face
+                 down, and they turn face up
+     1.24-1.66s  the one that fits the buyer is matched (ring, "Matched");
+                 the other two fly away
+     1.42-1.9s   the match turns over into the lead card
+     1.7-2.41s   the rows are dealt onto it, one by one
+     2.0-2.62s   a big pin drops from above the stage onto the booked slot
+                 (2.3s), bounces, two rings; the slot lights up, "Booked",
+                 then the viewing line and the follow-up
+     2.6-2.9s    the pin settles into the small pin the slot keeps; the run
+                 settles at 3s */
 
-.ixw[data-run][data-industry="realestate"] .ixm-in { animation: ixmFlipOut 0.45s ease-in calc(var(--i) * 70ms) both; }
+/* --- A card's back (both) ---------------------------------------------------
+   The instrument's colour running into Xeda's red, a fine hatch, an inset
+   frame, and a house in a ring in the middle. The inputs (and, below, the
+   phone's lead card) get it as an overlay that shows while they are past
+   edge-on (they turn symmetrically, so it is never seen from the front);
+   the desktop listings have it as a real back face. */
 
-/* Real estate: rows dealt face up like cards, and a pin dropped on the
-   booked viewing. */
-
-.ix-stage[data-run][data-industry="realestate"] .ix-fill,
-.ixw[data-run][data-industry="realestate"] :is(.ixm-row, .ixm-facts) {
-  transform-origin: 50% 0;
-  animation: ixDeal 0.55s cubic-bezier(0.2, 0.7, 0.3, 1) calc(var(--d) * 1ms) both;
+.ixw[data-industry="realestate"] .ixm-in::after,
+.ix-stage[data-industry="realestate"] .ix-item::after,
+.ix-stage[data-industry="realestate"] .hx-realestate-back {
+  border-radius: 0.65rem;
+  background:
+    radial-gradient(circle at 50% 50%, transparent 0 17px, hsl(var(--card) / 0.5) 17.5px 19px, transparent 19.5px),
+    repeating-linear-gradient(135deg, hsl(var(--card) / 0.13) 0 1.5px, transparent 1.5px 7px),
+    linear-gradient(150deg, hsl(var(--sig)), hsl(var(--xeda)));
+  box-shadow:
+    inset 0 0 0 3px hsl(var(--sig)),
+    inset 0 0 0 4.5px hsl(var(--card) / 0.45),
+    0 16px 30px -14px rgb(0 0 0 / 0.9);
 }
 
+/* The house on it. */
+.ixw[data-industry="realestate"] .ixm-in::before,
+.ix-stage[data-industry="realestate"] .ix-item::before,
+.ix-stage[data-industry="realestate"] .hx-realestate-back::before {
+  content: "";
+  position: absolute; left: 50%; top: 50%;
+  width: 22px; height: 22px;
+  margin: -11px 0 0 -11px;
+  background: hsl(var(--card));
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.5 1.5 11.3h2.8V21h6v-6h3.4v6h6v-9.7h2.8Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.5 1.5 11.3h2.8V21h6v-6h3.4v6h6v-9.7h2.8Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  pointer-events: none;
+}
+
+.ixw[data-industry="realestate"] .ixm-in::after,
+.ix-stage[data-industry="realestate"] .ix-item::after {
+  content: "";
+  position: absolute; inset: -1px; z-index: 3;
+  opacity: 0;
+  pointer-events: none;
+}
+.ixw[data-industry="realestate"] .ixm-in::before,
+.ix-stage[data-industry="realestate"] .ix-item::before { z-index: 4; opacity: 0; }
+
+/* Shown from the moment a turning card is edge-on (it turns symmetrically,
+   so that is the middle of its turn). */
+@keyframes hx-realestate-back-m { 0%, 22% { opacity: 0; } 22.6%, 100% { opacity: 1; } }
+@keyframes hx-realestate-back-d { 0%, 17.7% { opacity: 0; } 18.2%, 100% { opacity: 1; } }
+
+/* --- The pin (both) --------------------------------------------------------
+   Anchored at the point it lands on (--hx-realestate-px/py): its shadow,
+   two rings, the pin itself with its tip on that point, and the word it
+   lands with, over its head. */
+
+.ixw[data-industry="realestate"] .hx-realestate-fx,
+.ix-stage[data-industry="realestate"] .hx-realestate-fx { position: absolute; inset: 0; }
+.ixw[data-industry="realestate"] .hx-realestate-fx[data-off] .hx-realestate-spot { display: none; }
+
+.ixw[data-industry="realestate"] .hx-realestate-spot,
+.ix-stage[data-industry="realestate"] .hx-realestate-spot {
+  position: absolute; z-index: 2;
+  left: var(--hx-realestate-px, 50%); top: var(--hx-realestate-py, 50%);
+  width: 0; height: 0;
+  --hx-realestate-pin: 46px;
+}
+.ix-stage[data-industry="realestate"] .hx-realestate-spot { --hx-realestate-pin: 62px; }
+
+.ixw[data-industry="realestate"] .hx-realestate-drop,
+.ix-stage[data-industry="realestate"] .hx-realestate-drop {
+  position: absolute; bottom: -1px;
+  left: calc(var(--hx-realestate-pin) / -2);
+  width: var(--hx-realestate-pin); height: calc(var(--hx-realestate-pin) * 1.3);
+  transform-origin: 50% 100%;
+  opacity: 0;
+}
+.ixw[data-industry="realestate"] .hx-realestate-pin,
+.ix-stage[data-industry="realestate"] .hx-realestate-pin {
+  display: block; width: 100%; height: 100%; overflow: visible;
+  filter: drop-shadow(0 6px 10px rgb(0 0 0 / 0.55)) drop-shadow(0 0 14px hsl(var(--sig) / 0.45));
+}
+.ixw[data-industry="realestate"] .hx-realestate-pin-body,
+.ix-stage[data-industry="realestate"] .hx-realestate-pin-body { fill: hsl(var(--sig)); stroke: hsl(var(--xeda) / 0.7); stroke-width: 1; }
+.ixw[data-industry="realestate"] .hx-realestate-pin-shine,
+.ix-stage[data-industry="realestate"] .hx-realestate-pin-shine { fill: none; stroke: hsl(var(--foreground) / 0.55); stroke-width: 2; stroke-linecap: round; }
+.ixw[data-industry="realestate"] .hx-realestate-pin-head,
+.ix-stage[data-industry="realestate"] .hx-realestate-pin-head { fill: hsl(var(--card)); }
+.ixw[data-industry="realestate"] .hx-realestate-pin-house,
+.ix-stage[data-industry="realestate"] .hx-realestate-pin-house { fill: hsl(var(--sig)); }
+
+.ixw[data-industry="realestate"] .hx-realestate-shadow,
+.ix-stage[data-industry="realestate"] .hx-realestate-shadow {
+  position: absolute;
+  left: calc(var(--hx-realestate-pin) * -0.42); top: calc(var(--hx-realestate-pin) * -0.11);
+  width: calc(var(--hx-realestate-pin) * 0.84); height: calc(var(--hx-realestate-pin) * 0.22);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(0 0 0 / 0.7), rgb(0 0 0 / 0));
+  opacity: 0;
+}
+
+/* The rings: ellipses on the ground, in the instrument's colour. */
+.ixw[data-industry="realestate"] .hx-realestate-ring,
+.ix-stage[data-industry="realestate"] .hx-realestate-ring {
+  position: absolute;
+  left: calc(var(--hx-realestate-pin) * -0.95); top: calc(var(--hx-realestate-pin) * -0.32);
+  width: calc(var(--hx-realestate-pin) * 1.9); height: calc(var(--hx-realestate-pin) * 0.64);
+  border-radius: 50%;
+  border: 2.5px solid hsl(var(--sig));
+  box-shadow: 0 0 12px hsl(var(--sig) / 0.6), inset 0 0 8px hsl(var(--sig) / 0.4);
+  opacity: 0;
+}
+
+/* The word: a mint pill over the pin's head, kept inside the frame
+   (--hx-realestate-lx). */
+.ixw[data-industry="realestate"] .hx-realestate-flash,
+.ix-stage[data-industry="realestate"] .hx-realestate-flash,
+.ix-stage[data-industry="realestate"] .hx-realestate-badge {
+  position: absolute;
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  padding: 0.28rem 0.7rem 0.28rem 0.55rem;
+  border-radius: 9999px;
+  background: hsl(var(--success));
+  color: hsl(var(--background));
+  font-size: 0.8125rem; font-weight: 700; line-height: 1.1; letter-spacing: 0.01em;
+  white-space: nowrap;
+  box-shadow: 0 0 0 3px hsl(var(--background) / 0.55), 0 10px 22px -8px rgb(0 0 0 / 0.9), 0 0 22px -4px hsl(var(--success) / 0.7);
+  opacity: 0;
+}
+.ixw[data-industry="realestate"] .hx-realestate-flash,
+.ix-stage[data-industry="realestate"] .hx-realestate-flash {
+  left: 0;
+  bottom: calc(var(--hx-realestate-pin) * 1.3 + 8px);
+  transform-origin: 50% 100%;
+}
+.ix-stage[data-industry="realestate"] .hx-realestate-flash { font-size: 0.9375rem; padding: 0.35rem 0.85rem 0.35rem 0.65rem; }
+.ixw[data-industry="realestate"] .hx-realestate-flash-icon,
+.ix-stage[data-industry="realestate"] .hx-realestate-flash-icon { width: 0.95em; height: 0.95em; flex: none; }
+
+/* The day (phone) and the slot (desktop) keep a small pin once it is
+   booked; the big one settles into it. */
 .ix-stage[data-industry="realestate"] .ix-cal-slot--booked,
 .ixw[data-industry="realestate"] .ixm-days .is-booked { position: relative; overflow: visible; }
 
 .ix-stage[data-industry="realestate"] .ix-cal-slot--booked::before,
 .ixw[data-industry="realestate"] .ixm-days .is-booked::before {
   content: "";
-  position: absolute; left: 50%; top: -0.55rem; z-index: 2;
+  position: absolute; left: 50%; top: -0.5rem; z-index: 2;
   width: 0.7rem; height: 0.7rem;
   margin-left: -0.35rem;
   border-radius: 50% 50% 50% 0;
@@ -33,25 +188,475 @@
   opacity: 0;
   pointer-events: none;
 }
-
-.ix-stage[data-run][data-industry="realestate"] .ix-cal-slot--booked::before,
-.ixw[data-run][data-industry="realestate"] .ixm-days .is-booked::before { animation: ixPinDrop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) calc(var(--d) * 1ms + 120ms) both; }
-
-@keyframes ixFlipIn {
-  0% { transform: translate(0, 0) perspective(700px) rotate(var(--r)) rotateY(0deg) scale(var(--s)); opacity: 0.92; }
-  40% { transform: translate(calc(var(--dx) * 0.25), calc(var(--dy) * 0.25)) perspective(700px) rotate(0deg) rotateY(90deg) scale(calc(var(--s) * 0.85)); opacity: 1; }
-  100% { transform: translate(var(--dx), var(--dy)) perspective(700px) rotate(0deg) rotateY(180deg) scale(0.25); opacity: 0; }
+/* And a ring that flashes off it as the pin lands. */
+.ix-stage[data-industry="realestate"] .ix-cal-slot--booked::after,
+.ixw[data-industry="realestate"] .ixm-days .is-booked::after {
+  content: "";
+  position: absolute; inset: -2px;
+  border-radius: 6px;
+  border: 2px solid hsl(var(--success));
+  box-shadow: 0 0 14px hsl(var(--success) / 0.7);
+  opacity: 0;
+  pointer-events: none;
 }
 
-@keyframes ixmFlipOut { 0% { transform: perspective(700px) rotateY(0deg); opacity: 1; } 100% { transform: perspective(700px) rotateY(90deg); opacity: 0; } }
-
-@keyframes ixDeal {
-  0% { opacity: 0; transform: perspective(700px) rotateX(-80deg); }
-  55% { opacity: 1; }
-  100% { opacity: 1; transform: perspective(700px) rotateX(0deg); }
+@keyframes hx-realestate-fall {
+  0% { opacity: 1; transform: translateY(var(--hx-realestate-fall, -400px)) scale(0.9, 1.12); animation-timing-function: cubic-bezier(0.45, 0, 0.85, 0.55); }
+  43% { opacity: 1; transform: translateY(0) scale(0.92, 1.1); animation-timing-function: cubic-bezier(0.2, 0.6, 0.4, 1); }
+  52% { transform: translateY(0) scale(1.24, 0.72); animation-timing-function: cubic-bezier(0.25, 0.8, 0.4, 1); }
+  67% { transform: translateY(-20%) scale(0.95, 1.06); animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.5); }
+  79% { transform: translateY(0) scale(1.1, 0.88); animation-timing-function: ease-out; }
+  89% { transform: translateY(-5%) scale(0.99, 1.01); animation-timing-function: ease-in; }
+  100% { opacity: 1; transform: translateY(0) scale(1, 1); }
+}
+/* Down into the small pin it leaves on the day or the slot. */
+@keyframes hx-realestate-settle {
+  0% { opacity: 1; transform: translateY(0) scale(1, 1); }
+  45% { opacity: 1; transform: translateY(-6%) scale(1.06, 1.06); }
+  100% { opacity: 0; transform: translateY(0) scale(0.22, 0.22); }
+}
+@keyframes hx-realestate-shade {
+  0% { opacity: 0; transform: scale(0.25); animation-timing-function: cubic-bezier(0.5, 0, 0.95, 0.5); }
+  43% { opacity: 0.85; transform: scale(1); }
+  52% { opacity: 1; transform: scale(1.25); }
+  67% { opacity: 0.6; transform: scale(0.85); }
+  79%, 88% { opacity: 0.85; transform: scale(1.05); }
+  100% { opacity: 0; transform: scale(0.4); }
+}
+@keyframes hx-realestate-ripple {
+  0% { opacity: 1; transform: scale(0.15); }
+  60% { opacity: 0.55; }
+  100% { opacity: 0; transform: scale(1.7); }
+}
+@keyframes hx-realestate-word {
+  0% { opacity: 0; transform: translateX(calc(-50% + var(--hx-realestate-lx, 0px))) translateY(10px) scale(0.4); animation-timing-function: cubic-bezier(0.3, 1.6, 0.5, 1); }
+  22% { opacity: 1; transform: translateX(calc(-50% + var(--hx-realestate-lx, 0px))) translateY(0) scale(1); }
+  78% { opacity: 1; transform: translateX(calc(-50% + var(--hx-realestate-lx, 0px))) translateY(0) scale(1); animation-timing-function: ease-in; }
+  100% { opacity: 0; transform: translateX(calc(-50% + var(--hx-realestate-lx, 0px))) translateY(-10px) scale(0.92); }
+}
+/* The booked day / slot: a pop as the pin lands, and its flashing ring. */
+@keyframes hx-realestate-lit {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.3); }
+  60% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+@keyframes hx-realestate-lit-ring {
+  0% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.7, 2.1); }
+}
+@keyframes hx-realestate-rest {
+  0% { opacity: 0; transform: rotate(-45deg) scale(0.4); }
+  60% { opacity: 1; transform: rotate(-45deg) scale(1.25); }
+  100% { opacity: 1; transform: rotate(-45deg) scale(1); }
 }
 
-@keyframes ixPinDrop {
-  0% { opacity: 0; transform: translateY(-14px) rotate(-45deg); }
-  100% { opacity: 1; transform: translateY(0) rotate(-45deg); }
+/* --- Phone ------------------------------------------------------------------- */
+
+/* The inputs turn over in turn, lifting a little, and slide into a deck in
+   the middle of the window (--hx-realestate-dx/dy, measured), each a little
+   askew. Then they are gone: the lead card takes the deck's place. */
+.ixw[data-industry="realestate"] .ixm-in:nth-child(1) { --hx-realestate-tilt: -7deg; --hx-realestate-tx: -5px; --hx-realestate-ty: 5px; }
+.ixw[data-industry="realestate"] .ixm-in:nth-child(2) { --hx-realestate-tilt: 5deg; --hx-realestate-tx: 5px; --hx-realestate-ty: 2px; }
+.ixw[data-industry="realestate"] .ixm-in:nth-child(n + 3) { --hx-realestate-tilt: -1.5deg; --hx-realestate-tx: 0px; --hx-realestate-ty: -2px; }
+
+.ixw[data-run][data-industry="realestate"] .ixm-in {
+  transition: none;
+  animation:
+    hx-realestate-mflip 0.56s linear calc(var(--i) * 60ms) both,
+    hx-realestate-gone 0.01s linear 0.69s forwards;
+}
+.ixw[data-run][data-industry="realestate"] .ixm-in::after,
+.ixw[data-run][data-industry="realestate"] .ixm-in::before { animation: hx-realestate-back-m 0.56s linear calc(var(--i) * 60ms) both; }
+.ixw[data-run][data-industry="realestate"] .ixw-read { transition-duration: 0.12s; }
+
+@keyframes hx-realestate-mflip {
+  0% {
+    opacity: 1;
+    transform: translate(0px, 0px) rotate(0deg) perspective(700px) rotateY(0deg) scale(1);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  45% {
+    opacity: 1;
+    transform: translate(0px, -8px) rotate(0deg) perspective(700px) rotateY(180deg) scale(1.05);
+    animation-timing-function: cubic-bezier(0.3, 0.1, 0.2, 1);
+  }
+  100% {
+    opacity: 1;
+    transform:
+      translate(calc(var(--hx-realestate-dx, 0px) + var(--hx-realestate-tx)), calc(var(--hx-realestate-dy, 0px) + var(--hx-realestate-ty)))
+      rotate(var(--hx-realestate-tilt)) perspective(700px) rotateY(180deg) scale(0.95);
+  }
+}
+/* The deck is turned over into the lead card: the card takes the deck's
+   place showing the same back, as a strip the deck's height
+   (--hx-realestate-ct/cb, measured), turns face up (its back shows until it
+   is edge-on, at about 21%), and opens out, up and down, to its full
+   height. Until then it is not there (the result's own fade-in is not
+   needed). */
+.ixw[data-run][data-industry="realestate"] .ixw-result { transition: none; }
+.ixw[data-industry="realestate"] .ixm-panel { position: relative; }
+.ixw[data-run][data-industry="realestate"] .ixm-panel {
+  transform-origin: 50% var(--hx-realestate-oy, 50%);
+  animation:
+    hx-realestate-hold 0.69s step-end backwards,
+    hx-realestate-mopen 0.56s linear 0.69s backwards;
+}
+.ixw[data-industry="realestate"] .ixm-panel::after {
+  content: "";
+  position: absolute; inset: 0; z-index: 5;
+  border-radius: inherit;
+  background:
+    radial-gradient(circle at 50% var(--hx-realestate-oy, 50%), transparent 0 17px, hsl(var(--card) / 0.5) 17.5px 19px, transparent 19.5px),
+    repeating-linear-gradient(135deg, hsl(var(--card) / 0.13) 0 1.5px, transparent 1.5px 7px),
+    linear-gradient(150deg, hsl(var(--sig)), hsl(var(--xeda)));
+  box-shadow: inset 0 0 0 3px hsl(var(--sig)), inset 0 0 0 4.5px hsl(var(--card) / 0.45);
+  opacity: 0;
+  pointer-events: none;
+}
+.ixw[data-industry="realestate"] .ixm-panel::before {
+  content: "";
+  position: absolute; left: 50%; top: var(--hx-realestate-oy, 50%); z-index: 6;
+  width: 22px; height: 22px;
+  margin: -11px 0 0 -11px;
+  background: hsl(var(--card));
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.5 1.5 11.3h2.8V21h6v-6h3.4v6h6v-9.7h2.8Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2.5 1.5 11.3h2.8V21h6v-6h3.4v6h6v-9.7h2.8Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  opacity: 0;
+  pointer-events: none;
+}
+.ixw[data-run][data-industry="realestate"] .ixm-panel::after,
+.ixw[data-run][data-industry="realestate"] .ixm-panel::before { animation: hx-realestate-pback 0.56s linear 0.69s both; }
+@keyframes hx-realestate-hold { from, to { opacity: 0; } }
+@keyframes hx-realestate-pback { 0%, 20.5% { opacity: 1; } 21% { opacity: 0.85; } 52%, 100% { opacity: 0; } }
+@keyframes hx-realestate-mopen {
+  0% {
+    transform: perspective(900px) rotateY(-180deg) scale(0.93);
+    clip-path: inset(var(--hx-realestate-ct, 40%) 0 var(--hx-realestate-cb, 40%) 0 round 0.7rem);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.4, 1);
+  }
+  40% {
+    clip-path: inset(max(0px, var(--hx-realestate-ct, 40%) - 6px) 0 max(0px, var(--hx-realestate-cb, 40%) - 6px) 0 round 0.7rem);
+    animation-timing-function: cubic-bezier(0.5, 0, 0.2, 1);
+  }
+  42% { transform: perspective(900px) rotateY(6deg) scale(1.02); animation-timing-function: ease-in-out; }
+  64% { transform: perspective(900px) rotateY(-2deg) scale(0.995); animation-timing-function: ease-out; }
+  74% { clip-path: inset(0px 0 0px 0 round 0.9rem); }
+  100% { transform: perspective(900px) rotateY(0deg) scale(1); clip-path: inset(0px 0 0px 0 round 0.9rem); }
+}
+
+/* Its rows are dealt onto it, one after another: each tossed in from the
+   right, landing with a little overshoot. The four facts are dealt
+   singly. */
+.ixw[data-industry="realestate"] .ixm-panel > :nth-child(2) { --hx-realestate-at: 1s; }
+.ixw[data-industry="realestate"] .ixm-facts > :nth-child(1) { --hx-realestate-at: 1.07s; }
+.ixw[data-industry="realestate"] .ixm-facts > :nth-child(2) { --hx-realestate-at: 1.12s; }
+.ixw[data-industry="realestate"] .ixm-facts > :nth-child(3) { --hx-realestate-at: 1.17s; }
+.ixw[data-industry="realestate"] .ixm-facts > :nth-child(4) { --hx-realestate-at: 1.22s; }
+.ixw[data-industry="realestate"] .ixm-panel > :nth-child(4) { --hx-realestate-at: 1.26s; }
+.ixw[data-industry="realestate"] .ixm-panel > :nth-child(n + 5) { --hx-realestate-at: 1.34s; }
+
+.ixw[data-run][data-industry="realestate"] .ixm-facts { transition: none; }
+.ixw[data-run][data-industry="realestate"] .ixm-panel > .ixm-row,
+.ixw[data-run][data-industry="realestate"] .ixm-facts > div {
+  transition: none;
+  animation: hx-realestate-deal 0.4s linear var(--hx-realestate-at, 1s) backwards;
+}
+.ixw[data-run][data-industry="realestate"] .ixm-row .ix-status { transition-delay: calc(var(--hx-realestate-at, 1s) + 0.28s); }
+
+@keyframes hx-realestate-deal {
+  0% { opacity: 0; transform: translate(4rem, -0.8rem) rotate(10deg) scale(1.1); animation-timing-function: cubic-bezier(0.2, 0.7, 0.35, 1); }
+  35% { opacity: 1; }
+  68% { transform: translate(-3px, 0px) rotate(-1deg) scale(1); animation-timing-function: ease-in-out; }
+  100% { opacity: 1; transform: translate(0px, 0px) rotate(0deg) scale(1); }
+}
+
+/* The pin: falls from above the window onto the booked day (1.66s),
+   bounces, and settles into the day's own small pin. */
+.ixw[data-run][data-industry="realestate"] .hx-realestate-drop {
+  animation:
+    hx-realestate-fall 0.7s linear 1.36s backwards,
+    hx-realestate-settle 0.3s cubic-bezier(0.5, 0, 0.8, 0.4) 2.02s forwards;
+}
+.ixw[data-run][data-industry="realestate"] .hx-realestate-shadow { animation: hx-realestate-shade 0.96s linear 1.36s both; }
+.ixw[data-run][data-industry="realestate"] .hx-realestate-ring { animation: hx-realestate-ripple 0.56s cubic-bezier(0.2, 0.6, 0.35, 1) 1.66s forwards; }
+.ixw[data-run][data-industry="realestate"] .hx-realestate-ring--2 { animation-delay: 1.82s; }
+.ixw[data-run][data-industry="realestate"] .hx-realestate-flash { animation: hx-realestate-word 0.64s linear 1.68s both; }
+
+/* The day lights up as the pin lands (its own transition, re-timed), with
+   a pop and a ring; its small pin shows as the big one settles. */
+.ixw[data-run][data-industry="realestate"] .ixm-days > span.is-booked {
+  transition-delay: 1.66s;
+  animation: hx-realestate-lit 0.45s ease-out 1.66s backwards;
+}
+.ixw[data-run][data-industry="realestate"] .ixm-days .is-booked::after { animation: hx-realestate-lit-ring 0.6s ease-out 1.66s forwards; }
+.ixw[data-run][data-industry="realestate"] .ixm-days .is-booked::before { animation: hx-realestate-rest 0.26s ease-out 2.16s both; }
+
+/* --- Desktop ----------------------------------------------------------------- */
+
+/* The inputs turn over into cards (lifting and straightening), then are
+   pulled into the node, spinning a little as they go. --dx/--dy is the way
+   to the node, measured at the click (DesktopScene). */
+.ix-stage[data-industry="realestate"] .ix-unresolved { transition: opacity 0.15s ease; }
+.ix-stage[data-run][data-industry="realestate"] .ix-unresolved { opacity: 0; }
+.ix-stage[data-run][data-industry="realestate"] .ix-item {
+  filter: none;
+  transform-origin: 50% 50%;
+  transition: none;
+  animation: hx-realestate-dflip 0.86s linear calc(var(--i) * 75ms) both;
+}
+.ix-stage[data-run][data-industry="realestate"] .ix-item::after,
+.ix-stage[data-run][data-industry="realestate"] .ix-item::before { animation: hx-realestate-back-d 0.86s linear calc(var(--i) * 75ms) both; }
+.ix-stage[data-industry="realestate"] .ix-item::before { width: 26px; height: 26px; margin: -13px 0 0 -13px; }
+
+@keyframes hx-realestate-dflip {
+  0% {
+    opacity: 0.92;
+    transform: translate(0px, 0px) rotate(var(--r)) perspective(900px) rotateY(0deg) scale(var(--s));
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+  36% {
+    opacity: 1;
+    transform: translate(0px, -12px) rotate(0deg) perspective(900px) rotateY(180deg) scale(calc(var(--s) * 1.06));
+    animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0.3);
+  }
+  86% { opacity: 1; }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx, 0px), var(--dy, 0px)) rotate(-16deg) perspective(900px) rotateY(180deg) scale(0.2);
+  }
+}
+
+/* The result's frame: the dimmed preview drops away at the click; the lead
+   card arrives later, out of the matched listing (below). */
+.ix-stage[data-run][data-industry="realestate"] .ix-out-inner > .ix-panel {
+  filter: none;
+  transition: none;
+  animation: hx-realestate-dpanel 1.92s linear backwards;
+}
+@keyframes hx-realestate-dpanel {
+  0% { opacity: 0.5; transform: translate(0px, 0px) perspective(1300px) rotateY(0deg) scale(1, 1); animation-timing-function: ease-in; }
+  13% { opacity: 0; transform: translate(0px, 14px) perspective(1300px) rotateY(0deg) scale(0.95, 0.95); }
+  79.9% {
+    opacity: 0;
+    transform: translate(var(--hx-realestate-mx, 0px), var(--hx-realestate-my, 0px)) perspective(1300px) rotateY(-90deg) scale(var(--hx-realestate-mk, 0.33), var(--hx-realestate-mky, 0.5));
+  }
+  80.2% {
+    opacity: 1;
+    transform: translate(var(--hx-realestate-mx, 0px), var(--hx-realestate-my, 0px)) perspective(1300px) rotateY(-90deg) scale(var(--hx-realestate-mk, 0.33), var(--hx-realestate-mky, 0.5));
+    animation-timing-function: cubic-bezier(0.25, 0.6, 0.35, 1);
+  }
+  93% { opacity: 1; transform: translate(0px, 0px) perspective(1300px) rotateY(7deg) scale(1.015, 1.015); animation-timing-function: ease-in-out; }
+  100% { opacity: 1; transform: translate(0px, 0px) perspective(1300px) rotateY(0deg) scale(1, 1); }
+}
+
+/* The listings: dealt out of the node (from behind it) to a fan over the
+   result, face down, turning face up as they land. */
+.ix-stage[data-industry="realestate"] .hx-realestate-card {
+  --fx: calc(var(--hx-realestate-pcx, 50%) + (var(--k) - 1) * var(--hx-realestate-cw, 140px) * 1.02);
+  --fy: calc(var(--hx-realestate-pcy, 50%) + (var(--k) - 1) * (var(--k) - 1) * 16px);
+  --fr: calc((var(--k) - 1) * 9deg);
+  position: absolute; left: 0; top: 0;
+  width: var(--hx-realestate-cw, 140px); height: var(--hx-realestate-ch, 180px);
+  margin: calc(var(--hx-realestate-ch, 180px) / -2) 0 0 calc(var(--hx-realestate-cw, 140px) / -2);
+  perspective: 900px;
+  opacity: 0;
+}
+.ix-stage[data-industry="realestate"] .hx-realestate-card--match { z-index: 1; }
+.ix-stage[data-industry="realestate"] .hx-realestate-turn {
+  position: absolute; inset: 0;
+  display: block;
+  transform-style: preserve-3d;
+}
+.ix-stage[data-industry="realestate"] .hx-realestate-face,
+.ix-stage[data-industry="realestate"] .hx-realestate-back {
+  position: absolute; inset: 0;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+.ix-stage[data-industry="realestate"] .hx-realestate-back { transform: rotateY(180deg); }
+.ix-stage[data-industry="realestate"] .hx-realestate-back::before { width: 34px; height: 34px; margin: -17px 0 0 -17px; }
+.ix-stage[data-industry="realestate"] .hx-realestate-back {
+  background:
+    radial-gradient(circle at 50% 50%, transparent 0 25px, hsl(var(--card) / 0.5) 25.5px 27.5px, transparent 28px),
+    repeating-linear-gradient(135deg, hsl(var(--card) / 0.13) 0 1.5px, transparent 1.5px 8px),
+    linear-gradient(150deg, hsl(var(--sig)), hsl(var(--xeda)));
+}
+.ix-stage[data-industry="realestate"] .hx-realestate-face {
+  display: flex; flex-direction: column;
+  padding: 5px 5px 0;
+  border-radius: 0.65rem;
+  border: 1px solid hsl(var(--foreground) / 0.16);
+  background: hsl(var(--card));
+  box-shadow: 0 18px 34px -14px rgb(0 0 0 / 0.95);
+  overflow: hidden;
+}
+.ix-stage[data-industry="realestate"] .hx-realestate-photo { display: block; flex: 1; min-height: 0; overflow: hidden; border-radius: 0.45rem; }
+.ix-stage[data-industry="realestate"] .hx-realestate-photo svg { width: 100%; height: 100%; }
+.ix-stage[data-industry="realestate"] .hx-realestate-price {
+  display: block; padding: 0.45rem 0.35rem 0;
+  font-size: 1rem; font-weight: 700; line-height: 1.2;
+  color: hsl(var(--foreground));
+}
+.ix-stage[data-industry="realestate"] .hx-realestate-place {
+  padding: 0.15rem 0.35rem 0.6rem;
+  font-size: 12px; line-height: 1.3;
+  color: hsl(var(--muted-foreground));
+  overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2;
+}
+/* The match: a ring in the instrument's colour, and its word on top. */
+.ix-stage[data-industry="realestate"] .hx-realestate-card--match::after {
+  content: "";
+  position: absolute; inset: -4px;
+  border-radius: 0.85rem;
+  border: 2.5px solid hsl(var(--sig));
+  box-shadow: 0 0 26px -2px hsl(var(--sig) / 0.75), inset 0 0 14px -4px hsl(var(--sig) / 0.6);
+  opacity: 0;
+}
+.ix-stage[data-industry="realestate"] .hx-realestate-badge {
+  left: 50%; top: 0; z-index: 1;
+  transform: translate(-50%, -55%);
+}
+
+.ix-stage[data-run][data-industry="realestate"] .hx-realestate-card {
+  animation: hx-realestate-dealt 0.42s cubic-bezier(0.2, 0.7, 0.25, 1) calc(0.56s + var(--k) * 90ms) both;
+}
+.ix-stage[data-run][data-industry="realestate"] .hx-realestate-turn {
+  animation: hx-realestate-faceup 0.3s cubic-bezier(0.4, 0, 0.3, 1) calc(0.74s + var(--k) * 90ms) both;
+}
+@keyframes hx-realestate-dealt {
+  0% { opacity: 0; transform: translate(var(--hx-realestate-nx), var(--hx-realestate-ny)) rotate(-40deg) scale(0.3); }
+  12% { opacity: 1; }
+  100% { opacity: 1; transform: translate(var(--fx), var(--fy)) rotate(var(--fr)) scale(1); }
+}
+@keyframes hx-realestate-faceup {
+  from { transform: rotateY(180deg); }
+  to { transform: rotateY(0deg); }
+}
+
+/* The two that do not fit step back, then fly off the stage. */
+.ix-stage[data-run][data-industry="realestate"] .hx-realestate-card--miss {
+  animation:
+    hx-realestate-dealt 0.42s cubic-bezier(0.2, 0.7, 0.25, 1) calc(0.56s + var(--k) * 90ms) both,
+    hx-realestate-away 0.46s linear 1.24s forwards;
+}
+.ix-stage[data-industry="realestate"] .hx-realestate-card:nth-child(1) { --ax: -70px; --ay: -460px; --ar: -38deg; }
+.ix-stage[data-industry="realestate"] .hx-realestate-card:nth-child(3) { --ax: 440px; --ay: 150px; --ar: 42deg; }
+@keyframes hx-realestate-away {
+  0% { opacity: 1; transform: translate(var(--fx), var(--fy)) rotate(var(--fr)) scale(1); animation-timing-function: ease-out; }
+  22% { opacity: 0.55; transform: translate(var(--fx), calc(var(--fy) + 8px)) rotate(var(--fr)) scale(0.94); animation-timing-function: cubic-bezier(0.55, 0, 0.9, 0.5); }
+  85% { opacity: 0.5; }
+  100% { opacity: 0; transform: translate(calc(var(--fx) + var(--ax)), calc(var(--fy) + var(--ay))) rotate(calc(var(--fr) + var(--ar))) scale(0.8); }
+}
+
+/* The match lifts out of the fan, ringed, "Matched" on it; then it turns
+   over (edge-on at 1.54s), and the lead card swings up out of it. */
+.ix-stage[data-run][data-industry="realestate"] .hx-realestate-card--match {
+  animation:
+    hx-realestate-dealt 0.42s cubic-bezier(0.2, 0.7, 0.25, 1) calc(0.56s + var(--k) * 90ms) both,
+    hx-realestate-pick 0.3s cubic-bezier(0.3, 1.4, 0.5, 1) 1.24s forwards,
+    hx-realestate-gone 0.01s linear 1.54s forwards;
+}
+.ix-stage[data-run][data-industry="realestate"] .hx-realestate-card--match .hx-realestate-turn {
+  animation:
+    hx-realestate-faceup 0.3s cubic-bezier(0.4, 0, 0.3, 1) calc(0.74s + var(--k) * 90ms) both,
+    hx-realestate-edge 0.12s cubic-bezier(0.55, 0, 1, 0.6) 1.42s forwards;
+}
+.ix-stage[data-run][data-industry="realestate"] .hx-realestate-card--match::after { animation: hx-realestate-glow 0.3s ease-out 1.24s both; }
+.ix-stage[data-run][data-industry="realestate"] .hx-realestate-badge { animation: hx-realestate-badge 0.3s cubic-bezier(0.3, 1.6, 0.5, 1) 1.26s both; }
+@keyframes hx-realestate-pick {
+  from { opacity: 1; transform: translate(var(--fx), var(--fy)) rotate(var(--fr)) scale(1); }
+  to { opacity: 1; transform: translate(calc(var(--hx-realestate-pcx, 50%) + var(--hx-realestate-mx, 0px)), calc(var(--hx-realestate-pcy, 50%) + var(--hx-realestate-my, 0px))) rotate(0deg) scale(1.06); }
+}
+@keyframes hx-realestate-gone { to { opacity: 0; } }
+@keyframes hx-realestate-edge {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(90deg); }
+}
+@keyframes hx-realestate-glow { from { opacity: 0; transform: scale(1.12); } to { opacity: 1; transform: scale(1); } }
+@keyframes hx-realestate-badge {
+  from { opacity: 0; transform: translate(-50%, -55%) scale(0.3); }
+  to { opacity: 1; transform: translate(-50%, -55%) scale(1); }
+}
+
+/* The rows are dealt onto the lead card one by one (its skeleton bars go
+   as each lands, its status a beat later); the calendar is dealt last. */
+.ix-stage[data-industry="realestate"] .ix-panel > .ix-row { --hx-realestate-at: 1.7s; }
+.ix-stage[data-industry="realestate"] .ix-panel > .grid > .ix-row:nth-child(1) { --hx-realestate-at: 1.78s; }
+.ix-stage[data-industry="realestate"] .ix-panel > .grid > .ix-row:nth-child(2) { --hx-realestate-at: 1.83s; }
+.ix-stage[data-industry="realestate"] .ix-panel > .grid > .ix-row:nth-child(3) { --hx-realestate-at: 1.88s; }
+.ix-stage[data-industry="realestate"] .ix-panel > .grid > .ix-row:nth-child(n + 4) { --hx-realestate-at: 1.93s; }
+.ix-stage[data-industry="realestate"] .ix-cal { --hx-realestate-at: 1.99s; }
+
+.ix-stage[data-run][data-industry="realestate"] .ix-panel .ix-fill,
+.ix-stage[data-run][data-industry="realestate"] .ix-cal {
+  transition: none;
+  animation: hx-realestate-deal 0.42s linear var(--hx-realestate-at, 1.7s) backwards;
+}
+.ix-stage[data-run][data-industry="realestate"] .ix-panel .ix-skel { transition-delay: calc(var(--hx-realestate-at, 1.7s) + 0.1s); }
+.ix-stage[data-run][data-industry="realestate"] .ix-panel > .ix-row .ix-status { transition-delay: calc(var(--hx-realestate-at, 1.7s) + 0.32s); }
+
+/* The pin: from above the stage onto the booked slot (2.3s), bounce,
+   rings, "Booked"; the slot lights up, then the viewing line and the
+   follow-up show; the pin settles into the slot's small pin. */
+.ix-stage[data-run][data-industry="realestate"] .hx-realestate-drop {
+  animation:
+    hx-realestate-fall 0.7s linear 2s backwards,
+    hx-realestate-settle 0.26s cubic-bezier(0.5, 0, 0.8, 0.4) 2.62s forwards;
+}
+.ix-stage[data-run][data-industry="realestate"] .hx-realestate-shadow { animation: hx-realestate-shade 0.88s linear 2s both; }
+.ix-stage[data-run][data-industry="realestate"] .hx-realestate-ring { animation: hx-realestate-ripple 0.46s cubic-bezier(0.2, 0.6, 0.35, 1) 2.3s forwards; }
+.ix-stage[data-run][data-industry="realestate"] .hx-realestate-ring--2 { animation-delay: 2.42s; }
+.ix-stage[data-run][data-industry="realestate"] .hx-realestate-flash { animation: hx-realestate-word 0.56s linear 2.32s both; }
+
+.ix-stage[data-run][data-industry="realestate"] .ix-cal-slot--booked {
+  transition-delay: 2.3s;
+  animation: hx-realestate-lit 0.42s ease-out 2.3s backwards;
+}
+.ix-stage[data-run][data-industry="realestate"] .ix-cal-slot--booked::after { animation: hx-realestate-lit-ring 0.55s ease-out 2.3s forwards; }
+.ix-stage[data-run][data-industry="realestate"] .ix-cal-slot--booked::before { animation: hx-realestate-rest 0.2s ease-out 2.7s both; }
+
+.ix-stage[data-run][data-industry="realestate"] .ix-cal + .ix-foot { --hx-realestate-at: 2.36s; }
+.ix-stage[data-run][data-industry="realestate"] .ix-foot + .ix-foot { --hx-realestate-at: 2.47s; }
+.ix-stage[data-run][data-industry="realestate"] .ix-panel .ix-foot {
+  transition: none;
+  animation: hx-realestate-foot 0.4s cubic-bezier(0.2, 0.7, 0.3, 1) var(--hx-realestate-at, 2.36s) backwards;
+}
+.ix-stage[data-run][data-industry="realestate"] .ix-panel .ix-foot .ix-status { transition-delay: calc(var(--hx-realestate-at, 2.36s) + 0.14s); }
+@keyframes hx-realestate-foot {
+  0% { opacity: 0; transform: translate(-1.5rem, 0px); }
+  100% { opacity: 1; transform: translate(0px, 0px); }
+}
+
+/* --- Reduced motion -----------------------------------------------------------
+   Nothing moves: the set piece's slot is hidden (index.css) and every state
+   above is simply the final one. */
+@media (prefers-reduced-motion: reduce) {
+  .ixw[data-industry="realestate"] .ixm-in,
+  .ixw[data-industry="realestate"] .ixm-in::before,
+  .ixw[data-industry="realestate"] .ixm-in::after,
+  .ixw[data-industry="realestate"] .ixm-panel,
+  .ixw[data-industry="realestate"] .ixm-panel::before,
+  .ixw[data-industry="realestate"] .ixm-panel::after,
+  .ixw[data-industry="realestate"] .ixm-row,
+  .ixw[data-industry="realestate"] .ixm-facts > div,
+  .ixw[data-industry="realestate"] .ixm-days .is-booked,
+  .ixw[data-industry="realestate"] .ixm-days .is-booked::before,
+  .ixw[data-industry="realestate"] .ixm-days .is-booked::after,
+  .ix-stage[data-industry="realestate"] .ix-item,
+  .ix-stage[data-industry="realestate"] .ix-item::before,
+  .ix-stage[data-industry="realestate"] .ix-item::after,
+  .ix-stage[data-industry="realestate"] .ix-panel,
+  .ix-stage[data-industry="realestate"] .ix-fill,
+  .ix-stage[data-industry="realestate"] .ix-cal,
+  .ix-stage[data-industry="realestate"] .ix-foot,
+  .ix-stage[data-industry="realestate"] .ix-cal-slot--booked,
+  .ix-stage[data-industry="realestate"] .ix-cal-slot--booked::before,
+  .ix-stage[data-industry="realestate"] .ix-cal-slot--booked::after,
+  .ixw[data-industry="realestate"] .hx-realestate-fx *,
+  .ix-stage[data-industry="realestate"] .hx-realestate-fx * { animation: none !important; }
+  .ixw[data-industry="realestate"] .ixm-in::before,
+  .ixw[data-industry="realestate"] .ixm-in::after,
+  .ix-stage[data-industry="realestate"] .ix-item::before,
+  .ix-stage[data-industry="realestate"] .ix-item::after { display: none; }
 }
