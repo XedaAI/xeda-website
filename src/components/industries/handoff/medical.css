@@ -162,8 +162,12 @@
   pointer-events: none;
 }
 .ix-stage[data-run][data-industry="medical"] .ix-fill::after {
-  /* Centred on the 20px status mark (the row's right padding is 0.875rem). */
-  top: calc(50% - 21px); right: calc(0.875rem - 11px);
+  /* Just inside the status mark (the row's right padding is 0.875rem): the
+     panel clips at the row's edge, and the disc, its ring, its beat and the
+     lift of its row all have to stay round. It shrinks home onto the mark
+     (--hx-med-home) at the end. */
+  top: calc(50% - 21px); right: calc(0.875rem - 1px);
+  --hx-med-home: 10px;
   width: 42px; height: 42px;
   font-size: 22px;
   animation:
@@ -219,7 +223,7 @@
   40% { transform: none; }
   43% { transform: scale(1.1); }
   46%, 89% { transform: none; opacity: 1; }
-  100% { transform: scale(0.4); opacity: 0; }
+  100% { transform: translateX(var(--hx-med-home, 0px)) scale(0.4); opacity: 0; }
 }
 
 /* --- Phone: the requests beat, queue up and leave ------------------------- */
@@ -231,7 +235,9 @@
 /* ... then they shrink into a short queue at the left edge (MedicalFx
    measures how far each moves, --hx-med-qy) and leave it one by one. */
 .ixw[data-run][data-industry="medical"] .ixm-in {
-  transform-origin: 0 50%;
+  /* Off-centre to the left: the window's padding is narrow there, and the
+     beat with its ring has to stay inside the window on both sides. */
+  transform-origin: 25% 50%;
   animation:
     hx-medical-beat 300ms ease-out var(--hx-med-beat, 0ms) backwards,
     hx-medical-queue 440ms cubic-bezier(0.5, 0, 0.3, 1) calc(480ms + var(--i) * 45ms) both;
@@ -257,9 +263,9 @@
 
 @keyframes hx-medical-beat {
   0% { scale: 1; }
-  22% { scale: 1.09; }
+  22% { scale: 1.05; }
   45% { scale: 0.99; }
-  62% { scale: 1.04; }
+  62% { scale: 1.025; }
   100% { scale: 1; }
 }
 @keyframes hx-medical-ring {

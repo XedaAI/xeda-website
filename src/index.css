@@ -2347,7 +2347,8 @@ All colors MUST be HSL.
 
 /* Idle animations rest while the section is off screen. */
 #use-cases[data-offscreen] .ix-scene *,
-#use-cases[data-offscreen] .ix-scene *::before { animation-play-state: paused !important; }
+#use-cases[data-offscreen] .ix-scene *::before,
+#use-cases[data-offscreen] .ix-scene *::after { animation-play-state: paused !important; }
 
 @media (prefers-reduced-motion: reduce) {
   .ixm[data-run] .ixm-in { transform: translateX(var(--x)) rotate(var(--r)); }
@@ -3288,6 +3289,9 @@ html:not(.dark) .dc-card-n { background: hsl(var(--dc-accent) / 0.1); }
    never in the way; hidden with reduced motion. */
 .ix-fx { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
 .ixw-fx { position: absolute; inset: 0; z-index: 3; pointer-events: none; overflow: hidden; border-radius: inherit; }
+/* The visitor scrolled the result during a run: the overlay, placed for the
+   camera's scroll (handoff/camera.ts), would no longer meet the rows. */
+.ixw-view[data-user-scroll] .ixw-fx { visibility: hidden; }
 @media (prefers-reduced-motion: reduce) { .ix-fx, .ixw-fx { display: none; } }
 
 /* --- Desktop: two zones -----------------------------------------------------

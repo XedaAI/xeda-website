@@ -163,17 +163,45 @@ const MobileScene = ({
     };
     // Whether the result, scrolling inside the window, has more below.
     const more = () => view.toggleAttribute("data-more", result.scrollTop + result.clientHeight < result.scrollHeight - 4);
+    // A set piece may scroll the result to follow its action (handoff/
+    // camera.ts). Once the visitor scrolls it themselves, they win: the
+    // camera stops and the overlay hides (data-user-scroll, until the next
+    // run). Their scrolls are told from the camera's by the input before them.
+    let userAt = -Infinity;
+    let touching = false;
+    const input = () => { userAt = performance.now(); };
+    const touch = (e: TouchEvent) => { touching = e.type !== "touchend" && e.type !== "touchcancel"; input(); };
+    const press = (e: PointerEvent) => { if (e.target === result) input(); }; // its scrollbar
+    const scrolled = () => {
+      more();
+      if (stage.dataset.phase === "after" && (touching || performance.now() - userAt < 1000)) view.setAttribute("data-user-scroll", "");
+    };
     delete view.dataset.tight;
+    view.removeAttribute("data-user-scroll");
     place();
     const ro = new ResizeObserver(place);
     [stage, list, fields, result, ...result.children].forEach((el) => ro.observe(el));
-    result.addEventListener("scroll", more, { passive: true });
-    return () => { ro.disconnect(); result.removeEventListener("scroll", more); };
+    const opts = { passive: true };
+    result.addEventListener("scroll", scrolled, opts);
+    result.addEventListener("wheel", input, opts);
+    result.addEventListener("keydown", input, opts);
+    result.addEventListener("pointerdown", press, opts);
+    (["touchstart", "touchmove", "touchend", "touchcancel"] as const).forEach((k) => result.addEventListener(k, touch, opts));
+    return () => {
+      ro.disconnect();
+      result.removeEventListener("scroll", scrolled);
+      result.removeEventListener("wheel", input);
+      result.removeEventListener("keydown", input);
+      result.removeEventListener("pointerdown", press);
+      (["touchstart", "touchmove", "touchend", "touchcancel"] as const).forEach((k) => result.removeEventListener(k, touch));
+    };
   }, [industry.key, lang]);
 
   // A result scrolled inside the window starts from its top on the next run.
   useEffect(() => {
-    if (phase !== "after") viewRef.current?.querySelector(".ixw-result")?.scrollTo(0, 0);
+    const view = viewRef.current;
+    if (phase !== "after") view?.querySelector(".ixw-result")?.scrollTo(0, 0);
+    view?.removeAttribute("data-user-scroll");
   }, [phase]);
 
   const flagged = industry.fields.filter((f) => f.flag).length;

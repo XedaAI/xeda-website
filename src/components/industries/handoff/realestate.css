@@ -410,13 +410,17 @@
 .ix-stage[data-industry="realestate"] .ix-item::before { width: 26px; height: 26px; margin: -13px 0 0 -13px; }
 
 @keyframes hx-realestate-dflip {
+  /* From the resting pivot (top left, as .ix-item rests), so the card does
+     not jump at the click; turning about its centre by the time it is over. */
   0% {
     opacity: 0.92;
+    transform-origin: 0 0;
     transform: translate(0px, 0px) rotate(var(--r)) perspective(900px) rotateY(0deg) scale(var(--s));
     animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
   }
   36% {
     opacity: 1;
+    transform-origin: 50% 50%;
     transform: translate(0px, -12px) rotate(0deg) perspective(900px) rotateY(180deg) scale(calc(var(--s) * 1.06));
     animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0.3);
   }

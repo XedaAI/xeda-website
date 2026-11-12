@@ -65,6 +65,23 @@ const AccountingFx = ({ variant, lang }: FxProps) => {
         set("--hx-acc-sy", cy);
         set("--hx-acc-sw", stamp.offsetWidth);
         set("--hx-acc-sh", stamp.offsetHeight);
+        // Desktop: the big stamp starts at up to 3.8 times its size, but no
+        // bigger than the stage has room for around it (it clips the stage).
+        const stage = variant === "desk" ? frame.closest<HTMLElement>(".ix-stage") : null;
+        if (stage) {
+          const s = stage.getBoundingClientRect();
+          const r = stamp.getBoundingClientRect(); // its centre: it turns about it
+          const cx = r.left + r.width / 2 - s.left;
+          const cy = r.top + r.height / 2 - s.top;
+          const w = stamp.offsetWidth;
+          const h = stamp.offsetHeight;
+          // Half its size turned by the -13deg it comes down at.
+          const halfW = 0.487 * w + 0.113 * h;
+          const halfH = 0.113 * w + 0.487 * h;
+          const room = Math.min(cx, s.width - cx, cy, s.height - cy) - 6;
+          const big = Math.min(3.8, room / halfW, (Math.min(cy, s.height - cy) - 6) / halfH);
+          root.style.setProperty("--hx-acc-big", String(Math.round(Math.max(1.6, big) * 100) / 100));
+        }
       }
       if (result) {
         set("--hx-acc-rt", result.offsetTop);
