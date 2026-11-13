@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.114.0";
 import { clientIp, handlePreflight, jsonResponse, corsHeaders } from "../_shared/cors.ts";
+import { geminiFetch, ProviderNotConfigured, toChatCompletionStream } from "../_shared/gemini.ts";
 import { isRateLimited } from "../_shared/rate-limit.ts";
 import { LIMITS } from "../_shared/validate.ts";
 
@@ -9,23 +10,19 @@ const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
 const encoder = new TextEncoder();
 
-// Provider config. Defaults to Gemini's OpenAI-compatible endpoint, which
-// speaks the same request shape and the same SSE chunk format the Lovable AI
-// gateway did -- so the frontend stream parser is unchanged. Both values are
-// env-overridable so a future provider swap needs no code change.
-// https://ai.google.dev/gemini-api/docs/openai
-const AI_BASE_URL = Deno.env.get("AI_BASE_URL") ??
-  "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
+// The model runs on Google Cloud inside the EU; where and with which
+// credential is in _shared/gemini.ts.
+//
 // Pinned to an exact version, not an alias such as gemini-flash-latest: the
 // brief is tested against a specific model's behaviour, and an alias can move
-// underneath it without notice. gemini-2.5-flash is closed to new projects, so a
-// freshly created paid key returns 404 on it.
-const AI_MODEL = Deno.env.get("AI_MODEL") ?? "gemini-3.8-flash";
-// How long the model thinks before the first word. At the default it took over
-// five seconds; "low" answers in about two, and the brief is evaluated at this
-// setting (scripts/chat-eval.mjs reads it from here).
-const AI_REASONING_EFFORT = Deno.env.get("AI_REASONING_EFFORT") ?? "low";
-const AI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+// underneath it without notice. Named CHAT_MODEL, not AI_MODEL as before, so a
+// value left over from the previous provider is ignored rather than sent to
+// this one.
+const CHAT_MODEL = Deno.env.get("CHAT_MODEL") ?? "gemini-3.8-flash";
+// How long the model thinks before the first word. At the model's default it
+// took over five seconds; LOW answers in about two, and the brief is evaluated
+// at this setting (scripts/chat-eval.mjs reads it from here).
+const CHAT_THINKING_LEVEL = Deno.env.get("CHAT_THINKING_LEVEL") ?? "LOW";
 
 // The AI path costs money per call, so it gets a tighter budget than the
 // history actions, which only touch our own database.
@@ -231,13 +228,17 @@ requirements", never "we are DSGVO-konform" as a finished status.
 
 ABOUT THIS CHAT ITSELF
 This chat is not a demonstration of what we sell, and it is not covered by the
-guarantees above. Messages are processed by a third-party AI provider outside
-the EU and are stored for 30 days so the conversation can be continued, then
-deleted; the visitor can delete a conversation sooner with the bin icon. Voice
-questions are transcribed by the same AI provider. If anyone asks
-whether this chat is DSGVO-konform, say honestly that it is a simple website
-assistant, that messages go to an external AI provider, and that they should
-not enter personal or client data here.
+guarantees above. Messages are processed by an external AI provider, Google
+Cloud, on servers within the EU. Separately, we keep the conversation in our
+own database for 30 days so it can be continued, then delete it; the visitor
+can delete a conversation sooner with the bin icon. A question asked with the
+microphone is transcribed by the same provider, also within the EU. Only when
+an answer is read aloud does a second provider come in: it receives the text of
+our answer, never the visitor's voice, and may process it outside the EU. If
+anyone asks whether this chat is DSGVO-konform, say honestly that it is a simple website assistant, that
+messages go to an external AI provider, and that they should not enter personal
+or client data here. Processing in the EU does not make it DSGVO-konform, and
+you do not say that it does.
 If someone pastes personal data, client details, invoices or anything
 confidential, do not work with it. Tell them plainly not to send it through
 this chat and to bring it to the call instead.
@@ -498,15 +499,6 @@ serve(async (req) => {
       );
     }
 
-    if (!AI_API_KEY) {
-      console.error("GEMINI_API_KEY is not configured");
-      return jsonResponse(
-        req,
-        { error: language === "de" ? "KI-Service-Fehler" : "AI service error" },
-        500,
-      );
-    }
-
     const validated = validateMessages(messages);
     if ("error" in validated) {
       return jsonResponse(req, { error: validated.error }, 400);
@@ -518,22 +510,15 @@ serve(async (req) => {
       voice === true ? "(voice)" : "",
     );
 
-    const response = await fetch(AI_BASE_URL, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${AI_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: AI_MODEL,
-        messages: [
-          { role: "system", content: systemPrompt },
-          ...validated,
-        ],
-        // Set AI_REASONING_EFFORT="" for a provider that rejects the field.
-        ...(AI_REASONING_EFFORT ? { reasoning_effort: AI_REASONING_EFFORT } : {}),
-        stream: true,
-      }),
+    const response = await geminiFetch(CHAT_MODEL, "streamGenerateContent", {
+      systemInstruction: { parts: [{ text: systemPrompt }] },
+      contents: validated.map((message) => ({
+        role: message.role === "assistant" ? "model" : "user",
+        parts: [{ text: message.content }],
+      })),
+      generationConfig: CHAT_THINKING_LEVEL
+        ? { thinkingConfig: { thinkingLevel: CHAT_THINKING_LEVEL } }
+        : {},
     });
 
     if (!response.ok) {
@@ -571,10 +556,16 @@ serve(async (req) => {
       );
     }
 
-    return new Response(response.body, {
+    if (!response.body) throw new Error("AI provider sent no body");
+
+    return new Response(toChatCompletionStream(response.body), {
       headers: { ...corsHeaders(req), "Content-Type": "text/event-stream" },
     });
   } catch (error) {
+    if (error instanceof ProviderNotConfigured) {
+      console.error("AI provider not configured:", error.message);
+      return jsonResponse(req, { error: "AI service not configured" }, 500);
+    }
     console.error("Chat error:", error);
     return jsonResponse(req, { error: "Chat request failed" }, 500);
   }

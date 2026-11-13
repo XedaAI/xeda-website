@@ -50,3 +50,7 @@ jobs:
 
       - name: Typecheck edge functions
         run: deno check supabase/functions/*/index.ts
+
+      # The chat's AI provider must stay inside the EU and must not fall back.
+      - name: Test edge function modules
+        run: deno test --allow-env supabase/functions/_shared/

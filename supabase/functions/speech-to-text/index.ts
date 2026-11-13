@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { encode as encodeBase64 } from "https://deno.land/std@0.168.0/encoding/base64.ts";
 import { clientIp, handlePreflight, jsonResponse } from "../_shared/cors.ts";
+import { geminiFetch, ProviderNotConfigured } from "../_shared/gemini.ts";
 import { isRateLimited } from "../_shared/rate-limit.ts";
 import { getAdminClient } from "../_shared/supabase.ts";
 import { LIMITS } from "../_shared/validate.ts";
@@ -9,9 +10,10 @@ import { LIMITS } from "../_shared/validate.ts";
 // recognition, which in Chrome streams the visitor's audio to Google's servers
 // -- a processor we neither chose nor name -- and in Firefox does not exist.
 //
-// Transcribed by Gemini, the provider that already answers the chat, on the
-// same paid key. The visitor's voice goes to one provider, not a second one;
-// ElevenLabs only ever receives our answers, to read them aloud.
+// Transcribed by Gemini, the provider that already answers the chat, through
+// the same EU endpoint (_shared/gemini.ts). The visitor's voice goes to one
+// provider, not a second one; ElevenLabs only ever receives our answers, to
+// read them aloud.
 
 // Gemini bills audio by the second, so these two constants are the spend cap.
 const RATE_LIMIT_MAX = 30;
@@ -20,10 +22,10 @@ const RATE_LIMIT_WINDOW_SECONDS = 60 * 60;
 // Transcription needs no reasoning, so the lite model: about 1.4 s for a short
 // question against 2.5 s on the chat model, with the same transcript in tests.
 const STT_MODEL = Deno.env.get("STT_MODEL") ?? "gemini-3.5-flash-lite";
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${STT_MODEL}:generateContent`;
 
 // MediaRecorder output per browser. Gemini takes these containers as they are
-// (WebM and MP4 checked against real Chrome recordings).
+// (WebM and MP4 checked against real Chrome recordings); all five are on
+// Vertex AI's list of supported audio types.
 const AUDIO_TYPES = new Set([
   "audio/webm", // Chrome, Edge, Firefox
   "audio/ogg", // older Firefox
@@ -76,12 +78,6 @@ serve(async (req) => {
       return jsonResponse(req, { error: "Too many requests. Please try again later." }, 429);
     }
 
-    const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
-    if (!GEMINI_API_KEY) {
-      console.error("GEMINI_API_KEY is not configured");
-      return jsonResponse(req, { error: "Speech input not configured" }, 500);
-    }
-
     // The body is the raw recording; its type comes from MediaRecorder,
     // e.g. "audio/webm;codecs=opus".
     const mimeType = (req.headers.get("content-type") ?? "").split(";")[0].trim().toLowerCase();
@@ -105,21 +101,17 @@ serve(async (req) => {
     // Sizes only. What the visitor said is personal data and stays out of logs.
     console.log(`Transcribing ${audio.byteLength} bytes of ${mimeType}`);
 
-    const response = await fetch(GEMINI_URL, {
-      method: "POST",
-      headers: { "x-goog-api-key": GEMINI_API_KEY, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: TRANSCRIBE_INSTRUCTION }] },
-        contents: [{
-          role: "user",
-          parts: [{ inline_data: { mime_type: mimeType, data: encodeBase64(audio) } }],
-        }],
-        generationConfig: {
-          temperature: 0,
-          responseMimeType: "application/json",
-          responseSchema: RESPONSE_SCHEMA,
-        },
-      }),
+    const response = await geminiFetch(STT_MODEL, "generateContent", {
+      systemInstruction: { parts: [{ text: TRANSCRIBE_INSTRUCTION }] },
+      contents: [{
+        role: "user",
+        parts: [{ inlineData: { mimeType, data: encodeBase64(audio) } }],
+      }],
+      generationConfig: {
+        temperature: 0,
+        responseMimeType: "application/json",
+        responseSchema: RESPONSE_SCHEMA,
+      },
     });
 
     if (!response.ok) {
@@ -144,6 +136,10 @@ serve(async (req) => {
 
     return jsonResponse(req, { text: text.slice(0, LIMITS.chatTotalChars), language });
   } catch (error: unknown) {
+    if (error instanceof ProviderNotConfigured) {
+      console.error("AI provider not configured:", error.message);
+      return jsonResponse(req, { error: "Speech input not configured" }, 500);
+    }
     console.error("Error in speech-to-text function:", error);
     return jsonResponse(req, { error: "Failed to transcribe speech" }, 500);
   }

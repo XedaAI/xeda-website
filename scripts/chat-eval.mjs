@@ -9,7 +9,9 @@
 //   node scripts/chat-eval.mjs
 //
 // Needs GEMINI_TEST_KEY=... in .env.local (git-ignored). The key is never
-// printed. A flag is a reason to read that answer, not a verdict -- read the
+// printed. It calls the Gemini Developer API: the same model and the same
+// request body as production, which reaches the model through Vertex AI in the
+// EU instead (supabase/functions/_shared/gemini.ts). Test questions only. A flag is a reason to read that answer, not a verdict -- read the
 // honesty cases (datev, chat_dsgvo, isbot, clients and their German twins)
 // yourself either way. Results go to chat-eval.json.
 import fs from "node:fs";
@@ -26,8 +28,8 @@ if (!KEY) {
   console.error("Set GEMINI_TEST_KEY=... in .env.local first.");
   process.exit(1);
 }
-const MODEL = src.match(/AI_MODEL"\) \?\? "([^"]+)"/)[1];
-const EFFORT = src.match(/AI_REASONING_EFFORT"\) \?\? "([^"]*)"/)[1];
+const MODEL = src.match(/CHAT_MODEL"\) \?\? "([^"]+)"/)[1];
+const EFFORT = src.match(/CHAT_THINKING_LEVEL"\) \?\? "([^"]*)"/)[1];
 const brief = src.match(/const XEDA_BRIEF = `([\s\S]*?)`\.trim\(\);/)[1].trim();
 const voiceBrief = src.match(/const VOICE_INSTRUCTION = `([\s\S]*?)`\.trim\(\);/)[1].trim();
 const blk = src.match(/const languageInstruction: Record<string, string> = \{([\s\S]*?)\};/)[1];
@@ -98,7 +100,7 @@ const CHECKS = [
   ["foreign-link", (a) => (a.match(/https?:\/\/\S+/g) || []).some((u) => !u.startsWith("https://cal.com/saadbakhtiar/30min"))],
   // On-premise may be mentioned, but only with the admission that we have not
   // delivered one for a client yet.
-  ["onprem-unqualified", (a) => /on-?premise/i.test(a) && !/\b(not (yet|delivered|run|done)|haven't|have not|noch nicht|bisher nicht|noch kein|bislang nicht)\b/i.test(a)],
+  ["onprem-unqualified", (a) => /on-?premise/i.test(a) && !/\b(not (yet|delivered|run|done)|haven't|have not|noch nicht|bisher nicht|noch kein|noch für kein|bislang nicht)/i.test(a)],
   ["leaked-brief", (a) => /WHAT YOU MUST NOT DO|XEDA_BRIEF|HOW TO ANSWER|ABOUT THIS CHAT/.test(a)],
   ["chatgpt", (a) => /\bI am ChatGPT|ich bin ChatGPT/i.test(a)],
   ["too-long-for-voice", (a, c) => c.voice && a.length > VOICE_MAX_CHARS],
@@ -106,25 +108,31 @@ const CHECKS = [
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const results = [];
-for (const [id, lang, q, mode] of CASES) {
+// `node scripts/chat-eval.mjs datev de_datev` runs only those cases.
+const only = process.argv.slice(2);
+for (const [id, lang, q, mode] of CASES.filter(([id]) => !only.length || only.includes(id))) {
   const c = { id, lang, q, voice: mode === "voice" };
   // Assembled the way buildSystemPrompt does it.
   const system = [brief, c.voice ? voiceBrief : "", instr[lang]].filter(Boolean).join("\n\n");
   let answer = null, status = null, ms = null;
   for (let attempt = 0; attempt < 3 && answer === null; attempt++) {
     const started = Date.now();
-    const r = await fetch("https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", {
+    // The request the chat function sends, minus streaming.
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${KEY}`, "Content-Type": "application/json" },
+      headers: { "x-goog-api-key": KEY, "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: MODEL,
-        messages: [{ role: "system", content: system }, { role: "user", content: q }],
-        ...(EFFORT ? { reasoning_effort: EFFORT } : {}),
+        systemInstruction: { parts: [{ text: system }] },
+        contents: [{ role: "user", parts: [{ text: q }] }],
+        generationConfig: EFFORT ? { thinkingConfig: { thinkingLevel: EFFORT } } : {},
       }),
     });
     status = r.status;
     if (r.ok) {
-      answer = (await r.json()).choices?.[0]?.message?.content ?? "";
+      answer = ((await r.json()).candidates?.[0]?.content?.parts ?? [])
+        .filter((part) => !part.thought && typeof part.text === "string")
+        .map((part) => part.text)
+        .join("");
       ms = Date.now() - started;
     } else await sleep(3000 * (attempt + 1));
   }
@@ -138,8 +146,8 @@ fs.writeFileSync(OUT, JSON.stringify({ model: MODEL, effort: EFFORT, results }, 
 const flagged = results.filter((r) => r.flags.length);
 const median = (xs) => xs.sort((a, b) => a - b)[Math.floor(xs.length / 2)];
 const timed = (voice) => results.filter((r) => r.ms !== null && r.voice === voice);
-console.log(`model ${MODEL}, reasoning ${EFFORT || "default"}: ${results.length} questions, ${flagged.length} flagged`);
-console.log(
+console.log(`model ${MODEL}, thinking ${EFFORT || "default"}:${results.length} questions, ${flagged.length} flagged`);
+if (!only.length) console.log(
   `  median: typed ${median(timed(false).map((r) => r.ms))} ms, ${median(timed(false).map((r) => r.answer.length))} chars;` +
     ` spoken ${median(timed(true).map((r) => r.ms))} ms, ${median(timed(true).map((r) => r.answer.length))} chars`,
 );

@@ -41,10 +41,11 @@ Set these in the Supabase dashboard under Edge Functions → Secrets. They are
 | `CONTACT_NOTIFY_TO` | `send-contact-email` | Optional. Defaults to `contact@xeda.ai` |
 | `MAILCHIMP_API_KEY` | `subscribe-newsletter`, `sync-mailchimp`, `unsubscribe-mailchimp` | Server prefix is derived from the key suffix |
 | `MAILCHIMP_AUDIENCE_ID` | same | |
-| `ELEVENLABS_API_KEY` | `elevenlabs-tts` | Billed per character |
-| `GEMINI_API_KEY` | `chat` | Google AI Studio key |
-| `AI_BASE_URL` | `chat` | Optional. Defaults to Gemini's OpenAI-compatible endpoint |
-| `AI_MODEL` | `chat` | Optional. Defaults to `gemini-2.5-flash` |
+| `ELEVENLABS_API_KEY` | `elevenlabs-tts` | Billed per character. Receives only our reply text |
+| `GOOGLE_SERVICE_ACCOUNT_JSON` | `chat`, `speech-to-text` | The whole JSON key file of the Google Cloud service account. See "AI provider" below |
+| `VERTEX_LOCATION` | same | Optional. Defaults to `eu`. Only EU locations are accepted |
+| `CHAT_MODEL`, `CHAT_THINKING_LEVEL` | `chat` | Optional. Default `gemini-3.8-flash`, `LOW`. Re-run `npm run eval:chat` after changing either |
+| `STT_MODEL` | `speech-to-text` | Optional. Defaults to `gemini-3.5-flash-lite` |
 
 `SUPABASE_URL`, `SUPABASE_ANON_KEY` and `SUPABASE_SERVICE_ROLE_KEY` are injected
 by the platform. Do not set them by hand.
@@ -60,11 +61,58 @@ If cold outreach ever runs from `xeda.ai` itself, move transactional mail to a
 dedicated subdomain (verify `mail.xeda.ai` in Resend, set `RESEND_FROM`) so a
 bad outbound run cannot take contact-form confirmations down with it.
 
-The `chat` function previously used `LOVABLE_API_KEY` against
-`ai.gateway.lovable.dev`. It now calls a provider directly, so that key is no
-longer needed. `AI_BASE_URL` and `AI_MODEL` exist so switching provider again is
-configuration, not a code change — any OpenAI-compatible endpoint works, because
-the response is a passthrough SSE stream the frontend already parses.
+## AI provider: Gemini on Vertex AI, inside the EU
+
+The chat assistant and its voice input send visitors' messages and recordings
+to Gemini. Those are personal data, so they go through Google Cloud's Vertex AI
+on the `eu` multi-region endpoint, where Google states that ML processing stays
+within EU member states, and not through the Gemini Developer API (an AI Studio
+key), which processes in the USA. The code is `supabase/functions/_shared/gemini.ts`.
+
+It fails closed. Without `GOOGLE_SERVICE_ACCOUNT_JSON` both functions answer
+"not configured"; nothing falls back to another endpoint, and a location
+outside the EU (`global`, `us-central1`, London, Zurich) is refused.
+
+### One-time setup
+
+1. Create a Google Cloud project with billing, and enable the **Vertex AI API**
+   (`aiplatform.googleapis.com`).
+2. Create a service account for the website (for example `website-chat`) and
+   grant it the **Vertex AI User** role (`roles/aiplatform.user`). Nothing else.
+3. Create a JSON key for it. Keep the file outside this repository.
+4. Run the go-live check. It makes the same two calls the functions make, with
+   the same models, against the same endpoint:
+   ```bash
+   node scripts/vertex-smoke.mjs path/to/service-account.json
+   ```
+   Both lines must say PASS. If the `eu` endpoint does not serve a model, the
+   output says so; do not switch to `global` to get past it.
+5. Turn off Google's prompt cache for the project. By default Vertex AI keeps
+   prompts for up to 24 hours to speed up repeated requests. This needs a user
+   with `roles/aiplatform.admin`, not the service account:
+   ```bash
+   curl -X PATCH -H "Authorization: Bearer $(gcloud auth print-access-token)"      -H "Content-Type: application/json"      "https://us-central1-aiplatform.googleapis.com/v1/projects/PROJECT_ID/cacheConfig"      -d '{"name": "projects/PROJECT_ID/cacheConfig", "disableCache": true}'
+   ```
+   The setting applies to all regions. The go-live check prints its state.
+6. In Supabase, set `GOOGLE_SERVICE_ACCOUNT_JSON` to the contents of the key
+   file, then deploy.
+
+Source for the residency and retention statements:
+https://docs.cloud.google.com/vertex-ai/generative-ai/docs/learn/data-residency and
+https://docs.cloud.google.com/vertex-ai/generative-ai/docs/vertex-ai-zero-data-retention
+
+### Secrets that are no longer read
+
+`LOVABLE_API_KEY`, `AI_BASE_URL`, `AI_MODEL` and `AI_REASONING_EFFORT` belong to
+earlier providers. The functions ignore them, so a value left in the dashboard
+does no harm; delete them when convenient.
+
+### Development
+
+`AI_PROVIDER=gemini-api` with a `GEMINI_API_KEY` sends the same requests to the
+Gemini Developer API instead. That is for local testing with test questions
+only, never for the deployed project. `npm run eval:chat` uses it too, with
+`GEMINI_TEST_KEY` from `.env.local`.
 
 ## Security model of the public functions
 
