@@ -78,7 +78,7 @@ const uiText: Record<Language, {
     // period (DSGVO Art. 5(1)(e)) belong in the first thing the visitor reads.
     welcome:
       "Hi, I'm Xeda's AI assistant, not a person. Ask me anything about what we build and how we work, by text or with the mic. Chats are stored for 30 days, so please don't share personal or client data here.",
-    notice: "AI assistant · chats deleted after 30 days",
+    notice: "AI assistant. Answers can be wrong. Please don't share personal data. Chats are deleted after 30 days.",
     privacy: "Privacy",
     history: "Chat History",
     noHistory: "No past conversations",
@@ -104,7 +104,7 @@ const uiText: Record<Language, {
     transcribing: "Wird umgewandelt …",
     welcome:
       "Hallo, ich bin der KI-Assistent von Xeda, kein Mensch. Fragen Sie mich alles darüber, was wir bauen und wie wir arbeiten, per Text oder Mikrofon. Chats werden 30 Tage gespeichert, bitte geben Sie hier also keine personenbezogenen Daten oder Mandantendaten ein.",
-    notice: "KI-Assistent · Chats werden nach 30 Tagen gelöscht",
+    notice: "KI-Assistent. Antworten können fehlerhaft sein. Bitte keine personenbezogenen Daten eingeben. Chats werden nach 30 Tagen gelöscht.",
     privacy: "Datenschutz",
     history: "Chat-Verlauf",
     noHistory: "Keine vergangenen Gespräche",
@@ -260,7 +260,7 @@ const CopyButton = ({ text }: { text: string }) => {
       className="h-5 w-5"
       onClick={handleCopy}
     >
-      {copied ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
+      {copied ? <Check className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
     </Button>
   );
 };
@@ -277,6 +277,10 @@ const Chatbot = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  // On, but it only ever applies to a question asked with the microphone (see
+  // lastInputWasVoiceRef): a reply's text goes to the TTS provider when the
+  // visitor is using voice, never for a typed question, which is what the
+  // privacy policy says.
   const [autoSpeak, setAutoSpeak] = useState(true);
   const [isLoadingAudio, setIsLoadingAudio] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
@@ -339,16 +343,18 @@ const Chatbot = () => {
     });
   }, [getChatSession]);
 
-  // Persist only an explicit pick. Writing the default on mount would make it
-  // look like a choice and pin the chat to it after a site language switch.
+  // Preferences are stored only when the visitor actually picks one, never on
+  // page load (§ 25 TDDDG). For the language, writing the default on mount
+  // would also make it look like a choice and pin the chat to it after a site
+  // language switch.
   const chooseLanguage = useCallback((next: Language) => {
     localStorage.setItem("chatbot_language", next);
     setChosenLanguage(next);
   }, []);
-
-  useEffect(() => {
-    localStorage.setItem("chatbot_voice", selectedVoice);
-  }, [selectedVoice]);
+  const chooseVoice = (voiceId: string) => {
+    setSelectedVoice(voiceId);
+    localStorage.setItem("chatbot_voice", voiceId);
+  };
 
   // Load conversation history
   const loadConversationHistory = useCallback(async () => {
@@ -380,8 +386,14 @@ const Chatbot = () => {
     }
   }, []);
 
-  // Load existing conversation on mount
+  // Restore the visitor's last conversation the first time the chat is
+  // opened, not on page load: until someone actually uses the chat, nothing
+  // is stored in their browser and nothing is sent to the chat backend
+  // (§ 25 TDDDG, GDPR data minimisation).
+  const restoredRef = useRef(false);
   useEffect(() => {
+    if (!isOpen || restoredRef.current) return;
+    restoredRef.current = true;
     const initConversation = async () => {
       try {
         const conversation = await callSignedChatBackend<{ id: string } | null>({
@@ -397,7 +409,7 @@ const Chatbot = () => {
     };
 
     initConversation();
-  }, [loadConversation]);
+  }, [isOpen, loadConversation]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -972,7 +984,7 @@ const Chatbot = () => {
                         {voices.map((voice) => (
                           <DropdownMenuItem
                             key={voice.id}
-                            onClick={() => setSelectedVoice(voice.id)}
+                            onClick={() => chooseVoice(voice.id)}
                             className={selectedVoice === voice.id ? "bg-muted" : ""}
                           >
                             <div className="flex flex-col">
@@ -1121,10 +1133,11 @@ const Chatbot = () => {
                   <Send className="h-4 w-4" />
                 </Button>
               </div>
-              {/* Always visible, not only before the first message: the AI
-                  disclosure has to hold for a reloaded conversation too. */}
-              <p className="px-3 pt-1.5 pb-2 text-[11px] leading-tight text-muted-foreground shrink-0">
-                {t.notice} ·{" "}
+              {/* EU AI Act Art. 50(1): say plainly that this is an AI. Always
+                  visible, not only before the first message, so it holds for
+                  a reloaded conversation too. */}
+              <p className="px-3 pt-1.5 pb-2 text-[11px] leading-snug text-muted-foreground shrink-0">
+                {t.notice}{" "}
                 <Link to="/privacy" className="underline underline-offset-2 hover:text-foreground">
                   {t.privacy}
                 </Link>

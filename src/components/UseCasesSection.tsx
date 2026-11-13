@@ -1,72 +1,210 @@
-import type React from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card";
-import { Receipt, Factory, ShoppingCart, Building2, Stethoscope, HardHat, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import TiltWrapper from "@/components/TiltWrapper";
+import { industries, tx } from "@/components/industries/data";
+import IndustrySelector from "@/components/industries/IndustrySelector";
+import DesktopScene from "@/components/industries/DesktopScene";
+import MobileScene from "@/components/industries/MobileScene";
+import type { Phase } from "@/components/industries/XedaNode";
+import { RUN_MS } from "@/components/industries/timing";
+import { preloadIndustryImages } from "@/components/industries/images";
 
-// Illustrative use cases — examples of what we build, NOT specific client data.
-// Each card is the entry point to that industry's landing page (src/data/verticals.ts),
-// so the six areas are a funnel rather than a static grid.
-const cases = [
-  { icon: Receipt, key: "accounting", slug: "steuerkanzleien" },
-  { icon: Factory, key: "manufacturing", slug: "fertigung" },
-  { icon: ShoppingCart, key: "ecommerce", slug: "e-commerce" },
-  { icon: Building2, key: "realestate", slug: "immobilien" },
-  { icon: Stethoscope, key: "medical", slug: "arztpraxis" },
-  { icon: HardHat, key: "construction", slug: "handwerk" },
-];
+// Industries, as one repeated demonstration: messy work goes in, Xeda works
+// on it, structured action comes out. Nothing runs on its own — the visitor
+// presses Xeda, then can put it back and try another industry. Switching
+// industry fades to the new scene in its "before" state.
+//
+// Two compositions share this state: DesktopScene (side by side, from lg)
+// and MobileScene (a compact vertical card, below lg). Only one is mounted,
+// so a phone never lays out or animates the desktop scene.
+
+const FADE_MS = 200;
+const DESKTOP = "(min-width: 1024px)";
+
+const useMedia = (query: string) => {
+  const [match, setMatch] = useState(() => typeof window !== "undefined" && window.matchMedia(query).matches);
+  useEffect(() => {
+    const mq = window.matchMedia(query);
+    const sync = () => setMatch(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, [query]);
+  return match;
+};
 
 const UseCasesSection = () => {
-  const { t } = useLanguage();
+  const { t, language: lang } = useLanguage();
+  const isDesktop = useMedia(DESKTOP);
+  const reducedMotion = useMedia("(prefers-reduced-motion: reduce)");
+  const [active, setActive] = useState(0); // selected tab
+  const [shown, setShown] = useState(0); // scene on stage (lags during the fade)
+  const [phase, setPhase] = useState<Phase>("before");
+  const [fading, setFading] = useState(false);
+  const [offscreen, setOffscreen] = useState(true);
+  // The selected tab, for handlers that outlive the render they were made in.
+  const activeRef = useRef(0);
+
+  const sectionRef = useRef<HTMLElement>(null);
+  const selectorRef = useRef<HTMLDivElement>(null);
+  const timers = useRef<number[]>([]);
+  const clearTimers = () => { timers.current.forEach((id) => window.clearTimeout(id)); timers.current = []; };
+  useEffect(() => clearTimers, []);
+
+  // Pause the idle animations while the section is off screen.
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setOffscreen(!e.isIntersecting));
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  // Fetch every industry's picture once the section is near, so switching
+  // industry never waits on the network.
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      preloadIndustryImages();
+      io.disconnect();
+    }, { rootMargin: "800px 0px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  // A layout change mid-run (a tablet turned sideways) starts the scene over.
+  // It also cancels a fade in progress, so finish that switch here or the
+  // stage would be left blank on the old industry.
+  useEffect(() => {
+    const mq = window.matchMedia(DESKTOP);
+    const restart = () => {
+      clearTimers();
+      setShown(activeRef.current);
+      setFading(false);
+      setPhase("before");
+    };
+    mq.addEventListener("change", restart);
+    return () => mq.removeEventListener("change", restart);
+  }, []);
+
+  const industry = industries[shown];
+
+  const select = (i: number) => {
+    if (i === active) return;
+    clearTimers();
+    setActive(i);
+    activeRef.current = i;
+    setFading(true);
+    timers.current.push(window.setTimeout(() => {
+      setShown(i);
+      setPhase("before");
+      setFading(false);
+    }, reducedMotion ? 0 : FADE_MS));
+  };
+
+  // From the phone's previous/next controls, below the result: if the start
+  // of the section has scrolled away, bring the selector back into view so
+  // the new industry is seen from its beginning. Only then — it never moves
+  // the page otherwise.
+  const selectFromBelow = (i: number) => {
+    select(i);
+    const top = selectorRef.current?.getBoundingClientRect().top ?? 0;
+    const header = document.querySelector("header")?.getBoundingClientRect().bottom ?? 0;
+    if (top < header) window.scrollBy({ top: top - header - 12, behavior: reducedMotion ? "auto" : "smooth" });
+  };
+
+  const run = () => {
+    // Not while fading to another industry: the run would land on that one.
+    if (phase !== "before" || fading) return;
+    if (reducedMotion) { setPhase("after"); return; }
+    setPhase("processing");
+    timers.current.push(window.setTimeout(() => setPhase("after"), isDesktop ? RUN_MS.desktop : RUN_MS.phone));
+  };
+  const reset = () => { clearTimers(); setPhase("before"); };
+  // Replay: back to the before state for a beat, then run again. The inputs
+  // keep the travel vectors measured on the first run.
+  const replay = () => {
+    clearTimers();
+    setPhase("before");
+    if (reducedMotion) { setPhase("after"); return; }
+    timers.current.push(window.setTimeout(() => {
+      setPhase("processing");
+      timers.current.push(window.setTimeout(() => setPhase("after"), isDesktop ? RUN_MS.desktop : RUN_MS.phone));
+    }, 450));
+  };
 
   return (
-    <section id="use-cases" className="py-28 md:py-36 section-ink">
+    <section ref={sectionRef} id="use-cases" lang={lang} className="py-28 md:py-36 section-ink" data-offscreen={offscreen ? "" : undefined}>
       <div className="container mx-auto px-6">
-        <div className="text-center mb-4">
+        <div className="text-center mb-8 lg:mb-10">
           <span className="text-sm font-semibold tracking-wide text-brand-accent mb-4 block">{t("useCases.label")}</span>
           <h2 className="text-3xl md:text-5xl font-semibold tracking-[-0.022em] text-foreground mb-5 text-balance">{t("useCases.title")}</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">{t("useCases.subtitle")}</p>
+          <p className="text-foreground/90 text-lg max-w-2xl mx-auto">{t("useCases.introCta")}</p>
+          <p className="mt-2 text-muted-foreground max-w-2xl mx-auto">
+            <span className="text-brand-accent font-medium">{t("useCases.introLine")}</span>{" "}
+            <span className="text-sm">{t("useCases.introNote")}</span>
+          </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mt-12">
-          {cases.map(({ icon: Icon, key, slug }, index) => (
-            <TiltWrapper key={key}>
-            <Link
-              to={`/${slug}`}
-              className="group block h-full rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-            >
-            <Card
-              className="card-lift enter h-full bg-card border-border/50 hover:shadow-lg group-hover:border-foreground/28"
-              style={{ "--enter-delay": `${index * 0.07}s` } as React.CSSProperties}
-            >
-              <CardContent className="p-6 flex flex-col h-full">
-                <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center mb-4">
-                  <Icon className="w-5 h-5 text-primary" />
+        <div className="max-w-6xl mx-auto">
+          <div ref={selectorRef}>
+            <IndustrySelector active={active} onSelect={select} t={t} reducedMotion={reducedMotion} />
+          </div>
+
+          <div className="ix-demo">
+            {isDesktop ? (
+              <DesktopScene industry={industry} phase={phase} fading={fading} lang={lang} t={t} onRun={run} onReset={reset} onReplay={replay} />
+            ) : (
+              <MobileScene
+                industry={industry}
+                index={active}
+                phase={phase}
+                fading={fading}
+                lang={lang}
+                t={t}
+                onActivate={run}
+                onReset={reset}
+                onReplay={replay}
+                onSelect={selectFromBelow}
+              />
+            )}
+          </div>
+
+          <p className="sr-only" aria-live="polite">{phase === "after" ? tx(industry.summary, lang) : ""}</p>
+
+          {/* The industry in words, under the demonstration. All six are laid
+              in one grid cell so the tallest sets the height and switching
+              never moves the page; only the shown one is visible. */}
+          <div className="ix-copy-stack" data-fading={fading ? "" : undefined}>
+            {industries.map((ind, i) => (
+              <div key={ind.key} className={`ix-copy ${i === shown ? "is-shown" : ""}`} aria-hidden={i !== shown}>
+                <h3 className="sr-only">{t(`useCases.${ind.key}.industry`)}</h3>
+                <div>
+                  <span className="ix-copy-label">{t("useCases.problem")}</span>
+                  <p>{t(`useCases.${ind.key}.problem`)}</p>
                 </div>
-                <h3 className="text-lg font-bold text-foreground mb-3">{t(`useCases.${key}.industry`)}</h3>
-
-                <p className="text-sm text-muted-foreground mb-3">
-                  <span className="font-semibold text-foreground/70">Problem: </span>
-                  {t(`useCases.${key}.problem`)}
-                </p>
-                <p className="text-sm text-foreground/80 mb-4">
-                  <span className="font-semibold text-primary">{t("useCases.weBuild")}: </span>
-                  {t(`useCases.${key}.build`)}
-                </p>
-                <p className="text-sm font-medium text-foreground border-t border-border pt-3">
-                  → {t(`useCases.${key}.outcome`)}
-                </p>
-
-                <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary">
+                <div>
+                  <span className="ix-copy-label text-primary">{t("useCases.weBuild")}</span>
+                  <p>{t(`useCases.${ind.key}.build`)}</p>
+                </div>
+                <div>
+                  <span className="ix-copy-label text-brand-accent">{t("useCases.outcome")}</span>
+                  <p className="text-foreground">{t(`useCases.${ind.key}.outcome`)}</p>
+                </div>
+                <Link
+                  to={`/${ind.slug}`}
+                  tabIndex={i === shown ? undefined : -1}
+                  className="group inline-flex min-h-11 items-center gap-1.5 self-end whitespace-nowrap text-sm font-medium text-primary rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
                   {t("useCases.learnMore")}
                   <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-                </span>
-              </CardContent>
-            </Card>
-            </Link>
-            </TiltWrapper>
-          ))}
+                </Link>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

@@ -7,12 +7,13 @@ import {
   Check,
   ShieldCheck,
   FileText,
-  Sparkles,
   Search,
   Wrench,
   RefreshCw,
 } from "lucide-react";
 import SEOHead from "@/components/SEOHead";
+import XedaMark from "@/components/XedaMark";
+import XedaWordmark from "@/components/XedaWordmark";
 import DeliveryCascade from "@/components/DeliveryCascade";
 import { auditBookingUrl } from "@/lib/booking";
 import type { Vertical } from "@/data/verticals";
@@ -57,7 +58,10 @@ const VerticalLanding = ({ vertical }: { vertical: Vertical }) => {
   }, [vertical.slug]);
 
   return (
-    <div className="min-h-screen bg-background">
+    // The campaign pages are written in German whatever the site language,
+    // so they say so: screen readers pronounce them correctly and long
+    // compounds in the headline hyphenate instead of running off a phone.
+    <div lang="de" className="min-h-screen bg-background">
       <SEOHead
         customTitle={vertical.seoTitle}
         customDescription={vertical.seoDescription}
@@ -66,12 +70,16 @@ const VerticalLanding = ({ vertical }: { vertical: Vertical }) => {
 
       {/* Top bar */}
       <header className="border-b border-border">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
-            <span className="font-semibold text-lg text-foreground">xeda.ai</span>
+        <div className="container mx-auto px-6 py-4 flex items-center justify-between gap-4">
+          {/* Same lockup as the homepage header, so a visitor arriving from a
+              campaign sees the brand they will meet on the rest of the site.
+              A step smaller on phones, and the mark alone on the narrowest
+              ones, so the button beside it always fits. */}
+          <Link to="/" aria-label="Xeda" className="flex min-w-0 items-center gap-2 sm:gap-2.5">
+            <XedaMark className="h-6 sm:h-7 w-auto shrink-0 text-foreground" />
+            <XedaWordmark className="h-4 sm:h-5 w-auto text-foreground max-[339px]:hidden" />
           </Link>
-          <Button asChild size="sm">
+          <Button asChild size="sm" className="shrink-0">
             <a href={bookingUrl} target="_blank" rel="noopener noreferrer">
               Kostenloses Audit
             </a>
@@ -82,10 +90,10 @@ const VerticalLanding = ({ vertical }: { vertical: Vertical }) => {
       {/* Hero */}
       <section className="py-20 md:py-28 bg-muted/30">
         <div className="container mx-auto px-6 max-w-3xl text-center">
-          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-sm text-primary mb-6">
-            <Icon className="h-4 w-4" /> {eyebrow}
+          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-accent/10 border border-brand-accent/25 text-sm text-foreground mb-6">
+            <Icon className="h-4 w-4 text-brand-accent" /> {eyebrow}
           </span>
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight hyphens-auto [overflow-wrap:anywhere] md:hyphens-manual">
             {heroHeadline}
           </h1>
           <p className="text-lg text-muted-foreground mb-10 leading-relaxed">
@@ -123,7 +131,7 @@ const VerticalLanding = ({ vertical }: { vertical: Vertical }) => {
       {/* Solution */}
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-6 max-w-3xl">
-          <span className="text-sm font-medium text-primary mb-3 block text-center">
+          <span className="text-sm font-medium text-brand-accent mb-3 block text-center">
             Was wir bauen
           </span>
           <h2 className="text-3xl font-bold text-foreground mb-8 text-center">

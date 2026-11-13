@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SEOHead from "@/components/SEOHead";
+import LegalLinks from "@/components/LegalLinks";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 // The policy in both languages, rendered by one template. Keeping the text as
@@ -39,7 +40,7 @@ const address = (
   <>
     <strong className="text-foreground">Xeda UG (haftungsbeschränkt)</strong><br />
     Bismarckstr. 54, 67059 Ludwigshafen am Rhein, Deutschland<br />
-    E-Mail: saad.bakhtiyar@xeda.ai
+    E-Mail: saad.bakhtiar@xeda.ai
   </>
 );
 
@@ -302,6 +303,8 @@ const Privacy = () => {
             </section>
           ))}
         </article>
+
+        <LegalLinks className="mt-12 pt-8 border-t border-border max-w-3xl mx-auto" />
       </div>
     </div>
   );
