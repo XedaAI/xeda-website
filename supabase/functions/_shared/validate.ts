@@ -9,6 +9,12 @@ export const LIMITS = {
   message: 5000,
   /** ElevenLabs bills per character, so this is a spend cap as much as a validation. */
   ttsText: 1000,
+  /**
+   * Speech-to-text upload cap. The widget stops recording at 30 seconds, which
+   * is ~120 KB of Opus (Chrome, Firefox) or ~500 KB of AAC (Safari); 2 MB
+   * leaves headroom without letting anyone post an hour of audio at our cost.
+   */
+  sttBytes: 2 * 1024 * 1024,
   chatMessages: 30,
   chatTotalChars: 12000,
 } as const;

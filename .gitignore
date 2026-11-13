@@ -27,3 +27,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Output of scripts/chat-eval.mjs
+chat-eval.json
+
+# Google Cloud service account keys never belong in the repository
+*service-account*.json

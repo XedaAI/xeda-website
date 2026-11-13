@@ -26,8 +26,10 @@ const ALLOWED_ORIGINS = [
 const DEV_ORIGINS = [
   "http://localhost:8080",
   "http://localhost:5173",
+  "http://localhost:5199", // .claude/launch.json runs the dev server here
   "http://127.0.0.1:8080",
   "http://127.0.0.1:5173",
+  "http://127.0.0.1:5199",
 ];
 
 export function isAllowedOrigin(origin: string | null): boolean {

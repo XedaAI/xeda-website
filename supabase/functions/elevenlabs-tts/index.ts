@@ -1,10 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { clientIp, corsHeaders, handlePreflight, jsonResponse } from "../_shared/cors.ts";
+import { elevenLabsUrl } from "../_shared/elevenlabs.ts";
 import { isRateLimited } from "../_shared/rate-limit.ts";
 import { getAdminClient } from "../_shared/supabase.ts";
 import { LIMITS } from "../_shared/validate.ts";
 
-// "Sarah" -- natural and clear.
+// The widget's "Natural" voice -- natural and clear.
 const DEFAULT_VOICE_ID = "EXAVITQu4vr4xnSDxMaL";
 
 // ElevenLabs bills per character, so these two constants are the spend cap.
@@ -64,7 +65,7 @@ serve(async (req) => {
     console.log(`Generating speech for ${text.length} characters with voice: ${selectedVoiceId}`);
 
     const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${selectedVoiceId}`,
+      elevenLabsUrl(`/v1/text-to-speech/${selectedVoiceId}`),
       {
         method: "POST",
         headers: {
