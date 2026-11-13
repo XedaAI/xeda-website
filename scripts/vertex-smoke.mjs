@@ -147,7 +147,10 @@ try {
   const config = response.ok ? await response.json() : null;
   console.log(
     `\nINFO  prompt caching: ${
-      config ? (config.disableCache ? "disabled for this project" : "ENABLED (Google's default; see docs/SUPABASE.md to disable)") : `could not read (${response.status})`
+      config
+        ? (config.disableCache ? "disabled for this project" : "ENABLED (Google's default; see docs/SUPABASE.md to disable)")
+        // Expected: the Vertex AI User role may use models, not read project settings.
+        : `this service account may not read the setting (${response.status}); check it with your own login, see docs/SUPABASE.md`
     }`,
   );
 }

@@ -93,7 +93,13 @@ outside the EU (`global`, `us-central1`, London, Zurich) is refused.
    ```bash
    curl -X PATCH -H "Authorization: Bearer $(gcloud auth print-access-token)"      -H "Content-Type: application/json"      "https://us-central1-aiplatform.googleapis.com/v1/projects/PROJECT_ID/cacheConfig"      -d '{"name": "projects/PROJECT_ID/cacheConfig", "disableCache": true}'
    ```
-   The setting applies to all regions. The go-live check prints its state.
+   The setting applies to all regions. The reply to that command only says
+   the operation is done; read the setting back to confirm it, again as a user
+   and not as the service account, which may not read it. It must show
+   `"disableCache": true`:
+   ```bash
+   curl -H "Authorization: Bearer $(gcloud auth print-access-token)" \n     "https://us-central1-aiplatform.googleapis.com/v1/projects/PROJECT_ID/cacheConfig"
+   ```
 6. In Supabase, set `GOOGLE_SERVICE_ACCOUNT_JSON` to the contents of the key
    file, then deploy.
 
